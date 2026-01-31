@@ -208,7 +208,7 @@
         CACHE_KEY: 'lampa_quality_cache', // Ключ для зберігання кешу в LocalStorage
         JACRED_PROTOCOL: 'http://', // Протокол для API JacRed
         JACRED_URL: 'jac.maxvol.pro', // Домен API JacRed (redapi.cfhttp.top або jacred.xyz)
-        JACRED_API_KEY: '1', // Ключ API 
+        JACRED_API_KEY: '', // Ключ API 
         PROXY_LIST: [ // Список проксі серверів для обходу CORS обмежень
             'https://my-finder.kozak-bohdan.workers.dev/?url=',
             'https://cors.bwa.workers.dev/',
@@ -1887,5 +1887,6 @@
     })();
 
 })();
+
 
 
