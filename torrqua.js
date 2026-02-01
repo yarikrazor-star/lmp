@@ -23,7 +23,7 @@
 
     // --- CONFIGURATION ---
     var ENABLE_LOGGING = true;
-    var JACRED_PROTOCOL = 'http://';
+    var JACRED_PROTOCOL = 'https://';
     var JACRED_URL = Lampa.Storage.get('jacred.xyz') || 'jacred.xyz';
     var PROXY_LIST = [
         'https://well-informed-normal-function.anvil.app/_/api/jackett_proxy?u='
