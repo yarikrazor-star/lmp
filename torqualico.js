@@ -46,22 +46,24 @@
     var ICON_NONE = 'https://yarikrazor-star.github.io/lmp/dontknow.svg';
     var ICON_STREAM = 'https://yarikrazor-star.github.io/lmp/stream.svg';
 
-    // --- СТИЛІ (БЕЗ ПІДКЛАДОК) ---
+    // --- СТИЛІ (ВИПРАВЛЕНО ДЛЯ ОДНОГО РЯДКА) ---
     var style = document.createElement('style');
     style.textContent = [
         '.full-start__status.surs_quality {',
         '    padding: 0.1em 0.3em;',
         '    font-weight: bold;',
         '    margin-left: 0.8em;',
-        '    display: inline-flex;',
+        '    display: inline-flex !important;',
         '    align-items: center;',
+        '    flex-wrap: nowrap !important;', // Заборона переносу флекс-елементів
+        '    white-space: nowrap !important;', // Заборона переносу тексту
         '    background: transparent !important;',
         '    text-shadow: 1px 1px 2px rgba(0,0,0,0.9) !important;',
         '    color: #fff !important;',
         '}',
-        '.surs_quality .icon-main { width: 1.6em; height: 1.2em; margin-right: 6px; object-fit: contain; }',
-        '.surs_quality .icon-stream { width: 1.4em; height: 1.4em; margin: 0 4px 0 12px; object-fit: contain; vertical-align: middle; }',
-        '.surs_quality .quality-box { display: flex; align-items: center; background: transparent !important; margin-right: 2px; }',
+        '.surs_quality .icon-main { width: 1.6em; height: 1.2em; margin-right: 6px; object-fit: contain; flex-shrink: 0; }',
+        '.surs_quality .icon-stream { width: 1.4em; height: 1.4em; margin: 0 4px 0 12px; object-fit: contain; vertical-align: middle; flex-shrink: 0; }',
+        '.surs_quality .quality-box { display: flex; align-items: center; background: transparent !important; margin-right: 2px; flex-shrink: 0; }',
         '.surs_quality .seeds_info { margin-left: 4px; font-size: 0.85em; opacity: 1; font-weight: normal; color: #00ff00 !important; }',
         '.surs_quality .ua_not_found { opacity: 0.6; display: flex; align-items: center; }',
         '.surs_quality .ua_not_found .icon-none { width: 1.5em; height: 1.5em; margin-right: 5px; }',
@@ -224,7 +226,7 @@
             return;
         }
 
-        // Рендер іконок та тексту
+        // Рендер іконок та тексту в один рядок
         var html = '<img src="' + ICON_UA + '" class="icon-main">';
         
         // 1. Найкраща якість (коротко)
