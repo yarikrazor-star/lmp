@@ -26,8 +26,6 @@
     var JACRED_PROTOCOL = 'https://';
     var JACRED_URL = Lampa.Storage.get('jacred.xyz') || 'jacred.xyz';
     var PROXY_LIST = [
-        'https://well-informed-normal-function.anvil.app/_/api/jackett_proxy?u=',
-        'https://my-finder.kozak-bohdan.workers.dev/?url=',
         'http://api.allorigins.win/raw?url=',
         'http://cors.bwa.workers.dev/'
     ];
