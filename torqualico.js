@@ -39,35 +39,35 @@
         'http://api.allorigins.win/raw?url=',
         'http://cors.bwa.workers.dev/'
     ];
-    var PROXY_TIMEOUT = 3000; // Мінімальний таймаут для швидкості
+    var PROXY_TIMEOUT = 3000;
 
     // Іконки
     var ICON_UA = 'https://yarikrazor-star.github.io/lmp/ua.svg';
     var ICON_NONE = 'https://yarikrazor-star.github.io/lmp/dontknow.svg';
     var ICON_STREAM = 'https://yarikrazor-star.github.io/lmp/stream.svg';
 
-    // --- СТИЛІ (ВИПРАВЛЕНО ДЛЯ ОДНОГО РЯДКА) ---
+    // --- СТИЛІ (ОНОВЛЕНО: ЄДИНА ПІДКЛАДКА ТА ЗАБОРОНА ПЕРЕНОСУ) ---
     var style = document.createElement('style');
     style.textContent = [
         '.full-start__status.surs_quality {',
-        '    padding: 0.1em 0.3em;',
-        '    font-weight: bold;',
-        '    margin-left: 0.8em;',
         '    display: inline-flex !important;',
-        '    align-items: center;',
-        '    flex-wrap: nowrap !important;', // Заборона переносу флекс-елементів
-        '    white-space: nowrap !important;', // Заборона переносу тексту
-        '    background: transparent !important;',
-        '    text-shadow: 1px 1px 2px rgba(0,0,0,0.9) !important;',
-        '    color: #fff !important;',
+        '    align-items: center !important;',
+        '    flex-wrap: nowrap !important;',
+        '    white-space: nowrap !important;',
+        '    background: rgba(255, 255, 255, 0.1) !important;',
+        '    padding: 0.4em 0.7em !important;',
+        '    border-radius: 0.5em !important;',
+        '    margin-left: 0.8em !important;',
+        '    border: 1px solid rgba(255, 255, 255, 0.2) !important;',
+        '    max-width: none !important;', // Скасовуємо обмеження ширини
         '}',
-        '.surs_quality .icon-main { width: 1.6em; height: 1.2em; margin-right: 6px; object-fit: contain; flex-shrink: 0; }',
-        '.surs_quality .icon-stream { width: 1.4em; height: 1.4em; margin: 0 4px 0 12px; object-fit: contain; vertical-align: middle; flex-shrink: 0; }',
-        '.surs_quality .quality-box { display: flex; align-items: center; background: transparent !important; margin-right: 2px; flex-shrink: 0; }',
-        '.surs_quality .seeds_info { margin-left: 4px; font-size: 0.85em; opacity: 1; font-weight: normal; color: #00ff00 !important; }',
-        '.surs_quality .ua_not_found { opacity: 0.6; display: flex; align-items: center; }',
-        '.surs_quality .ua_not_found .icon-none { width: 1.5em; height: 1.5em; margin-right: 5px; }',
-        '.surs_quality .pop-tag { text-transform: uppercase; font-size: 0.9em; letter-spacing: 0.5px; }'
+        '.surs_quality .icon-main { width: 1.6em; height: 1.2em; margin-right: 8px; object-fit: contain; flex-shrink: 0; }',
+        '.surs_quality .icon-stream { width: 1.3em; height: 1.3em; margin: 0 6px 0 12px; object-fit: contain; flex-shrink: 0; opacity: 0.9; }',
+        '.surs_quality .quality-item { display: flex; align-items: center; flex-wrap: nowrap; flex-shrink: 0; }',
+        '.surs_quality .seeds_info { margin-left: 4px; font-size: 0.8em; color: #00ff00 !important; font-weight: normal; }',
+        '.surs_quality .pop-tag { text-transform: uppercase; font-size: 0.85em; letter-spacing: 0.5px; white-space: nowrap; }',
+        '.surs_quality .ua_not_found { display: flex; align-items: center; opacity: 0.5; }',
+        '.surs_quality .ua_not_found .icon-none { width: 1.4em; height: 1.4em; }'
     ].join('\n');
     document.head.appendChild(style);
 
@@ -90,8 +90,6 @@
         if (!title) return "";
         var t = title.toLowerCase();
         var types = [];
-        
-        // Пошук типу релізу
         if (/\b(bdremux|remux)\b/.test(t)) types.push("Remux");
         else if (/\b(bluray|blu-ray)\b/.test(t)) types.push("BluRay");
         else if (/\b(bdrip|brrip)\b/.test(t)) types.push("BDRip");
@@ -100,11 +98,9 @@
         else if (/\b(hdtv)\b/.test(t)) types.push("HDTV");
         else if (/\b(dvdrip)\b/.test(t)) types.push("DVDRip");
 
-        // Пошук кодека
         if (/\b(hevc|x265|h265)\b/.test(t)) types.push("HEVC");
         else if (/\b(avc|x264|h264)\b/.test(t)) types.push("AVC");
 
-        // Пошук роздільної здатності для популярного
         var res = t.match(/\b(2160p|1080p|720p|4k)\b/i);
         if (res) types.push(res[0].toUpperCase());
 
@@ -184,14 +180,12 @@
             });
 
             if (filtered.length > 0) {
-                // Найкраща якість
                 var best = filtered.slice().sort(function(a, b) {
                     var qA = parseQuality(a.title), qB = parseQuality(b.title);
                     if (qB !== qA) return qB - qA;
                     return (parseInt(b.seeders || 0)) - (parseInt(a.seeders || 0));
                 })[0];
 
-                // Найпопулярніша роздача
                 var pop = filtered.slice().sort(function(a, b) {
                     return (parseInt(b.seeders || b.seeds || 0)) - (parseInt(a.seeders || a.seeds || 0));
                 })[0];
@@ -226,19 +220,22 @@
             return;
         }
 
-        // Рендер іконок та тексту в один рядок
-        var html = '<img src="' + ICON_UA + '" class="icon-main">';
+        var html = '';
+        // Прапор UA
+        html += '<img src="' + ICON_UA + '" class="icon-main">';
         
-        // 1. Найкраща якість (коротко)
+        // Блок найкращої якості
         var bestMeta = getQualityMeta(data.best.val);
-        html += '<div class="quality-box"><span class="' + bestMeta.css + '">' + bestMeta.text + '</span>';
+        html += '<div class="quality-item"><span class="' + bestMeta.css + '">' + bestMeta.text + '</span>';
         if (data.best.seeds > 0) html += '<span class="seeds_info">(' + data.best.seeds + ')</span>';
         html += '</div>';
 
-        // 2. Найпопулярніша (розгорнуто)
-        var popMeta = getQualityMeta(data.pop.val);
+        // Розділювач іконка стріму
         html += '<img src="' + ICON_STREAM + '" class="icon-stream">';
-        html += '<div class="quality-box"><span class="pop-tag ' + popMeta.css + '">' + data.pop.fullText + '</span>';
+
+        // Блок популярного релізу
+        var popMeta = getQualityMeta(data.pop.val);
+        html += '<div class="quality-item"><span class="pop-tag ' + popMeta.css + '">' + data.pop.fullText + '</span>';
         if (data.pop.seeds > 0) html += '<span class="seeds_info">(' + data.pop.seeds + ')</span>';
         html += '</div>';
 
