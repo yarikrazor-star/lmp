@@ -75,9 +75,7 @@
     var tech = { hdr: false, dv: false, audio: null };
     var maxChannels = 0;
 
-    // Окремий цикл для пошуку найкращого звуку серед УСІХ українських результатів
     ukrResults.forEach(function(item) {
-      // Перевірка через ffprobe
       if (item.ffprobe) {
         item.ffprobe.forEach(function(s) {
           if (s.codec_type === 'audio' && s.channels) {
@@ -85,19 +83,16 @@
           }
         });
       }
-      // Додаткова перевірка по назві (якщо ffprobe порожній)
       var t = item.Title.toLowerCase();
       if (t.match(/7\.1|8ch/)) maxChannels = Math.max(maxChannels, 8);
       else if (t.match(/5\.1|6ch/)) maxChannels = Math.max(maxChannels, 6);
       else if (t.match(/2\.0/)) maxChannels = Math.max(maxChannels, 2);
     });
 
-    // Форматування звуку
     if (maxChannels > 0) {
       tech.audio = (maxChannels >= 8) ? '7.1' : (maxChannels >= 6) ? '5.1' : (maxChannels >= 4) ? '4.0' : '2.0';
     }
 
-    // Аналіз HDR/DV тільки для "найкращого" за роздільною здатністю
     if (best.ffprobe) {
       best.ffprobe.forEach(function(s) {
         if (s.codec_type === 'video') {
@@ -137,9 +132,9 @@
       if (data.tech.dv) items.push({i: null, t: 'Dolby Vision'});
       if (data.tech.hdr) items.push({i: null, t: 'HDR'});
       
-      items.forEach(function(it, idx) {
+      items.forEach(function(it) {
         var icon = it.i ? '<img src="'+it.i+'" class="qb-prefix-icon">' : '';
-        block.append('<div class="quality-badge" style="animation-delay:'+(idx*0.05)+'s">'+icon+'<span class="qb-text">'+it.t+'</span></div>');
+        block.append('<div class="quality-badge">' + icon + '<span class="qb-text">' + it.t + '</span></div>');
       });
     }
     container.append(block);
@@ -181,14 +176,35 @@
   setInterval(processCards, 2000);
 
   $('body').append('<style>\
-    .qb-unified-block { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; margin: 8px 0; }\
-    .quality-badge { display: flex; align-items: center; gap: 4px; color: #fff; opacity: 0; transform: translateY(5px); animation: qb_in 0.3s forwards; }\
-    @keyframes qb_in { to { opacity: 1; transform: translate(0); } }\
+    .quality-badges-container { margin-top: 4px; margin-bottom: 12px; }\
+    .qb-unified-block { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }\
+    .quality-badge { \
+      display: flex; \
+      align-items: center; \
+      gap: 6px; \
+      color: #fff; \
+      padding: 3px 8px; \
+      background: rgba(255, 255, 255, 0.1); \
+      border: 1px solid rgba(255, 255, 255, 0.4); \
+      border-radius: 4px; \
+    }\
     .qb-text { font-size: 14px; font-weight: bold; text-shadow: 0 1px 2px #000; }\
     .qb-prefix-icon { height: 16px; width: auto; }\
-    .card .qb-unified-block { position: absolute; top: 5px; left: 5px; z-index: 10; \
-    flex-direction: column; align-items: flex-start; gap: 2px; }\
+    .card .qb-unified-block { \
+      position: absolute; \
+      top: 5px; \
+      left: 5px; \
+      z-index: 10; \
+      flex-direction: column; \
+      align-items: flex-start; \
+      gap: 3px; \
+    }\
+    .card .quality-badge { \
+      padding: 1px 4px; \
+      background: rgba(0, 0, 0, 0.5); \
+      border: 1px solid rgba(255, 255, 255, 0.5); \
+    }\
     .card .qb-text { font-size: 10px; }\
-    .card .qb-prefix-icon { height: 12px; }\
+    .card .qb-prefix-icon { height: 11px; }\
   </style>');
 })();
