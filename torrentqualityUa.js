@@ -155,7 +155,7 @@
               var data = getBestAndPopular(res.Results, movie);
               if (data.ukr) { resultsCache[key] = data; render(card.find('.card__view'), data, true); }
             }
-          });
+          }, function() { /* помилка ігнорується для запобігання вильоту */ });
         }
       }
     });
@@ -169,42 +169,45 @@
         if (!cont.length) { cont = $('<div class="quality-badges-container"></div>'); details.after(cont); }
         Lampa.Parser.get({ search: e.data.movie.title || e.data.movie.name, movie: e.data.movie, page: 1 }, function(res) {
             if (res && res.Results) render(cont, getBestAndPopular(res.Results, e.data.movie), false);
-        });
+        }, function() { /* помилка ігнорується */ });
     }
   });
 
   setInterval(processCards, 2000);
 
   $('body').append('<style>\
-    .quality-badges-container { margin-top: 4px; margin-bottom: 12px; }\
-    .qb-unified-block { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }\
+    .quality-badges-container { margin-top: 0.4em; margin-bottom: 1.2em; }\
+    .qb-unified-block { display: flex; flex-wrap: wrap; gap: 0.6em; align-items: center; }\
     .quality-badge { \
       display: flex; \
       align-items: center; \
-      gap: 6px; \
+      gap: 0.4em; \
       color: #fff; \
-      padding: 3px 8px; \
-      background: rgba(255, 255, 255, 0.1); \
-      border: 1px solid rgba(255, 255, 255, 0.4); \
-      border-radius: 4px; \
+      padding: 0.25em 0.6em; \
+      background: rgba(255, 255, 255, 0.08); \
+      border: 1px solid rgba(255, 255, 255, 0.7); \
+      border-radius: 0.3em; \
+      white-space: nowrap; \
     }\
-    .qb-text { font-size: 14px; font-weight: bold; text-shadow: 0 1px 2px #000; }\
-    .qb-prefix-icon { height: 16px; width: auto; }\
+    .qb-text { font-size: 1.1em; font-weight: bold; text-shadow: 0 0.1em 0.2em rgba(0,0,0,0.8); }\
+    .qb-prefix-icon { height: 1.1em; width: auto; display: block; }\
+    /* Стилі для карток залишаємо компактними */\
     .card .qb-unified-block { \
       position: absolute; \
-      top: 5px; \
-      left: 5px; \
+      top: 0.4em; \
+      left: 0.4em; \
       z-index: 10; \
       flex-direction: column; \
       align-items: flex-start; \
-      gap: 3px; \
+      gap: 0.2em; \
     }\
     .card .quality-badge { \
-      padding: 1px 4px; \
-      background: rgba(0, 0, 0, 0.5); \
+      padding: 0.1em 0.3em; \
+      background: rgba(0, 0, 0, 0.65); \
       border: 1px solid rgba(255, 255, 255, 0.5); \
+      border-radius: 0.2em; \
     }\
-    .card .qb-text { font-size: 10px; }\
-    .card .qb-prefix-icon { height: 11px; }\
+    .card .qb-text { font-size: 0.8em; }\
+    .card .qb-prefix-icon { height: 0.8em; }\
   </style>');
 })();
