@@ -27,9 +27,10 @@
             var $render = $(render);
             $render.find('.surs_wiki_unified').remove();
 
+            // Змінено префікс на "Студія:"
             var studioRow = $('<div class="surs_wiki_unified surs_studio_row" style="width: 100%; display: block; margin: 0.4em 0; clear: both;">' +
                                 '<div class="wiki_studio_info" style="font-size: 1.2em; color: #fff; opacity: 0.9;">' +
-                                    '<span>Виробник: <span class="studio_list">Пошук...</span></span>' +
+                                    '<span>Студія: <span class="studio_list">Пошук...</span></span>' +
                                 '</div>' +
                             '</div>');
 
@@ -112,22 +113,39 @@
                                     var parser = new DOMParser();
                                     var doc = parser.parseFromString(html, 'text/html');
                                     var rows = doc.querySelectorAll('.infobox tr');
-                                    var company = "";
+                                    var finalCompanies = 'Не вказано';
 
                                     for (var i = 0; i < rows.length; i++) {
                                         var label = rows[i].querySelector('.infobox-label');
                                         if (label) {
                                             var txt = label.textContent.toLowerCase();
+                                            // Шукаємо блок виробництва
                                             if ((txt.indexOf('company') > -1 || txt.indexOf('production') > -1) && txt.indexOf('location') === -1) {
                                                 var dataCell = rows[i].querySelector('.infobox-data');
                                                 if (dataCell) {
-                                                    company = dataCell.textContent.replace(/\[\d+\]/g, '').trim();
+                                                    // Витягуємо всі елементи списку або текст, розділений комами/лініями
+                                                    var items = [];
+                                                    dataCell.querySelectorAll('li, a').forEach(function(el) {
+                                                        var name = el.textContent.replace(/\[\d+\]/g, '').trim();
+                                                        if (name && items.indexOf(name) === -1 && name.length > 2) items.push(name);
+                                                    });
+
+                                                    if (items.length === 0) {
+                                                        items = dataCell.textContent.split(/\n|,|;/).map(function(s) { 
+                                                            return s.replace(/\[\d+\]/g, '').trim(); 
+                                                        }).filter(function(s) { return s.length > 2; });
+                                                    }
+
+                                                    // Обмежуємо до 3 студій та з'єднуємо через буліт
+                                                    if (items.length > 0) {
+                                                        finalCompanies = items.slice(0, 3).join(' • ');
+                                                    }
                                                     break;
                                                 }
                                             }
                                         }
                                     }
-                                    studioList.text(company || 'Не вказано');
+                                    studioList.text(finalCompanies);
                                 }
                             }
                         });
