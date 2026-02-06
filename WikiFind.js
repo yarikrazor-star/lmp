@@ -25,39 +25,46 @@
             if (!movie || !render) return;
 
             var $render = $(render);
+            // Видаляємо старі елементи, якщо вони є
             $render.find('.surs_wiki_unified').remove();
 
-            // Змінено префікс на "Студія:"
+            // 1. Рядок з виробником (залишаємо під слоганом)
             var studioRow = $('<div class="surs_wiki_unified surs_studio_row" style="width: 100%; display: block; margin: 0.4em 0; clear: both;">' +
                                 '<div class="wiki_studio_info" style="font-size: 1.2em; color: #fff; opacity: 0.9;">' +
-                                    '<span>Студія: <span class="studio_list">Пошук...</span></span>' +
+                                    '<span>Виробник: <span class="studio_list">Пошук...</span></span>' +
                                 '</div>' +
                             '</div>');
 
-            var wikiBtnRow = $('<div class="surs_wiki_unified surs_wiki_btn_row" style="display: inline-block; vertical-align: middle; margin-left: 8px;">' +
-                                '<div class="surs_wiki_box" style="display: inline-flex; align-items: center; background: transparent; padding: 4px 10px; border-radius: 4px; border: 1px solid rgba(255, 255, 255, 0.5); font-size: 1.1em; color: #fff; cursor: pointer;">' +
-                                    '<img src="' + ICON_WIKI + '" style="width: 1.1em; height: 1.1em; filter: invert(1); opacity: 0.8;">' +
-                                    '<span class="wiki_text" style="margin-left: 6px; font-weight: bold; font-size: 0.85em; text-transform: uppercase;">...</span>' +
-                                '</div>' +
-                               '</div>');
+            // 2. Створення кнопки Вікіпедії як стандартної кнопки Lampa
+            var wikiBtn = $('<div class="full-start__button selector surs_wiki_unified surs_wiki_btn_row">' +
+                                '<img src="' + ICON_WIKI + '" style="width: 1.1em; height: 1.1em; filter: invert(1); vertical-align: middle; margin-right: 8px; opacity: 0.8;">' +
+                                '<span class="wiki_text">WIKI: ...</span>' +
+                            '</div>');
 
             var slogan = $render.find('.full-start__slogan');
             var ratings = $render.find('.full-start-new__rate-line, .full-start__rate-line');
-            var age = ratings.find('.full-start__age, .full-start__view');
+            var buttonsContainer = $render.find('.full-start-new__buttons, .full-start__buttons');
 
+            // Вставляємо інфо про студію
             if (slogan.length) slogan.after(studioRow);
             else if (ratings.length) ratings.before(studioRow);
             else $render.find('.full-start__info').prepend(studioRow);
 
-            if (age.length) age.before(wikiBtnRow);
-            else if (ratings.length) ratings.append(wikiBtnRow);
+            // Вставляємо кнопку в блок до інших кнопок
+            if (buttonsContainer.length) {
+                buttonsContainer.append(wikiBtn);
+                // Оновлюємо активність контролера, щоб кнопка стала доступною для пульта
+                if (Lampa.Activity.active().activity.toggle) {
+                    Lampa.Activity.active().activity.toggle();
+                }
+            }
 
-            this.search(movie, wikiBtnRow, studioRow);
+            this.search(movie, wikiBtn, studioRow);
         };
 
-        this.search = function (movie, btnRow, studioRow) {
+        this.search = function (movie, wikiBtn, studioRow) {
             var self = this;
-            var wikiText = btnRow.find('.wiki_text');
+            var wikiText = wikiBtn.find('.wiki_text');
             var studioList = studioRow.find('.studio_list');
             
             var titleEN = (movie.original_title || movie.original_name || movie.title || movie.name || '').replace(/[^\w\s]/gi, '');
@@ -85,6 +92,7 @@
                     var pageEN = (res.query && res.query.search && res.query.search[0]) ? res.query.search[0] : null;
 
                     if (pageEN) {
+                        // Пошук української версії статті
                         $.ajax({
                             url: 'https://en.wikipedia.org/w/api.php',
                             data: { action: 'query', prop: 'langlinks', lllang: 'uk', pageids: pageEN.pageid, format: 'json', origin: '*' },
@@ -92,9 +100,10 @@
                             success: function(details) {
                                 var pageData = (details.query && details.query.pages && details.query.pages[pageEN.pageid]) ? details.query.pages[pageEN.pageid] : {};
                                 var uaTitle = (pageData.langlinks && pageData.langlinks[0]) ? pageData.langlinks[0]['*'] : null;
-                                wikiText.text(uaTitle ? 'UA' : 'EN');
+                                
+                                wikiText.text(uaTitle ? 'WIKI: UA' : 'WIKI: EN');
 
-                                btnRow.find('.surs_wiki_box').off('click').on('click', function() {
+                                wikiBtn.off('hover:enter').on('hover:enter', function() {
                                     var url = uaTitle 
                                         ? 'https://uk.m.wikipedia.org/wiki/' + encodeURIComponent(uaTitle)
                                         : 'https://en.m.wikipedia.org/?curid=' + pageEN.pageid;
@@ -103,6 +112,7 @@
                             }
                         });
 
+                        // Пошук виробника (студії)
                         $.ajax({
                             url: 'https://en.wikipedia.org/w/api.php',
                             data: { action: 'parse', pageid: pageEN.pageid, prop: 'text', section: 0, format: 'json', origin: '*' },
@@ -113,50 +123,33 @@
                                     var parser = new DOMParser();
                                     var doc = parser.parseFromString(html, 'text/html');
                                     var rows = doc.querySelectorAll('.infobox tr');
-                                    var finalCompanies = 'Не вказано';
+                                    var company = "";
 
                                     for (var i = 0; i < rows.length; i++) {
                                         var label = rows[i].querySelector('.infobox-label');
                                         if (label) {
                                             var txt = label.textContent.toLowerCase();
-                                            // Шукаємо блок виробництва
                                             if ((txt.indexOf('company') > -1 || txt.indexOf('production') > -1) && txt.indexOf('location') === -1) {
                                                 var dataCell = rows[i].querySelector('.infobox-data');
                                                 if (dataCell) {
-                                                    // Витягуємо всі елементи списку або текст, розділений комами/лініями
-                                                    var items = [];
-                                                    dataCell.querySelectorAll('li, a').forEach(function(el) {
-                                                        var name = el.textContent.replace(/\[\d+\]/g, '').trim();
-                                                        if (name && items.indexOf(name) === -1 && name.length > 2) items.push(name);
-                                                    });
-
-                                                    if (items.length === 0) {
-                                                        items = dataCell.textContent.split(/\n|,|;/).map(function(s) { 
-                                                            return s.replace(/\[\d+\]/g, '').trim(); 
-                                                        }).filter(function(s) { return s.length > 2; });
-                                                    }
-
-                                                    // Обмежуємо до 3 студій та з'єднуємо через буліт
-                                                    if (items.length > 0) {
-                                                        finalCompanies = items.slice(0, 3).join(' • ');
-                                                    }
+                                                    company = dataCell.textContent.replace(/\[\d+\]/g, '').trim();
                                                     break;
                                                 }
                                             }
                                         }
                                     }
-                                    studioList.text(finalCompanies);
+                                    studioList.text(company || 'Не вказано');
                                 }
                             }
                         });
                     } else {
                         studioList.text('Не знайдено');
-                        wikiText.text('?');
+                        wikiText.text('WIKI: ?');
                     }
                 },
                 error: function() {
                     studioList.text('Помилка');
-                    wikiText.text('!');
+                    wikiText.text('WIKI: !');
                 }
             });
         };
