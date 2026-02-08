@@ -1,7 +1,9 @@
 (function () {
   'use strict';
 
-  var TMDB_IMAGE_URL = 'https://image.tmdb.org/t/p/h30'; 
+  // ЗМІНА 1: Використовуємо w500 замість h30.
+  // Це завантажить логотип у кращій якості та дозволить йому бути "довгим".
+  var TMDB_IMAGE_URL = 'https://image.tmdb.org/t/p/w500'; 
 
   /**
    * Генерує HTML-код для логотипів студій виробництва
@@ -27,52 +29,50 @@
  
     var details = $('.full-start-new__details');
     if (details.length) {
-        // Використовуємо той самий контейнер, що і torrentqualityUa
         var cont = $('.quality-badges-container');
         if (!cont.length) { 
             cont = $('<div class="quality-badges-container"></div>'); 
             details.after(cont); 
         }
         
-        // Видаляємо старі логотипи, якщо вони були, щоб не дублювати при перемиканні
         cont.find('.studio-logo').remove();
         
-        // Отримуємо логотипи студій та додаємо В ПОЧАТОК контейнера (prepend)
-        // або в кінець (append), залежно від того, де ви хочете їх бачити
         var studioHtml = getStudioLogos(e.data.movie);
         cont.prepend(studioHtml);
     }
   });
 
-  // Стилі, адаптовані для спільного контейнера
+  // ЗМІНА 2: Оновлені стилі для горизонтальних лого
   var style = '<style>\
     .quality-badges-container { \
         display: flex; \
         align-items: center; \
         flex-wrap: wrap; \
-        gap: 12px; \
-        margin: 8px 0; \
+        gap: 15px; \
+        margin: 10px 0; \
         min-height: 2em; \
     }\
     .studio-logo { \
-        height: 1.6em; \
+        /* Прибираємо фіксовану висоту контейнера, дозволяємо адаптивність */ \
+        display: flex; \
+        align-items: center; \
         opacity: 0; \
         transform: translateY(8px); \
         animation: studio_in 0.4s ease forwards; \
-        display: flex; \
-        align-items: center; \
     }\
     @keyframes studio_in { \
-        to { opacity: 0.9; transform: translateY(0); } \
+        to { opacity: 1; transform: translateY(0); } \
     }\
     .studio-logo img { \
-        height: 100%; \
+        /* Обмежуємо висоту, але дозволяємо ширині бути "auto" */ \
+        max-height: 2.5em; \
         width: auto; \
+        max-width: 150px; /* Обмеження ширини, щоб дуже довгі лого не ламали верстку */ \
+        object-fit: contain; \
         filter: brightness(0) invert(1); \
     }\
   </style>';
   
-  // Додаємо стилі, якщо вони ще не додані
   if (!$('style:contains(".studio-logo")').length) {
     $('body').append(style);
   }
