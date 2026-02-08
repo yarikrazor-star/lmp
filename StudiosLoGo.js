@@ -42,8 +42,6 @@
         flex-wrap: wrap !important; \
         gap: 15px !important; \
         margin: 10px 0 !important; \
-        position: relative !important; \
-        z-index: 10 !important; \
     }\
     .studio-logo { \
         display: flex !important; \
@@ -52,13 +50,13 @@
         opacity: 0; \
         transform: translateY(8px); \
         animation: studio_in 0.4s ease forwards; \
-        /* ЗМІНА: Використовуємо непрозорий фон та чітку білу рамку */ \
-        background-color: #2a2a2a !important; \
-        border: 1.5px solid #ffffff !important; \
-        padding: 5px 10px !important; \
-        border-radius: 6px !important; \
-        box-shadow: 0 2px 5px rgba(0,0,0,0.5) !important; \
-        box-sizing: border-box !important; \
+        /* Світло-сіра напівпрозора підкладка */ \
+        background: rgba(220, 220, 220, 0.8) !important; \
+        /* Біла рамка */ \
+        border: 1px solid #ffffff !important; \
+        padding: 4px 10px !important; \
+        border-radius: 4px !important; \
+        box-shadow: 0 1px 3px rgba(0,0,0,0.2) !important; \
     }\
     @keyframes studio_in { \
         to { opacity: 1; transform: translateY(0); } \
