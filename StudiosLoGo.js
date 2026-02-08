@@ -65,7 +65,7 @@
     }\
     .studio-logo img { \
         /* Обмежуємо висоту, але дозволяємо ширині бути "auto" */ \
-        max-height: 2.5em; \
+        max-height: 1em; \
         width: auto; \
         max-width: 150px; /* Обмеження ширини, щоб дуже довгі лого не ламали верстку */ \
         object-fit: contain; \
