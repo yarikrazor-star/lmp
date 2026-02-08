@@ -1,13 +1,8 @@
 (function () {
   'use strict';
 
-  // ЗМІНА 1: Використовуємо h50 для кращої якості.
   var TMDB_IMAGE_URL = 'https://image.tmdb.org/t/p/h50'; 
 
-  /**
-   * Генерує HTML-код для логотипів студій виробництва (макс. 3)
-   * @param {Object} movie - Об'єкт фільму з даними TMDB
-   */
   function getStudioLogos(movie) {
     var html = '';
     if (movie && movie.production_companies) {
@@ -22,7 +17,6 @@
     return html;
   }
 
-  // Слухач відкриття картки фільму
   Lampa.Listener.follow('full', function(e) {
     if (e.type !== 'complite') return;
  
@@ -41,7 +35,6 @@
     }
   });
 
-  // Оновлені стилі з примусовим пріоритетом (!important)
   var style = '<style>\
     .quality-badges-container { \
         display: flex !important; \
@@ -49,19 +42,23 @@
         flex-wrap: wrap !important; \
         gap: 15px !important; \
         margin: 10px 0 !important; \
-        min-height: 2em !important; \
+        position: relative !important; \
+        z-index: 10 !important; \
     }\
     .studio-logo { \
         display: flex !important; \
         align-items: center !important; \
+        justify-content: center !important; \
         opacity: 0; \
         transform: translateY(8px); \
         animation: studio_in 0.4s ease forwards; \
-        /* Примусовий фон та рамка, що ігнорують теми */ \
-        background: rgba(255, 255, 255, 0.1) !important; \
-        border: 1px solid rgba(255, 255, 255, 0.3) !important; \
-        padding: 4px 8px !important; \
-        border-radius: 4px !important; \
+        /* ЗМІНА: Використовуємо непрозорий фон та чітку білу рамку */ \
+        background-color: #2a2a2a !important; \
+        border: 1.5px solid #ffffff !important; \
+        padding: 5px 10px !important; \
+        border-radius: 6px !important; \
+        box-shadow: 0 2px 5px rgba(0,0,0,0.5) !important; \
+        box-sizing: border-box !important; \
     }\
     @keyframes studio_in { \
         to { opacity: 1; transform: translateY(0); } \
@@ -71,7 +68,8 @@
         width: auto !important; \
         max-width: 150px !important; \
         object-fit: contain !important; \
-        filter: none !important; /* Гарантує відсутність інверсії кольору */ \
+        filter: none !important; \
+        display: block !important; \
     }\
   </style>';
   
