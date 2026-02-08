@@ -50,13 +50,12 @@
         opacity: 0; \
         transform: translateY(8px); \
         animation: studio_in 0.4s ease forwards; \
-        /* Світло-сіра напівпрозора підкладка */ \
-        background: rgba(220, 220, 220, 0.8) !important; \
-        /* Біла рамка */ \
-        border: 1px solid #ffffff !important; \
+        /* 50% сірого (128,128,128) та 50% прозорості (0.5) */ \
+        background: rgba(128, 128, 128, 0.5) !important; \
+        /* Біла рамка обводка */ \
+        border: 1px solid rgba(255, 255, 255, 1) !important; \
         padding: 4px 10px !important; \
         border-radius: 4px !important; \
-        box-shadow: 0 1px 3px rgba(0,0,0,0.2) !important; \
     }\
     @keyframes studio_in { \
         to { opacity: 1; transform: translateY(0); } \
