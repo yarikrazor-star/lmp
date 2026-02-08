@@ -6,13 +6,14 @@
   var TMDB_IMAGE_URL = 'https://image.tmdb.org/t/p/h50'; 
 
   /**
-   * Генерує HTML-код для логотипів студій виробництва
+   * Генерує HTML-код для логотипів студій виробництва (макс. 3)
    * @param {Object} movie - Об'єкт фільму з даними TMDB
    */
   function getStudioLogos(movie) {
     var html = '';
     if (movie && movie.production_companies) {
-      movie.production_companies.forEach(function(co) {
+      // slice(0, 3) обрізає масив, залишаючи лише перші три елементи
+      movie.production_companies.slice(0, 3).forEach(function(co) {
         if (co.logo_path) {
           html += '<div class="quality-badge studio-logo">' +
                   '<img src="' + TMDB_IMAGE_URL + co.logo_path + '" title="' + co.name + '">' +
