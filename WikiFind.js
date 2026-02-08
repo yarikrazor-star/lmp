@@ -9,7 +9,6 @@
             var _this = this;
             Lampa.Listener.follow('full', function (e) {
                 if (e.type === 'complite') {
-                    // Видаляємо старі кнопки, щоб не накопичувалися
                     $('.lampa-wiki-button').remove();
                     setTimeout(function() {
                         try {
@@ -25,11 +24,38 @@
             var container = $(html);
             if (container.find('.lampa-wiki-button').length) return;
 
+            // Створюємо кнопку з фіксованими розмірами
             var button = $('<div class="full-start__button selector lampa-wiki-button">' +
-                                '<img src="' + ICON_WIKI + '" style="width: 100%; height: 100%; object-fit: contain;">' +
+                                '<img src="' + ICON_WIKI + '">' +
                             '</div>');
 
-            var style = '<style>.lampa-wiki-button { display: flex; align-items: center; justify-content: center; width: 2.8em; height: 2.8em; padding: 0.5em; min-width: 2.8em; margin-left: 10px; border-radius: 50%; background: rgba(255,255,255,0.1); cursor: pointer; } .lampa-wiki-button.focus { background: rgba(255,255,255,0.2); border: 2px solid #fff; }</style>';
+            // Оновлені стилі: додав flex-shrink та чіткі розміри для іконки
+            var style = '<style>' +
+                '.lampa-wiki-button { ' +
+                    'display: flex !important; ' +
+                    'align-items: center; ' +
+                    'justify-content: center; ' +
+                    'width: 2.8em !important; ' +
+                    'height: 2.8em !important; ' +
+                    'min-width: 2.8em !important; ' +
+                    'flex-shrink: 0; ' +
+                    'margin-left: 10px; ' +
+                    'border-radius: 50%; ' +
+                    'background: rgba(255,255,255,0.1); ' +
+                    'cursor: pointer; ' +
+                    'overflow: hidden; ' +
+                '} ' +
+                '.lampa-wiki-button img { ' +
+                    'width: 1.6em; ' +
+                    'height: 1.6em; ' +
+                    'object-fit: contain; ' +
+                '} ' +
+                '.lampa-wiki-button.focus { ' +
+                    'background: rgba(255,255,255,0.2); ' +
+                    'border: 2px solid #fff; ' +
+                '}' +
+            '</style>';
+
             if (!$('style#wiki-plugin-style').length) $('head').append('<style id="wiki-plugin-style">' + style + '</style>');
 
             var footer = container.find('.full-start-new__buttons, .full-start__buttons');
@@ -40,7 +66,6 @@
                     if (!isOpened) _this.startSearch(data.movie);
                 });
 
-                // ОСНОВНЕ ВИПРАВЛЕННЯ: активуємо контролер, щоб кнопка стала доступною для пульта відразу
                 if (Lampa.Controller.enabled().name === 'full_start') {
                     Lampa.Controller.enable('full_start');
                 }
