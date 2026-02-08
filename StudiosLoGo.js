@@ -43,7 +43,7 @@
     }
   });
 
-  // ЗМІНА 2: Оновлені стилі для горизонтальних лого
+  // Стилі: оригінальний колір, підкладка та біла рамка
   var style = '<style>\
     .quality-badges-container { \
         display: flex; \
@@ -54,23 +54,25 @@
         min-height: 2em; \
     }\
     .studio-logo { \
-        /* Прибираємо фіксовану висоту контейнера, дозволяємо адаптивність */ \
         display: flex; \
         align-items: center; \
         opacity: 0; \
         transform: translateY(8px); \
         animation: studio_in 0.4s ease forwards; \
+        /* Підкладка та стандартна біла рамка */ \
+        background: rgba(255, 255, 255, 0.1); \
+        border: 1px solid rgba(255, 255, 255, 0.2); \
+        padding: 4px 8px; \
+        border-radius: 4px; \
     }\
     @keyframes studio_in { \
         to { opacity: 1; transform: translateY(0); } \
     }\
     .studio-logo img { \
-        /* Обмежуємо висоту, але дозволяємо ширині бути "auto" */ \
         max-height: 1.5em; \
         width: auto; \
-        max-width: 150px; /* Обмеження ширини, щоб дуже довгі лого не ламали верстку */ \
+        max-width: 150px; \
         object-fit: contain; \
-        filter: brightness(0) invert(1); \
     }\
   </style>';
   
