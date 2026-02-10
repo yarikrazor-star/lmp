@@ -8,8 +8,14 @@
     if (movie && movie.production_companies) {
       movie.production_companies.slice(0, 3).forEach(function(co) {
         if (co.logo_path) {
+          // Якщо є логотип - виводимо картинку
           html += '<div class="quality-badge studio-logo">' +
                   '<img src="' + TMDB_IMAGE_URL + co.logo_path + '" title="' + co.name + '">' +
+                  '</div>';
+        } else {
+          // Якщо логотипа немає - виводимо текст з назвою
+          html += '<div class="quality-badge studio-logo">' +
+                  '<span class="studio-logo-text">' + co.name + '</span>' +
                   '</div>';
         }
       });
@@ -50,12 +56,11 @@
         opacity: 0; \
         transform: translateY(8px); \
         animation: studio_in 0.4s ease forwards; \
-        /* 50% сірого (128,128,128) та 50% прозорості (0.5) */ \
         background: rgba(128, 128, 128, 0.5) !important; \
-        /* Біла рамка обводка */ \
         border: 1px solid rgba(255, 255, 255, 1) !important; \
         padding: 4px 10px !important; \
         border-radius: 4px !important; \
+        min-height: 1.5em !important; \
     }\
     @keyframes studio_in { \
         to { opacity: 1; transform: translateY(0); } \
@@ -67,6 +72,13 @@
         object-fit: contain !important; \
         filter: none !important; \
         display: block !important; \
+    }\
+    .studio-logo-text { \
+        color: #fff !important; \
+        font-weight: bold !important; \
+        font-size: 1.2rem !important; \
+        text-shadow: 1px 1px 2px #000, 0 0 1em #000 !important; \
+        white-space: nowrap !important; \
     }\
   </style>';
   
