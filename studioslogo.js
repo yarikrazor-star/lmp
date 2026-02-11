@@ -57,9 +57,8 @@
         transform: translateY(8px); \
         animation: studio_in 0.4s ease forwards; \
         background: rgba(128, 128, 128, 0.5) !important; \
-        border: 0px solid rgba(255, 255, 255, 1); \
+        border: false; \
         padding: 4px 10px !important; \
-        border-radius: 0px !important; \
         min-height: 1.5em !important; \
     }\
     @keyframes studio_in { \
