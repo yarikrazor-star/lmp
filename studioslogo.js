@@ -76,7 +76,7 @@
     .studio-logo-text { \
         color: #fff !important; \
         font-weight: bold !important; \
-        font-size: 1.2rem !important; \
+        font-size: 0.7em !important; \
         text-shadow: 1px 1px 2px #000, 0 0 1em #000 !important; \
         white-space: nowrap !important; \
     }\
