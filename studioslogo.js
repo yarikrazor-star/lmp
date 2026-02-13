@@ -1,7 +1,7 @@
 (function () {
     'use strict';
 
-    var TMDB_IMAGE_URL = 'https://image.tmdb.org/t/p/h50';
+    var TMDB_IMAGE_URL = 'https://image.tmdb.org/t/p/h100';
     var CACHE_TTL = 30 * 24 * 60 * 60 * 1000;
     var titleCache = Lampa.Storage.get("title_cache_uk_bold") || {};
 
@@ -30,9 +30,8 @@
         var logosHtml = getStudioLogosHtml(movie);
 
         var html = '<div class="plugin-uk-title-combined" style="margin-top: 10px; margin-bottom: 15px; text-align: left; width: 100%; display: flex; flex-direction: column; align-items: flex-start;">' +
-                        '<div style="font-size: 1.6em; font-weight: bold; color: #fff; line-height: 1.1;">' + title + '</div>' +
-                        '<div class="studio-logos-container" style="display: flex; align-items: center; margin-top: 8px;">' + logosHtml + '</div>' +
-                    '</div>';
+                '<div class="studio-logos-container" style="display: flex; align-items: center;">' + logosHtml + '</div>' +
+            '</div>';
 
         var target = $(".full-start-new__title", render);
         if(!target.length) target = $(".full-start__title", render);
@@ -92,9 +91,9 @@
     }
 
     var style = '<style id="studio-logos-combined-style">' +
-        '.rate--studio.studio-logo { align-items: center; vertical-align: middle; padding: 4px 10px !important; background: rgba(255,255,255,0.1) !important; border-radius: 8px; transition: all 0.2s ease; height: 1.8em; cursor: pointer; border: 1px solid transparent; }' +
+        '.rate--studio.studio-logo { align-items: center; vertical-align: middle; padding: 5px 12px !important; background: rgba(255,255,255,0.1) !important; border-radius: 10px; transition: all 0.2s ease; height: 32px; cursor: pointer; border: 1px solid transparent; }' +
         '.rate--studio.studio-logo.focus { background: rgba(255,255,255,0.2) !important; border: 1px solid #fff; transform: scale(1.05); }' +
-        '.rate--studio.studio-logo img { max-height: 1.2em !important; max-width: 90px; object-fit: contain; }' +
+        '.rate--studio.studio-logo img { max-height: 25px; !important; max-width: 105px; object-fit: contain; }' +
         '.studio-logo-text { font-size: 0.75em; font-weight: bold; color: #fff !important; }' +
     '</style>';
 
