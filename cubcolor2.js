@@ -19,6 +19,7 @@
 
 	function cubRating(rateCub, render, e) {
 		if (!e.object || !e.object.source || !(e.object.source === 'cub' || e.object.source === 'tmdb')) return;
+		
 		var isTv = !!e.object && !!e.object.method && e.object.method === 'tv';
 		var minCnt = 20; 
 		var reactionCoef = {
@@ -28,40 +29,36 @@
 			bore: 2.5,
 			shit: 0
 		};
+		
 		var sum = 0, cnt = 0;
-		if (e.data) {
-			if (e.data.reactions && e.data.reactions.result) {
-				var reactions = e.data.reactions.result;
-				for (var i = 0; i < reactions.length; i++) {
-					var coef = reactionCoef[reactions[i].type];
-					if (reactions[i].counter) {
-						sum += reactions[i].counter * coef;
-						cnt += reactions[i].counter * 1;
-					}
+		if (e.data && e.data.reactions && e.data.reactions.result) {
+			var reactions = e.data.reactions.result;
+			for (var i = 0; i < reactions.length; i++) {
+				var coef = reactionCoef[reactions[i].type];
+				if (reactions[i].counter) {
+					sum += (reactions[i].counter * coef);
+					cnt += (reactions[i].counter * 1);
 				}
 			}
 		}
 		
-		var div = rateCub.find('> div');
-
 		if (cnt >= minCnt) {
 			var avg_rating = isTv ? 7.436 : 6.584; 
 			var m = isTv ? 69 : 274; 
-			var cub_rating = ((avg_rating * m + sum)/(m + cnt));
-			var cub_rating_text = cub_rating.toFixed(1).replace('10.0', '10');
+			var cub_rating = ((avg_rating * m + sum) / (m + cnt));
+			var cub_rating_text = cub_rating.toFixed(1).replace('.0', '');
 			
-			// Визначаємо колір
 			var ratingColor = getColorForRating(cub_rating);
 
+			// Знаходимо внутрішні елементи
+			var divRating = rateCub.find('.cub-rating-value');
+			var divLabel = rateCub.find('.cub-rating-label');
+
+			// Встановлюємо значення та колір
+			divRating.text(cub_rating_text).css('color', ratingColor);
+			divLabel.text('CUB').css('color', '#fff');
+
 			rateCub.removeClass('hide');
-			
-			// Застосовуємо колір лише до числа (перший div)
-			div.eq(0).text(cub_rating_text).css('color', ratingColor);
-			// Очищуємо місце, де був смайл (другий div)
-			div.eq(1).empty();
-			// Текст "CUB" залишаємо стандартним
-			rateCub.css('color', '#fff');
-			
 		} else {
 			rateCub.addClass('hide');
 		}
@@ -73,16 +70,27 @@
 			if (e.type === 'complite' || e.type === 'complete') {
 				var render = e.object.activity.render();
 				var rateCub = $('.rate--cub', render);
+				
 				if (rateCub.length === 0) {
-					// Створюємо структуру: [Число] [Місце під іконку] [Назва]
-					$('.rate--kp, .rate--imdb, .rate--tmdb', render).last().after('<div class="full-start__rate rate--cub hide"><div></div><div></div><div style="padding-left: 0.4em;">CUB</div></div>');
+					// Створюємо чітку структуру з класами для надійного пошуку
+					var html = '<div class="full-start__rate rate--cub hide">' +
+									'<div class="cub-rating-value"></div>' +
+									'<div class="cub-rating-label" style="margin-left: 0.4em;"></div>' +
+							   '</div>';
+					
+					var target = $('.rate--kp, .rate--imdb, .rate--tmdb', render).last();
+					if (target.length > 0) {
+						target.after(html);
+					} else {
+						$('.full-start__rate', render).last().after(html);
+					}
 					rateCub = $('.rate--cub', render);
 				}
-				if (rateCub.hasClass('hide')) {
-					cubRating(rateCub, render, e);
-				}
+				
+				cubRating(rateCub, render, e);
 			}
 		});
 	}
+
 	if (!window.cub_rating_plugin) startPlugin();
 })();
