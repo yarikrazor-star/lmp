@@ -1,34 +1,25 @@
 (function () {
 	'use strict';
 
-	// Функція розрахунку кольору (від 0 до 10)
 	function getColorForRating(rating) {
 		if (!rating || rating === 0) return '#fff';
 		var r, g, b = 0;
 		if (rating < 5) {
-			// Перехід від червоного до жовтого
 			r = 255;
 			g = Math.round(255 * (rating / 5));
 		} else {
-			// Перехід від жовтого до зеленого
 			r = Math.round(255 * (1 - (rating - 5) / 5));
 			g = 255;
 		}
 		return 'rgb(' + r + ',' + g + ',' + b + ')';
 	}
 
-	function cubRating(rateCub, render, e) {
+	function cubRating(rateCub, e) {
 		if (!e.object || !e.object.source || !(e.object.source === 'cub' || e.object.source === 'tmdb')) return;
 		
 		var isTv = !!e.object && !!e.object.method && e.object.method === 'tv';
 		var minCnt = 20; 
-		var reactionCoef = {
-			fire: 10,
-			nice: 7.5,
-			think: 5,
-			bore: 2.5,
-			shit: 0
-		};
+		var reactionCoef = { fire: 10, nice: 7.5, think: 5, bore: 2.5, shit: 0 };
 		
 		var sum = 0, cnt = 0;
 		if (e.data && e.data.reactions && e.data.reactions.result) {
@@ -47,17 +38,13 @@
 			var m = isTv ? 69 : 274; 
 			var cub_rating = ((avg_rating * m + sum) / (m + cnt));
 			var cub_rating_text = cub_rating.toFixed(1).replace('.0', '');
-			
 			var ratingColor = getColorForRating(cub_rating);
 
-			// Знаходимо внутрішні елементи
-			var divRating = rateCub.find('.cub-rating-value');
-			var divLabel = rateCub.find('.cub-rating-label');
-
-			// Встановлюємо значення та колір
-			divRating.text(cub_rating_text).css('color', ratingColor);
-			divLabel.text('CUB').css('color', '#fff');
-
+			// Очищуємо і записуємо заново, щоб уникнути конфліктів рендеру
+			rateCub.empty();
+			rateCub.append('<div style="color: ' + ratingColor + '">' + cub_rating_text + '</div>');
+			rateCub.append('<div style="margin-left: 0.4em; color: #fff">CUB</div>');
+			
 			rateCub.removeClass('hide');
 		} else {
 			rateCub.addClass('hide');
@@ -69,25 +56,23 @@
 		Lampa.Listener.follow('full', function (e) {
 			if (e.type === 'complite' || e.type === 'complete') {
 				var render = e.object.activity.render();
-				var rateCub = $('.rate--cub', render);
 				
-				if (rateCub.length === 0) {
-					// Створюємо чітку структуру з класами для надійного пошуку
-					var html = '<div class="full-start__rate rate--cub hide">' +
-									'<div class="cub-rating-value"></div>' +
-									'<div class="cub-rating-label" style="margin-left: 0.4em;"></div>' +
-							   '</div>';
+				// Чекаємо мить, щоб Lampa встигла відрендерити свої елементи
+				setTimeout(function() {
+					var rateCub = $('.rate--cub', render);
 					
-					var target = $('.rate--kp, .rate--imdb, .rate--tmdb', render).last();
-					if (target.length > 0) {
-						target.after(html);
-					} else {
-						$('.full-start__rate', render).last().after(html);
+					if (rateCub.length === 0) {
+						var html = '<div class="full-start__rate rate--cub hide"></div>';
+						var target = $('.rate--kp, .rate--imdb, .rate--tmdb', render).last();
+						
+						if (target.length > 0) target.after(html);
+						else $('.full-start__rate', render).last().after(html);
+						
+						rateCub = $('.rate--cub', render);
 					}
-					rateCub = $('.rate--cub', render);
-				}
-				
-				cubRating(rateCub, render, e);
+					
+					cubRating(rateCub, e);
+				}, 10);
 			}
 		});
 	}
