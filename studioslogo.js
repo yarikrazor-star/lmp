@@ -90,12 +90,12 @@
             border: 1px solid #fff; \
         }\
         .rate--studio.studio-logo img { \
-            max-height: 1.1em !important; \
+            max-height: 1.5em !important; \
             max-width: 80px; \
             object-fit: contain; \
         }\
         .studio-logo-text { \
-            font-size: 0.8em; \
+            font-size: 1em; \
             font-weight: bold; \
             color: #fff !important; \
         }\
@@ -104,4 +104,5 @@
     if (!$('#studio-logos-style').length) {
         $('body').append(style);
     }
+
 })();
