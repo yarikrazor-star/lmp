@@ -51,8 +51,8 @@
       $(".plugin-uk-title", render).remove();
 
       // Налаштування стилю: font-size (розмір) та font-weight (жирність)
-      var html = '<div class="plugin-uk-title" style="margin-top: 10px; margin-bottom: 15px; text-align: left; width: 100%;">' +
-                    '<div style="font-size: 1.6em; font-weight: bold; color: #fff; line-height: 1.2;">' +
+      var html = '<div class="plugin-uk-title" style="margin-top: 1px; margin-bottom: 1px; text-align: left; width: 100%;">' +
+                    '<div style="font-size: 0.5em;  color: #fff; line-height: 1.0;">' +
                         title +
                     '</div>' +
                  '</div>';
@@ -77,4 +77,5 @@
       if (e.type === "ready") startPlugin();
     });
   }
+
 })();
