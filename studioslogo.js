@@ -81,16 +81,16 @@
             background: rgba(255, 255, 255, 0.15) !important; \
             border-radius: 6px; \
             transition: all 0.2s ease; \
-            height: 1.6em; \
+            height: 1.8em; \
             cursor: pointer; \
         }\
         .rate--studio.studio-logo.focus { \
             background: rgba(255, 255, 255, 0.45) !important; \
-            transform: scale(1.05); \
+            transform: scale(1.1); \
             border: 1px solid #fff; \
         }\
         .rate--studio.studio-logo img { \
-            max-height: 1.5em !important; \
+            max-height: 1.8em !important; \
             max-width: 80px; \
             object-fit: contain; \
         }\
@@ -106,3 +106,4 @@
     }
 
 })();
+
