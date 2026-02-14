@@ -29,7 +29,7 @@
 
         var logosHtml = getStudioLogosHtml(movie);
 
-        var html = '<div class="plugin-uk-title-combined" style="margin-top: 10px; margin-bottom: 15px; text-align: left; width: 100%; display: flex; flex-direction: column; align-items: flex-start;">' +
+        var html = '<div class="plugin-uk-title-combined" style="margin-top: 5px; margin-bottom: 5px; text-align: left; width: 100%; display: flex; flex-direction: column; align-items: flex-start;">' +
                 '<div class="studio-logos-container" style="display: flex; align-items: center;">' + logosHtml + '</div>' +
             '</div>';
 
@@ -104,3 +104,4 @@
     if (window.appready) startPlugin();
     else Lampa.Listener.follow("app", function (e) { if (e.type === "ready") startPlugin(); });
 })();
+
