@@ -13,7 +13,7 @@
 		var TARGET_WIDTH = "7em";
 
 		var PADDING_TOP_EM = 0;
-		var PADDING_BOTTOM_EM = 0.2;
+		var PADDING_BOTTOM_EM = 0.1;
 
 		window.logoplugin = true;
 
@@ -46,7 +46,7 @@
 			img.style.paddingTop = PADDING_TOP_EM + "em";
 
 			var pb = PADDING_BOTTOM_EM;
-			if (window.innerWidth < 768 && has_tagline) pb = 0.5;
+			if (window.innerWidth < 768 && has_tagline) pb = 0.2;
 			img.style.paddingBottom = pb + "em";
 
 			var use_text_height = Lampa.Storage.get("logo_use_text_height", false);
@@ -405,3 +405,4 @@
 
 	if (!window.logoplugin) startPlugin();
 })();
+
