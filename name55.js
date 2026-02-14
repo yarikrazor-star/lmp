@@ -52,7 +52,7 @@
 
       // Налаштування стилю: font-size (розмір) та font-weight (жирність)
       var html = '<div class="plugin-uk-title" style="margin-top: 1px; margin-bottom: 1px; text-align: left; width: 100%;">' +
-                    '<div style="font-size: 1.0em;  color: #fff; line-height: 1.0;">' +
+                    '<div style="font-size: 1.5em;  color: #fff; line-height: 1.5;">' +
                         title +
                     '</div>' +
                  '</div>';
@@ -79,5 +79,6 @@
   }
 
 })();
+
 
 
