@@ -257,7 +257,7 @@
 			) {
 				Lampa.SettingsApi.addComponent({
 					component: LOGO_COMPONENT,
-					name: "Логотипы"
+					name: "Лого"
 				});
 			}
 			Lampa.Settings.main().update();
@@ -268,7 +268,7 @@
 	Lampa.SettingsApi.addParam({
 		component: "interface",
 		param: { name: "logo_settings_entry", type: "static" },
-		field: { name: "Логотипы", description: "Настройки отображения логотипов" },
+		field: { name: "Лого", description: "Настройки лого" },
 		onRender: function (item) {
 			item.on("hover:enter", function () {
 				Lampa.Settings.create(LOGO_COMPONENT);
@@ -282,7 +282,7 @@
 	Lampa.SettingsApi.addParam({
 		component: LOGO_COMPONENT,
 		param: { name: "logo_back_to_int", type: "static" },
-		field: { name: "Назад", description: "Вернуться в настройки интерфейса" },
+		field: { name: "Назад", description: "Назад" },
 		onRender: function (item) {
 			item.on("hover:enter", function () {
 				Lampa.Settings.create("interface");
@@ -295,12 +295,12 @@
 		param: {
 			name: "logo_glav",
 			type: "select",
-			values: { 1: "Скрыть", 0: "Отображать" },
+			values: { 1: "Показати", 0: "Приховати" },
 			default: "0"
 		},
 		field: {
-			name: "Логотипы вместо названий",
-			description: "Отображает логотипы фильмов вместо текста"
+			name: "Логотипы замість газв",
+			description: "Показує лого замість назви"
 		}
 	});
 	Lampa.SettingsApi.addParam({
@@ -324,8 +324,8 @@
 			default: ""
 		},
 		field: {
-			name: "Язык логотипа",
-			description: "Приоритетный язык для поиска логотипа"
+			name: "Мова логотипа",
+			description: "Пріорітет мови"
 		}
 	});
 	Lampa.SettingsApi.addParam({
@@ -337,13 +337,13 @@
 				w300: "w300",
 				w500: "w500",
 				w780: "w780",
-				original: "Оригинал"
+				original: "Оригінал"
 			},
 			default: "original"
 		},
 		field: {
-			name: "Размер логотипа",
-			description: "Разрешение загружаемого изображения"
+			name: "Розмір лого",
+			description: "Розширення лого"
 		}
 	});
 	Lampa.SettingsApi.addParam({
@@ -355,16 +355,16 @@
 			default: "css"
 		},
 		field: {
-			name: "Тип анимации логотипов",
-			description: "Способ анимации логотипов"
+			name: "Тип анімації",
+			description: "Способ анімації"
 		}
 	});
 	Lampa.SettingsApi.addParam({
 		component: LOGO_COMPONENT,
 		param: { name: "logo_use_text_height", type: "trigger", default: false },
 		field: {
-			name: "Логотип по высоте текста",
-			description: "Размер логотипа равен высоте текста"
+			name: "Логотип по высоті тексту",
+			description: "Розмір лого рівний висоті текста"
 		}
 	});
 
@@ -372,13 +372,13 @@
 		component: LOGO_COMPONENT,
 		param: { name: "logo_clear_cache", type: "button" },
 		field: {
-			name: "Сбросить кеш логотипов",
-			description: "Нажмите для очистки кеша изображений"
+			name: "Скинути кеш лого",
+			description: "Нажміть для очистки"
 		},
 		onChange: function () {
 			Lampa.Select.show({
-				title: "Сбросить кеш?",
-				items: [{ title: "Да", confirm: true }, { title: "Нет" }],
+				title: "Скинути лого?",
+				items: [{ title: "Так", confirm: true }, { title: "Ні" }],
 				onSelect: function (a) {
 					if (a.confirm) {
 						var keys = [];
@@ -405,4 +405,5 @@
 
 	if (!window.logoplugin) startPlugin();
 })();
+
 
