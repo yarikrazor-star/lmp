@@ -3,7 +3,22 @@
 
     var omdb_api_key = '71351fb8';
 
-    // Функція градації кольору (0-10)
+    var style = $('<style>\
+        .full-start__rate.custom-rating { margin-top: 0 !important; margin-right: 12px !important; display: flex !important; align-items: center !important; }\
+        .custom-rating img { height: 16px; width: auto; margin-right: 4px; display: block; }\
+        .custom-rating div { font-weight: bold; line-height: 1; font-size: 1em !important; }\
+        .rate--kp { display: none !important; }\
+    </style>');
+    $('body').append(style);
+
+    var icons = {
+        imdb: 'https://upload.wikimedia.org/wikipedia/commons/5/53/IMDB_-_SuperTinyIcons.svg',
+        rt: 'https://upload.wikimedia.org/wikipedia/commons/5/5b/Rotten_Tomatoes.svg',
+        mc: 'https://upload.wikimedia.org/wikipedia/commons/e/e1/Metacritic_logo_Roundel.svg',
+        tmdb: 'https://upload.wikimedia.org/wikipedia/commons/8/89/Tmdb.new.logo.svg',
+        cub: 'https://upload.wikimedia.org/wikipedia/commons/d/da/Rotten_Tomatoes_positive_audience.svg'
+    };
+
     function getColor(rating) {
         rating = parseFloat(rating);
         if (!rating || rating === 0) return '#fff';
@@ -18,86 +33,102 @@
         return 'rgb(' + r + ',' + g + ',' + b + ')';
     }
 
-    function addRatingBlock(anchor, className, label, value) {
+    function addRatingBlock(anchor, className, iconUrl, value) {
         if ($('.' + className).length > 0) return;
-        
-        var block = $('<div class="full-start__rate ' + className + '"><div></div><div style="margin-left: 4px; opacity: 0.6; font-weight: normal; text-transform: uppercase;">' + label + '</div></div>');
         var color = getColor(value);
-        
-        block.find('div').eq(0).text(value).css('color', color);
-        block.css('margin-right', '10px');
-        
+        var block = $('<div class="full-start__rate custom-rating ' + className + '">\
+            <img src="' + iconUrl + '" />\
+            <div style="color: ' + color + '">' + value + '</div>\
+        </div>');
         anchor.after(block);
     }
 
-    function updateStandardRates(render) {
-        // Видалено .rate--kp зі списку для розфарбовування
-        $('.rate--tmdb, .rate--imdb', render).each(function() {
-            var val = parseFloat($(this).find('div').eq(0).text());
-            if (val > 0) $(this).find('div').eq(0).css('color', getColor(val));
-        });
+    function getCubRating(e) {
+        if (!e.object || !e.object.source || !(e.object.source === 'cub' || e.object.source === 'tmdb')) return null;
+        var isTv = e.object.method === 'tv';
+        var reactionCoef = { fire: 10, nice: 7.5, think: 5, bore: 2.5, shit: 0 };
+        var sum = 0, cnt = 0;
+        if (e.data && e.data.reactions && e.data.reactions.result) {
+            var reactions = e.data.reactions.result;
+            for (var i = 0; i < reactions.length; i++) {
+                var coef = reactionCoef[reactions[i].type];
+                if (reactions[i].counter) {
+                    sum += (reactions[i].counter * coef);
+                    cnt += (reactions[i].counter * 1);
+                }
+            }
+        }
+        if (cnt >= 20) {
+            var avg = isTv ? 7.436 : 6.584;
+            var m = isTv ? 69 : 274;
+            return ((avg * m + sum) / (m + cnt)).toFixed(1);
+        }
+        return null;
     }
 
-    function getOMDB(e) {
-        var movie = e.data.movie;
+    function updateRatings(e) {
         var render = e.object.activity.render();
-        
-        // ПРИМУСОВО ВИДАЛЯЄМО РЕЙТИНГ КИНОПОИСК З ЕКРАНУ
-        $('.rate--kp', render).remove();
+        var movie = e.data.movie;
 
-        // Шукаємо якір (спочатку TMDB, якщо немає - IMDb) для вставки нових блоків
+        $('.rate--tmdb', render).each(function() {
+            var $this = $(this);
+            var val = parseFloat($this.find('div').eq(0).text());
+            if (val > 0 && !$this.hasClass('custom-rating')) {
+                $this.addClass('custom-rating').empty();
+                $this.append('<img src="' + icons.tmdb + '" />');
+                $this.append('<div style="color: ' + getColor(val) + '">' + val + '</div>');
+            }
+        });
+
         var anchor = $('.rate--tmdb', render);
-        if (anchor.length === 0) anchor = $('.rate--imdb', render).last();
-        
-        // Якщо жодного якоря не знайдено (наприклад, тільки-но видалили КП і більше нічого немає)
-        // використовуємо контейнер рейтингів як такий
-        if (anchor.length === 0) anchor = $('.full-start__rates', render);
+        if (anchor.length === 0) anchor = $('.full-start__rates', render).find('div').first();
         if (anchor.length === 0) return;
 
-        updateStandardRates(render);
+        var cubVal = getCubRating(e);
+        if (cubVal) addRatingBlock(anchor, 'rate--cub-custom', icons.cub, cubVal);
 
         var imdb_id = movie.imdb_id || (movie.external_ids ? movie.external_ids.imdb_id : '');
+        
+        var requestOMDB = function(id) {
+            $.getJSON('https://www.omdbapi.com/?apikey=' + omdb_api_key + '&i=' + id, function(data) {
+                if (data && data.Response !== "False") {
+                    if (data.Metascore && data.Metascore !== 'N/A') {
+                        addRatingBlock(anchor, 'rate--omdb-meta', icons.mc, (parseInt(data.Metascore) / 10).toFixed(1));
+                    }
+                    var rt = (data.Ratings || []).find(function(r) { return r.Source === 'Rotten Tomatoes'; });
+                    if (rt) {
+                        addRatingBlock(anchor, 'rate--omdb-rt', icons.rt, (parseInt(rt.Value) / 10).toFixed(1));
+                    }
+                    if (data.imdbRating && data.imdbRating !== 'N/A') {
+                        addRatingBlock(anchor, 'rate--omdb-imdb', icons.imdb, data.imdbRating);
+                    }
+                }
+            });
+        };
 
         if (imdb_id) {
-            requestOMDB(imdb_id, anchor);
+            requestOMDB(imdb_id);
         } else if (movie.id) {
             var type = (e.object.method === 'tv' || movie.number_of_seasons) ? 'tv' : 'movie';
-            var tmdb_url = Lampa.TMDB.api(type + '/' + movie.id + '/external_ids?api_key=' + Lampa.TMDB.key());
-            Lampa.Network.silent(tmdb_url, function (res) {
-                if (res && res.imdb_id) requestOMDB(res.imdb_id, anchor);
+            Lampa.Network.silent(Lampa.TMDB.api(type + '/' + movie.id + '/external_ids?api_key=' + Lampa.TMDB.key()), function (res) {
+                if (res && res.imdb_id) requestOMDB(res.imdb_id);
             });
         }
     }
 
-    function requestOMDB(imdb_id, anchor) {
-        $.getJSON('https://www.omdbapi.com/?apikey=' + omdb_api_key + '&i=' + imdb_id, function(data) {
-            if (data && data.Response !== "False") {
-                if (data.Metascore && data.Metascore !== 'N/A') {
-                    var mc = (parseInt(data.Metascore) / 10).toFixed(1);
-                    addRatingBlock(anchor, 'rate--omdb-meta', 'MC', mc);
-                }
-                var rt = (data.Ratings || []).find(function(r) { return r.Source === 'Rotten Tomatoes'; });
-                if (rt) {
-                    var rtv = (parseInt(rt.Value) / 10).toFixed(1);
-                    addRatingBlock(anchor, 'rate--omdb-rt', 'RT', rtv);
-                }
-                if (data.imdbRating && data.imdbRating !== 'N/A') {
-                    addRatingBlock(anchor, 'rate--omdb-imdb', 'IMDb', data.imdbRating);
-                }
-            }
-        });
-    }
-
     function startPlugin() {
-        window.omdb_rating_plugin_v5 = true;
+        window.lampa_combined_v3 = true;
         Lampa.Listener.follow('full', function (e) {
             if (e.type === 'complite' || e.type === 'complete') {
-                setTimeout(function() {
-                    getOMDB(e);
-                }, 100);
+                var attempts = [100, 500, 1000];
+                attempts.forEach(function(delay) {
+                    setTimeout(function() {
+                        updateRatings(e);
+                    }, delay);
+                });
             }
         });
     }
 
-    if (!window.omdb_rating_plugin_v5) startPlugin();
+    if (!window.lampa_combined_v3) startPlugin();
 })();
