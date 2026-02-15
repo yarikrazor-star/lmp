@@ -199,14 +199,17 @@
             if (country && country !== "undefined") details.push(country);
             var secondaryInfo = details.length > 0 ? ' • ' + details.join(' • ') : '';
 
-            var html = '<div class="plugin-hybrid-title" style="margin-top: 5px; margin-bottom: 5px; text-align: left; width: 100%;">' +
-                            '<div style="line-height: 1.2; font-weight: bold; display: flex; align-items: baseline; flex-wrap: wrap;">' +
-                                '<span style="font-size: ' + currentSize.title + '; color: #fff; opacity: 0.8;">' + displayTitle + '</span>' + 
-                                '<span style="font-size: ' + currentSize.info + '; color: #fff; opacity: 0.5; margin-left: 3px;">' + secondaryInfo + '</span>' +
-                            '</div>' +
-                       '</div>';
+            var html = '<div class="plugin-hybrid-title" style="margin-top: 5px; margin-bottom: 5px; text-align: left; width: 100%; position: relative; z-index: 10;">' +
+                '<div style="line-height: 1.2; font-weight: bold; display: flex; align-items: baseline; flex-wrap: wrap;">' +
+                    '<span style="font-size: ' + currentSize.title + '; color: #fff; opacity: 0.8;">' + displayTitle + '</span>' + 
+                    '<span style="font-size: ' + currentSize.info + '; color: #fff; opacity: 0.5; margin-left: 3px;">' + secondaryInfo + '</span>' +
+                '</div>' +
+           '</div>';
 
-            $(".full-start-new__title", render).after(html);
+// Використовуємо .after(), щоб він став одразу під оригінальним заголовком
+var target = $(".full-start-new__title", render);
+if(!target.length) target = $(".full-start__title", render);
+target.after(html);
         }
 
         if (!window.hybrid_title_plugin_loaded) {
