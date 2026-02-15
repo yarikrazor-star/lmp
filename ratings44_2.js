@@ -12,8 +12,8 @@
             gap: 3px; \
         }\
         .custom-rating .rating-icon-wrap { \
-            width: 0.8em; \
-            height: 0.8em; \
+            width: 0.9em; \
+            height: 0.9em; \
             display: flex; \
             align-items: center; \
             justify-content: center; \
@@ -26,7 +26,7 @@
         .custom-rating div { \
             font-weight: bold; \
             line-height: 1; \
-            font-size: 0.6em !important; \
+            font-size: 0.7em !important; \
         }\
         .rate--kp { display: none !important; }\
     </style>');
@@ -41,17 +41,18 @@
     };
 
     function getColor(rating) {
-        rating = parseFloat(rating);
-        if (!rating || rating === 0) return '#fff';
-        var r, g, b = 0;
-        if (rating < 5) {
-            r = 255;
-            g = Math.round(255 * (rating / 5));
+        var val = parseFloat(rating);
+        if (!val || val === 0) return '#fff';
+        
+        if (val < 3) {
+            return '#ff4d4d'; // Червоний
+        } else if (val < 5) {
+            return '#ff9f43'; // Помаранчевий
+        } else if (val < 7.5) {
+            return '#feca57'; // Жовтий
         } else {
-            r = Math.round(255 * (1 - (rating - 5) / 5));
-            g = 255;
+            return '#2ecc71'; // Зелений
         }
-        return 'rgb(' + r + ',' + g + ',' + b + ')';
     }
 
     function addRatingBlock(anchor, className, iconUrl, value) {
@@ -131,9 +132,11 @@
             requestOMDB(imdb_id);
         } else if (movie.id) {
             var type = (e.object.method === 'tv' || movie.number_of_seasons) ? 'tv' : 'movie';
-            Lampa.Network.silent(Lampa.TMDB.api(type + '/' + movie.id + '/external_ids?api_key=' + Lampa.TMDB.key()), function (res) {
-                if (res && res.imdb_id) requestOMDB(res.imdb_id);
-            });
+            if (window.Lampa && Lampa.Network && Lampa.TMDB) {
+                Lampa.Network.silent(Lampa.TMDB.api(type + '/' + movie.id + '/external_ids?api_key=' + Lampa.TMDB.key()), function (res) {
+                    if (res && res.imdb_id) requestOMDB(res.imdb_id);
+                });
+            }
         }
     }
 
@@ -141,7 +144,8 @@
         window.lampa_combined_v3 = true;
         Lampa.Listener.follow('full', function (e) {
             if (e.type === 'complite' || e.type === 'complete') {
-                [100, 500, 1000].forEach(function(delay) {
+                var delays = [100, 500, 1000];
+                delays.forEach(function(delay) {
                     setTimeout(function() {
                         updateRatings(e);
                     }, delay);
@@ -150,5 +154,7 @@
         });
     }
 
-    if (!window.lampa_combined_v3) startPlugin();
+    if (!window.lampa_combined_v3) {
+        startPlugin();
+    }
 })();
