@@ -4,9 +4,30 @@
     var omdb_api_key = '71351fb8';
 
     var style = $('<style>\
-        .full-start__rate.custom-rating { margin-top: 0 !important; margin-right: 12px !important; display: flex !important; align-items: center !important; }\
-        .custom-rating img { height: 16px; width: auto; margin-right: 4px; display: block; }\
-        .custom-rating div { font-weight: bold; line-height: 1; font-size: 1em !important; }\
+        .full-start__rate.custom-rating { \
+            margin-top: 0 !important; \
+            margin-right: 10px !important; \
+            display: flex !important; \
+            align-items: center !important; \
+            gap: 5px; \
+        }\
+        .custom-rating .rating-icon-wrap { \
+            width: 1.2em; \
+            height: 1.2em; \
+            display: flex; \
+            align-items: center; \
+            justify-content: center; \
+        }\
+        .custom-rating img { \
+            max-width: 100%; \
+            max-height: 100%; \
+            object-fit: contain; \
+        }\
+        .custom-rating div { \
+            font-weight: bold; \
+            line-height: 1; \
+            font-size: 0.8em !important; \
+        }\
         .rate--kp { display: none !important; }\
     </style>');
     $('body').append(style);
@@ -37,7 +58,7 @@
         if ($('.' + className).length > 0) return;
         var color = getColor(value);
         var block = $('<div class="full-start__rate custom-rating ' + className + '">\
-            <img src="' + iconUrl + '" />\
+            <div class="rating-icon-wrap"><img src="' + iconUrl + '" /></div>\
             <div style="color: ' + color + '">' + value + '</div>\
         </div>');
         anchor.after(block);
@@ -75,7 +96,7 @@
             var val = parseFloat($this.find('div').eq(0).text());
             if (val > 0 && !$this.hasClass('custom-rating')) {
                 $this.addClass('custom-rating').empty();
-                $this.append('<img src="' + icons.tmdb + '" />');
+                $this.append('<div class="rating-icon-wrap"><img src="' + icons.tmdb + '" /></div>');
                 $this.append('<div style="color: ' + getColor(val) + '">' + val + '</div>');
             }
         });
@@ -120,8 +141,7 @@
         window.lampa_combined_v3 = true;
         Lampa.Listener.follow('full', function (e) {
             if (e.type === 'complite' || e.type === 'complete') {
-                var attempts = [100, 500, 1000];
-                attempts.forEach(function(delay) {
+                [100, 500, 1000].forEach(function(delay) {
                     setTimeout(function() {
                         updateRatings(e);
                     }, delay);
