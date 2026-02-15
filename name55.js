@@ -129,7 +129,9 @@
                     });
                 }
 
-                var enTitle = data.title || data.name;
+                // Захист від undefined: беремо оригінальну назву з картки або з даних API
+                var originalName = data.original_title || data.original_name || card.original_title || card.original_name || "";
+                var enTitle = data.title || data.name || originalName;
                 var ukTitle = enTitle;
 
                 if (data.translations && data.translations.translations) {
@@ -137,7 +139,7 @@
                         return t.iso_3166_1 === "UA" || t.iso_639_1 === "uk";
                     });
                     if (translation) {
-                        ukTitle = translation.data.title || translation.data.name;
+                        ukTitle = translation.data.title || translation.data.name || enTitle;
                     }
                 }
 
@@ -149,16 +151,20 @@
                 var countryString = countryList.join(" / ");
 
                 titleCache[card.id] = {
-                    ukTitle: ukTitle,
-                    enTitle: enTitle,
+                    ukTitle: ukTitle || "",
+                    enTitle: enTitle || "",
                     hasLogo: hasUkrainianLogo,
-                    year: year,
-                    country: countryString,
+                    year: year || "",
+                    country: countryString || "",
                     timestamp: now
                 };
                 Lampa.Storage.set("title_cache_hybrid_v3", titleCache);
 
                 renderTitle(ukTitle, enTitle, hasUkrainianLogo, year, countryString);
+            }).fail(function() {
+                // Якщо запит не вдався, показуємо хоча б те, що є в об'єкті картки
+                var fallbackTitle = card.title || card.name || card.original_title || "";
+                renderTitle(fallbackTitle, fallbackTitle, false, "", "");
             });
         }
 
@@ -172,6 +178,9 @@
             var sizeKey = Lampa.Storage.get('hybrid_title_size', 'm');
 
             var displayTitle = (mode === 'smart' && hasLogo) ? enTitle : ukTitle;
+            
+            // Фінальна перевірка, щоб ні в якому разі не вивести "undefined" як текст
+            if (!displayTitle || displayTitle === "undefined") displayTitle = "";
 
             var sizes = {
                 'xs':    { title: '1.0em', info: '0.8em' },
@@ -186,8 +195,8 @@
             var currentSize = sizes[sizeKey] || sizes['m'];
 
             var details = [];
-            if (year) details.push(year);
-            if (country) details.push(country);
+            if (year && year !== "undefined") details.push(year);
+            if (country && country !== "undefined") details.push(country);
             var secondaryInfo = details.length > 0 ? ' • ' + details.join(' • ') : '';
 
             var html = '<div class="plugin-hybrid-title" style="margin-top: 5px; margin-bottom: 5px; text-align: left; width: 100%;">' +
