@@ -299,7 +299,7 @@
 			default: "0"
 		},
 		field: {
-			name: "Логотипы замість назв",
+			name: "Логотипи замість назв",
 			description: "Показує лого замість назви"
 		}
 	});
@@ -405,6 +405,7 @@
 
 	if (!window.logoplugin) startPlugin();
 })();
+
 
 
 
