@@ -6,14 +6,14 @@
     var style = $('<style>\
         .full-start__rate.custom-rating { \
             margin-top: 0 !important; \
-            margin-right: 10px !important; \
+            margin-right: 5px !important; \
             display: flex !important; \
             align-items: center !important; \
-            gap: 5px; \
+            gap: 3px; \
         }\
         .custom-rating .rating-icon-wrap { \
-            width: 1.2em; \
-            height: 1.2em; \
+            width: 0.8em; \
+            height: 0.8em; \
             display: flex; \
             align-items: center; \
             justify-content: center; \
@@ -26,7 +26,7 @@
         .custom-rating div { \
             font-weight: bold; \
             line-height: 1; \
-            font-size: 0.8em !important; \
+            font-size: 0.6em !important; \
         }\
         .rate--kp { display: none !important; }\
     </style>');
