@@ -299,7 +299,7 @@
 			default: "0"
 		},
 		field: {
-			name: "Логотипы замість газв",
+			name: "Логотипы замість назв",
 			description: "Показує лого замість назви"
 		}
 	});
@@ -363,7 +363,7 @@
 		component: LOGO_COMPONENT,
 		param: { name: "logo_use_text_height", type: "trigger", default: false },
 		field: {
-			name: "Логотип по высоті тексту",
+			name: "Логотип по висоті тексту",
 			description: "Розмір лого рівний висоті текста"
 		}
 	});
@@ -405,5 +405,6 @@
 
 	if (!window.logoplugin) startPlugin();
 })();
+
 
 
