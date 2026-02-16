@@ -3,10 +3,12 @@
 
     function startUAAvailability() {
         var proxies = [
-            'https://my-finder.kozak-bohdan.workers.dev/?url=',
-            'https://cors.bwa.workers.dev/',
-            'https://api.allorigins.win/raw?url='
-        ];
+    'https://cors.lampa.stream/',         // Офіційний Cors Lampa (найшвидший для UA)
+    'https://my-finder.kozak-bohdan.workers.dev/?url=', // Твій швидкий Cloudflare Worker
+    'https://corsproxy.io/?',             // Потужний глобальний сервіс
+    'https://api.allorigins.win/raw?url=', // Надійний фолбек
+    'https://cors.bwa.workers.dev/'       // Додатковий вузол
+];
 
         var clean = function(str) {
             return str ? str.toLowerCase().replace(/[^a-z0-9а-яіїєґ]/g, ' ').replace(/\s+/g, ' ').trim() : '';
