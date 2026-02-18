@@ -1,44 +1,16 @@
 (function () {
     'use strict';
 
-    // 1. CSS Стилі
-    // Додано фільтр для CUB (чорна заливка 80%)
+    var COMPONENT_NAME = 'omdb_config_ui';
+
     var style = $('<style>\
-        .full-start__rate.custom-rating { \
-            margin-top: 0 !important; \
-            margin-right: 5px !important; \
-            margin-bottom: 0.2em !important; \
-            display: flex !important; \
-            align-items: center !important; \
-            gap: 0.3em; \
-        }\
-        .custom-rating .rating-icon-wrap { \
-            width: 1.1em; \
-            height: 1.1em; \
-            display: flex; \
-            align-items: center; \
-            justify-content: center; \
-        }\
-        .custom-rating img { \
-            max-width: 100%; \
-            max-height: 100%; \
-            object-fit: contain; \
-        }\
-        .custom-rating div { \
-            font-weight: bold; \
-            line-height: 1; \
-            font-size: 1em !important; \
-        }\
+        .full-start__rate.custom-rating { margin-top: 0 !important; margin-right: 5px !important; margin-bottom: 0.2em !important; display: flex !important; align-items: center !important; gap: 0.3em; }\
+        .custom-rating .rating-icon-wrap { width: 1.1em; height: 1.1em; display: flex; align-items: center; justify-content: center; }\
+        .custom-rating img { max-width: 100%; max-height: 100%; object-fit: contain; }\
+        .custom-rating div { font-weight: bold; line-height: 1; font-size: 1em !important; }\
         .rate--kp { display: none !important; }\
-        .settings-param__value { \
-            margin-left: auto; \
-            font-size: 0.9em; \
-            opacity: 0.7; \
-            max-width: 200px; \
-            overflow: hidden; \
-            text-overflow: ellipsis; \
-            white-space: nowrap; \
-        }\
+        .omdb-api-val { margin-left: auto; font-size: 0.9em; opacity: 0.7; max-width: 200px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; padding-left: 10px; }\
+        div[data-component="' + COMPONENT_NAME + '"] { display: none !important; }\
     </style>');
     $('body').append(style);
 
@@ -47,11 +19,11 @@
         rt: 'https://upload.wikimedia.org/wikipedia/commons/5/5b/Rotten_Tomatoes.svg',
         mc: 'https://upload.wikimedia.org/wikipedia/commons/e/e1/Metacritic_logo_Roundel.svg',
         tmdb: 'https://upload.wikimedia.org/wikipedia/commons/8/89/Tmdb.new.logo.svg',
-        // Оновлене лого CUB
-        cub: 'https://raw.githubusercontent.com/yumata/lampa/9381985ad4371d2a7d5eb5ca8e3daf0f32669eb7/img/logo-icon.svg'
+        cub: 'https://raw.githubusercontent.com/yumata/lampa/9381985ad4371d2a7d5eb5ca8e3daf0f32669eb7/img/logo-icon.svg',
+        oscar: 'https://upload.wikimedia.org/wikipedia/commons/f/f8/Oscar_gold_silhouette.svg',
+        award: 'https://upload.wikimedia.org/wikipedia/commons/e/e8/Barnstar_film_3.svg'
     };
 
-    // 2. Допоміжні функції
     function getColor(rating) {
         var val = parseFloat(rating);
         if (!val || val === 0) return '#fff';
@@ -61,20 +33,18 @@
         else return '#2ecc71';
     }
 
-    // Отримання розміру зі сховища
     function getRatingSize() {
         return Lampa.Storage.get('omdb_rating_size', '0.8em');
     }
 
+    function createBlock(className, iconUrl, value, color) {
+        var size = getRatingSize();
+        return $('<div class="full-start__rate custom-rating ' + className + '" style="font-size: ' + size + '"><div class="rating-icon-wrap"><img src="' + iconUrl + '" /></div><div style="color: ' + (color || '#fff') + '">' + value + '</div></div>');
+    }
+
     function addRatingBlock(anchor, className, iconUrl, value) {
         if ($('.' + className).length > 0) return;
-        var color = getColor(value);
-        var size = getRatingSize();
-        
-        var block = $('<div class="full-start__rate custom-rating ' + className + '" style="font-size: ' + size + '">\
-            <div class="rating-icon-wrap"><img src="' + iconUrl + '" /></div>\
-            <div style="color: ' + color + '">' + value + '</div>\
-        </div>');
+        var block = createBlock(className, iconUrl, value, getColor(value));
         anchor.after(block);
     }
 
@@ -101,17 +71,14 @@
         return null;
     }
 
-    // 3. Основна логіка оновлення рейтингів
     function updateRatings(e) {
         var render = e.object.activity.render();
         var movie = e.data.movie;
         var size = getRatingSize();
 
-        // TMDB
         $('.rate--tmdb', render).each(function() {
             var $this = $(this);
             var val = parseFloat($this.find('div').eq(0).text());
-            
             if (val > 0) {
                 if (!$this.hasClass('custom-rating')) {
                     $this.addClass('custom-rating').empty();
@@ -126,29 +93,39 @@
         if (anchor.length === 0) anchor = $('.full-start__rates', render).find('div').first();
         if (anchor.length === 0) return;
 
-        // CUB
         var cubVal = getCubRating(e);
         if (cubVal) addRatingBlock(anchor, 'rate--cub-custom', icons.cub, cubVal);
 
         var imdb_id = movie.imdb_id || (movie.external_ids ? movie.external_ids.imdb_id : '');
-        
-        // OMDB
+
         var requestOMDB = function(id) {
             var key = Lampa.Storage.get('omdb_api_key', '');
             if (!key) return;
-
             $.getJSON('https://www.omdbapi.com/?apikey=' + key + '&i=' + id, function(data) {
                 if (data && data.Response !== "False") {
-                    if (data.Metascore && data.Metascore !== 'N/A') {
-                        addRatingBlock(anchor, 'rate--omdb-meta', icons.mc, (parseInt(data.Metascore) / 10).toFixed(1));
+                    if (data.Awards && data.Awards !== "N/A") {
+                        var oscarsMatch = data.Awards.match(/Won (\d+) Oscar/i);
+                        var winsMatch = data.Awards.match(/(\d+) win/i);
+                        
+                        if (oscarsMatch && parseInt(oscarsMatch[1]) > 0) {
+                            if ($('.rate--omdb-oscar', render).length === 0) {
+                                var oscarBlock = createBlock('rate--omdb-oscar', icons.oscar, oscarsMatch[1], '#feca57');
+                                anchor.before(oscarBlock);
+                            }
+                        }
+                        
+                        if (winsMatch && parseInt(winsMatch[1]) > 0) {
+                            if ($('.rate--omdb-awards', render).length === 0) {
+                                var awardBlock = createBlock('rate--omdb-awards', icons.award, winsMatch[1], '#fff');
+                                anchor.before(awardBlock);
+                            }
+                        }
                     }
+
+                    if (data.Metascore && data.Metascore !== 'N/A') addRatingBlock(anchor, 'rate--omdb-meta', icons.mc, (parseInt(data.Metascore) / 10).toFixed(1));
                     var rt = (data.Ratings || []).find(function(r) { return r.Source === 'Rotten Tomatoes'; });
-                    if (rt) {
-                        addRatingBlock(anchor, 'rate--omdb-rt', icons.rt, (parseInt(rt.Value) / 10).toFixed(1));
-                    }
-                    if (data.imdbRating && data.imdbRating !== 'N/A') {
-                        addRatingBlock(anchor, 'rate--omdb-imdb', icons.imdb, data.imdbRating);
-                    }
+                    if (rt) addRatingBlock(anchor, 'rate--omdb-rt', icons.rt, (parseInt(rt.Value) / 10).toFixed(1));
+                    if (data.imdbRating && data.imdbRating !== 'N/A') addRatingBlock(anchor, 'rate--omdb-imdb', icons.imdb, data.imdbRating);
                 }
             });
         };
@@ -165,44 +142,29 @@
         }
     }
 
-    // 4. Ініціалізація та Налаштування
     function startPlugin() {
-        window.lampa_combined_v3 = true;
-        var SETTINGS_COMPONENT = "omdb_settings_component";
+        window.lampa_omdb_plugin_loaded = true;
 
-        Lampa.Settings.listener.follow("open", function (e) {
-            if (e.name == "main") {
-                var render = Lampa.Settings.main().render();
-                if (render.find('[data-component="' + SETTINGS_COMPONENT + '"]').length == 0) {
-                    Lampa.SettingsApi.addComponent({
-                        component: SETTINGS_COMPONENT,
-                        name: "OMDB"
-                    });
-                }
-                render.find('[data-component="' + SETTINGS_COMPONENT + '"]').addClass("hide");
-            }
+        Lampa.SettingsApi.addComponent({
+            component: COMPONENT_NAME,
+            name: 'OMDB'
         });
 
-        // Пункт в "Інтерфейс"
         Lampa.SettingsApi.addParam({
             component: "interface",
-            param: { name: "omdb_setup_btn", type: "static" },
+            param: { name: "omdb_entry_btn", type: "static" },
             field: { name: "OMDB Рейтинг", description: "Налаштування ключа та вигляду" },
             onRender: function (item) {
                 item.on("hover:enter", function () {
-                    Lampa.Settings.create(SETTINGS_COMPONENT);
-                    Lampa.Controller.enabled().controller.back = function () {
-                        Lampa.Settings.create("interface");
-                    };
+                    Lampa.Settings.create(COMPONENT_NAME);
                 });
             }
         });
 
-        // Кнопка "Назад"
         Lampa.SettingsApi.addParam({
-            component: SETTINGS_COMPONENT,
-            param: { name: "omdb_back_btn", type: "static" },
-            field: { name: "Назад", description: "Повернутися до налаштувань інтерфейсу" },
+            component: COMPONENT_NAME,
+            param: { name: "omdb_back", type: "static" },
+            field: { name: "Назад", description: "До інтерфейсу" },
             onRender: function (item) {
                 item.on("hover:enter", function () {
                     Lampa.Settings.create("interface");
@@ -210,16 +172,14 @@
             }
         });
 
-        // 1. Поле для введення ключа
         Lampa.SettingsApi.addParam({
-            component: SETTINGS_COMPONENT,
-            param: { name: "omdb_key_trigger", type: "static" },
-            field: { name: "API Key", description: "Натисніть для введення ключа" },
+            component: COMPONENT_NAME,
+            param: { name: "omdb_api_key_set", type: "static" },
+            field: { name: "API Key", description: "Натисніть для введення" },
             onRender: function (item) {
                 var currentKey = Lampa.Storage.get('omdb_api_key', '');
-                var valueDiv = $('<div class="settings-param__value">' + (currentKey ? currentKey : 'Не встановлено') + '</div>');
-                item.find('.settings-param__descr').after(valueDiv);
-
+                var valEl = $('<div class="omdb-api-val">' + (currentKey || 'Не встановлено') + '</div>');
+                item.find('.settings-param__descr').after(valEl);
                 item.on('hover:enter', function() {
                     Lampa.Input.edit({
                         title: 'OMDB API Key',
@@ -228,47 +188,30 @@
                         nosave: true
                     }, function(newValue) {
                         Lampa.Storage.set('omdb_api_key', newValue);
-                        valueDiv.text(newValue ? newValue : 'Не встановлено');
+                        valEl.text(newValue || 'Не встановлено');
                     });
                 });
             }
         });
 
-        // 2. Вибір розміру (Select)
         Lampa.SettingsApi.addParam({
-            component: SETTINGS_COMPONENT,
+            component: COMPONENT_NAME,
             param: {
                 name: 'omdb_rating_size',
                 type: 'select',
-                values: {
-                    '0.5em': '0.5em (XS)',
-                    '0.8em': '0.8em (S)',
-                    '1.1em': '1.1em (M)',
-                    '1.5em': '1.5em (L)',
-                    '2.0em': '2.0em (XL)'
-                },
+                values: { '0.5em': 'XS', '0.8em': 'S', '1.1em': 'M', '1.5em': 'L', '2.0em': 'XL' },
                 default: '0.8em'
             },
-            field: {
-                name: 'Розмір рейтингу',
-                description: 'Розмір іконок та тексту'
-            }
+            field: { name: 'Розмір рейтингу' }
         });
 
-        // Запуск
         Lampa.Listener.follow('full', function (e) {
             if (e.type === 'complite' || e.type === 'complete') {
-                var delays = [100, 500, 1000];
-                delays.forEach(function(delay) {
-                    setTimeout(function() {
-                        updateRatings(e);
-                    }, delay);
-                });
+                setTimeout(function() { updateRatings(e); }, 100);
+                setTimeout(function() { updateRatings(e); }, 1000);
             }
         });
     }
 
-    if (!window.lampa_combined_v3) {
-        startPlugin();
-    }
+    if (!window.lampa_omdb_plugin_loaded) startPlugin();
 })();
