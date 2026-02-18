@@ -87,6 +87,24 @@
                 updateStyles(); // Оновлюємо стилі миттєво
             }
         });
+
+        // 6. Параметр: Очистити кеш та перезавантажити
+        Lampa.SettingsApi.addParam({
+            component: SETTINGS_COMPONENT,
+            param: { name: "studio_logo_clear_cache", type: "static" },
+            field: { name: "Очистити кеш", description: "Видалити дані та перезавантажити додаток" },
+            onRender: function (item) {
+                item.on("hover:enter", function () {
+                    runtimeLogoCache = {}; // Очищаємо об'єкт кешу
+                    Lampa.Noty.show("Кеш очищено. Перезавантаження...");
+                    
+                    // Перезавантаження сторінки через 1 секунду
+                    setTimeout(function() {
+                        window.location.reload();
+                    }, 1000);
+                });
+            }
+        });
     }
 
     // --- ГЕНЕРАЦІЯ СТИЛІВ ---
@@ -99,9 +117,7 @@
             ? 'background: rgba(255,255,255,0.08) !important; border: 1px solid transparent;' 
             : 'background: transparent !important; border: none !important; padding: 0 !important;';
         
-        // Логіка відступів (Padding та Margin)
-        // Якщо фон увімкнено: стандартний padding, без додаткових відступів знизу.
-        // Якщо фон вимкнено: прибираємо padding, додаємо відступ справа (для розділення) і ЗНИЗУ 0.2em.
+        // Логіка відступів
         var layoutCSS = showBg 
             ? 'padding: 5px 12px !important;' 
             : 'padding: 5px 0px !important; margin-right: 20px !important; margin-bottom: 0.2em !important;';
@@ -160,8 +176,8 @@
 
             if (totalPixels > 0) {
                 var darkRatio = (darkPixels / totalPixels) * 100;
-                // Поріг 65% для інверсії
-                if (darkRatio > 65) {
+                // Поріг 75% для інверсії (замість 65%)
+                if (darkRatio > 75) {
                     img.style.filter = 'brightness(0) invert(1)';
                 }
             }
