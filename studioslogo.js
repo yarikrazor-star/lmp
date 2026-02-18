@@ -2,14 +2,15 @@
     'use strict';
 
     var TMDB_IMAGE_URL = 'https://image.tmdb.org/t/p/h100';
-    // Кеш тільки в оперативній пам'яті
-    var runtimeLogoCache = {}; 
+    // Нова назва кешу та ліміт часу (3 хвилини в мілісекундах)
+    var cache_33378765 = {}; 
+    var CACHE_LIFETIME = 3 * 60 * 1000; 
+
     var SETTINGS_COMPONENT = "studio_logo_settings";
     var STYLE_ID = "studio-logos-combined-style";
 
     // --- ЛОГІКА НАЛАШТУВАНЬ ---
     function initSettings() {
-        // 1. Створення компонента налаштувань
         Lampa.Settings.listener.follow("open", function (e) {
             if (e.name == "main") {
                 var render = Lampa.Settings.main().render();
@@ -24,7 +25,6 @@
             }
         });
 
-        // 2. Пункт у меню "Інтерфейс"
         Lampa.SettingsApi.addParam({
             component: "interface",
             param: { name: "studio_logo_entry", type: "static" },
@@ -39,7 +39,6 @@
             }
         });
 
-        // 3. Кнопка "Назад" всередині меню
         Lampa.SettingsApi.addParam({
             component: SETTINGS_COMPONENT,
             param: { name: "studio_logo_back", type: "static" },
@@ -51,7 +50,6 @@
             }
         });
 
-        // 4. Параметр: Підложка (Background)
         Lampa.SettingsApi.addParam({
             component: SETTINGS_COMPONENT,
             param: {
@@ -62,11 +60,10 @@
             field: { name: "Підложка", description: "Напівпрозорий фон за логотипом" },
             onChange: function (value) {
                 Lampa.Storage.set("studio_logo_bg", value);
-                updateStyles(); // Оновлюємо стилі миттєво
+                updateStyles();
             }
         });
 
-        // 5. Параметр: Розмір лого (Size)
         var sizes = {};
         var sizeSteps = ['0.5', '0.7', '0.9', '1.1', '1.3', '1.5', '1.7', '1.9', '2.1', '2.5'];
         sizeSteps.forEach(function(s) {
@@ -84,21 +81,18 @@
             field: { name: "Розмір лого", description: "Висота логотипа відносно тексту" },
             onChange: function (value) {
                 Lampa.Storage.set("studio_logo_size", value);
-                updateStyles(); // Оновлюємо стилі миттєво
+                updateStyles();
             }
         });
 
-        // 6. Параметр: Очистити кеш та перезавантажити
         Lampa.SettingsApi.addParam({
             component: SETTINGS_COMPONENT,
             param: { name: "studio_logo_clear_cache", type: "static" },
             field: { name: "Очистити кеш", description: "Видалити дані та перезавантажити додаток" },
             onRender: function (item) {
                 item.on("hover:enter", function () {
-                    runtimeLogoCache = {}; // Очищаємо об'єкт кешу
+                    cache_33378765 = {}; 
                     Lampa.Noty.show("Кеш очищено. Перезавантаження...");
-                    
-                    // Перезавантаження сторінки через 1 секунду
                     setTimeout(function() {
                         window.location.reload();
                     }, 1000);
@@ -112,12 +106,10 @@
         var showBg = Lampa.Storage.get("studio_logo_bg", true);
         var sizeEm = Lampa.Storage.get("studio_logo_size", '1.3');
 
-        // Логіка фону
         var bgCSS = showBg 
             ? 'background: rgba(255,255,255,0.08) !important; border: 1px solid transparent;' 
             : 'background: transparent !important; border: none !important; padding: 0 !important;';
         
-        // Логіка відступів
         var layoutCSS = showBg 
             ? 'padding: 5px 12px !important;' 
             : 'padding: 5px 0px !important; margin-right: 20px !important; margin-bottom: 0.2em !important;';
@@ -125,7 +117,6 @@
         var css = 
             '.rate--studio.studio-logo { align-items: center; vertical-align: middle; ' + layoutCSS + bgCSS + ' border-radius: 8px; transition: all 0.2s ease; height: auto; cursor: pointer; }' +
             '.rate--studio.studio-logo.focus { background: rgba(255,255,255,0.2) !important; border: 1px solid #fff; transform: scale(1.05); }' +
-            // Розмір логотипа
             '.rate--studio.studio-logo img { height: ' + sizeEm + 'em !important; max-width: 200px; width: auto; object-fit: contain; filter: brightness(1) invert(0); transition: filter 0.3s ease; }' +
             '.studio-logo-text { font-size: 0.8em; font-weight: bold; color: #fff !important; white-space: nowrap; }';
 
@@ -138,52 +129,31 @@
     }
 
     // --- ЛОГІКА ОБРОБКИ ЛОГОТИПІВ ---
-
     function analyzeLogoColor(img) {
         try {
             var canvas = document.createElement('canvas');
             var ctx = canvas.getContext('2d');
-            
             canvas.width = img.naturalWidth || img.width;
             canvas.height = img.naturalHeight || img.height;
-
             if (canvas.width === 0 || canvas.height === 0) return;
-
             ctx.drawImage(img, 0, 0);
-
             var imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
             var data = imageData.data;
             var r, g, b, alpha, brightness;
             var darkPixels = 0;
             var totalPixels = 0;
-
             for (var i = 0; i < data.length; i += 4) {
-                r = data[i];
-                g = data[i + 1];
-                b = data[i + 2];
                 alpha = data[i + 3];
-
                 if (alpha < 10) continue;
-
                 totalPixels++;
-
+                r = data[i]; g = data[i + 1]; b = data[i + 2];
                 brightness = (r * 299 + g * 587 + b * 114) / 1000;
-
-                if (brightness < 50) {
-                    darkPixels++;
-                }
+                if (brightness < 50) darkPixels++;
             }
-
-            if (totalPixels > 0) {
-                var darkRatio = (darkPixels / totalPixels) * 100;
-                // Поріг 75% для інверсії (замість 65%)
-                if (darkRatio > 75) {
-                    img.style.filter = 'brightness(0) invert(1)';
-                }
+            if (totalPixels > 0 && (darkPixels / totalPixels) * 100 > 75) {
+                img.style.filter = 'brightness(0) invert(1)';
             }
-        } catch (e) {
-            console.error('StudioLogo: Error analyzing image color', e);
-        }
+        } catch (e) {}
     }
 
     function getStudioLogosHtml(movie) {
@@ -207,7 +177,6 @@
         if (!render) return;
 
         $(".plugin-uk-title-combined", render).remove();
-
         var logosHtml = getStudioLogosHtml(movie);
         if (!logosHtml) return;
 
@@ -215,45 +184,24 @@
                 '<div class="studio-logos-container" style="display: flex; align-items: center; flex-wrap: wrap;">' + logosHtml + '</div>' +
             '</div>';
 
-        var hybridTitle = $(".plugin-hybrid-title", render);
-        var target;
-
-        if (hybridTitle.length) {
-            target = hybridTitle;
-        } else {
-            target = $(".full-start-new__title", render);
-            if (!target.length) target = $(".full-start__title", render);
-        }
+        var target = $(".plugin-hybrid-title", render);
+        if (!target.length) target = $(".full-start-new__title", render);
+        if (!target.length) target = $(".full-start__title", render);
         
         target.after(html);
 
         $('.studio-img-check', render).each(function() {
             var img = this;
-            var runAnalysis = function() {
-                analyzeLogoColor(img);
-            };
-
-            if (img.complete) {
-                runAnalysis();
-            } else {
-                img.onload = runAnalysis;
-                img.onerror = function() {
-                    $(this).css('display', 'block'); 
-                };
-            }
+            if (img.complete) analyzeLogoColor(img);
+            else img.onload = function() { analyzeLogoColor(img); };
         });
 
         $('.rate--studio', render).on('hover:enter', function () {
             var id = $(this).data('id');
-            var name = $(this).data('name');
             if (id) {
                 Lampa.Activity.push({
-                    url: 'movie',
-                    id: id,
-                    title: name,
-                    component: 'company',
-                    source: 'tmdb',
-                    page: 1
+                    url: 'movie', id: id, title: $(this).data('name'),
+                    component: 'company', source: 'tmdb', page: 1
                 });
             }
         });
@@ -267,16 +215,17 @@
     }
 
     function startPlugin() {
-        // Ініціалізуємо налаштування та стилі
         initSettings();
         updateStyles();
 
         Lampa.Listener.follow('full', function (e) {
             if ((e.type === 'complite' || e.type === 'complete') && e.data.movie) {
                 var card = e.data.movie;
-                var cachedData = runtimeLogoCache[card.id];
+                var now = Date.now();
+                var cachedData = cache_33378765[card.id];
 
-                if (cachedData) {
+                // Перевірка наявності та свіжості кешу (3 хв)
+                if (cachedData && (now - cachedData.timestamp < CACHE_LIFETIME)) {
                     renderCombinedTitle(cachedData.uk_title, cachedData.full_data);
                 } else {
                     var type = card.first_air_date ? "tv" : "movie";
@@ -288,9 +237,11 @@
 
                         var uk = found ? (found.data.title || found.data.name) : (card.title || card.name);
                         
-                        runtimeLogoCache[card.id] = { 
+                        // Зберігаємо з міткою часу
+                        cache_33378765[card.id] = { 
                             uk_title: uk, 
-                            full_data: data 
+                            full_data: data,
+                            timestamp: now
                         };
 
                         renderCombinedTitle(uk, data);
