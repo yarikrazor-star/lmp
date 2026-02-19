@@ -47,20 +47,24 @@
                 /* Вікно на 100% екрану */
                 '.wiki-smart-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #121212; z-index: 5000; display: flex; flex-direction: column; overflow: hidden; }' +
                 
-                /* Шапка навігації та кнопка Закрити */
+                /* Шапка навігації */
                 '.wiki-smart-header { padding: 25px 5%; background: #1a1a1a; border-bottom: 1px solid #2a2a2a; display: flex; justify-content: space-between; align-items: center; flex-shrink: 0; box-shadow: 0 4px 15px rgba(0,0,0,0.5); z-index: 2; }' +
-                '.wiki-smart-nav { display: flex; align-items: center; gap: 20px; flex: 1; overflow: hidden; }' +
-                '.wiki-smart-arrow { font-size: 2.5em; color: #555; font-weight: bold; line-height: 1; padding: 0 10px; }' +
-                '.wiki-smart-arrow.active { color: #fff; }' +
-                '.wiki-smart-info { display: flex; flex-direction: column; overflow: hidden; white-space: nowrap; }' +
+                '.wiki-smart-nav { display: flex; align-items: center; gap: 10px; flex: 1; overflow: hidden; }' +
+                
+                /* Стрілки з підтримкою touch */
+                '.wiki-smart-arrow { font-size: 2.5em; color: #444; font-weight: bold; line-height: 1; padding: 0 20px; user-select: none; transition: 0.2s; -webkit-tap-highlight-color: transparent; }' +
+                '.wiki-smart-arrow.active { color: #fff; cursor: pointer; }' +
+                '.wiki-smart-arrow.active:active { transform: scale(0.9); }' +
+                
+                '.wiki-smart-info { display: flex; flex-direction: column; overflow: hidden; white-space: nowrap; padding: 0 10px; }' +
                 '.wiki-smart-type { font-size: 1em; color: #888; text-transform: capitalize; margin-bottom: 5px; }' +
                 '.wiki-smart-title { font-size: 1.6em; color: #fff; font-weight: bold; text-overflow: ellipsis; overflow: hidden; }' +
                 '.wiki-smart-warning { font-size: 0.9em; color: #ffbd2e; margin-top: 6px; font-weight: normal; display: flex; align-items: center; gap: 8px; }' +
                 '.wiki-smart-counter { font-size: 1.3em; color: #666; margin-left: 15px; font-weight: bold; }' +
                 
                 /* Кнопка Закрити */
-                '.wiki-smart-close { width: 55px; height: 55px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 34px; font-weight: bold; color: #aaa; background: #252525; border: 2px solid transparent; cursor: pointer; transition: 0.2s; }' +
-                '.wiki-smart-close.focus { background: #fff; color: #000; border-color: #fff; outline: none; box-shadow: 0 0 15px rgba(255,255,255,0.4); }' +
+                '.wiki-smart-close { width: 55px; height: 55px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 34px; font-weight: bold; color: #aaa; background: #252525; border: 2px solid transparent; cursor: pointer; transition: 0.2s; -webkit-tap-highlight-color: transparent; }' +
+                '.wiki-smart-close.focus, .wiki-smart-close:active { background: #fff; color: #000; border-color: #fff; outline: none; box-shadow: 0 0 15px rgba(255,255,255,0.4); }' +
 
                 /* Контент статті */
                 '.wiki-smart-content { flex: 1; overflow-y: auto; padding: 40px 6% 80px 6%; color: #d0d0d0; line-height: 1.65; font-size: 1.45em; -webkit-overflow-scrolling: touch; word-wrap: break-word; }' +
@@ -71,20 +75,17 @@
                 '.wiki-smart-content p { margin-bottom: 1.2em; text-align: justify; }' +
                 '.wiki-smart-content a { color: #d0d0d0; text-decoration: none; pointer-events: none; border-bottom: 1px dashed #555; }' +
                 
-                /* =========================================
-                   ТАБЛИЦІ (Адаптовані під ТВ, на всю ширину)
-                   ========================================= */
-                /* Загальні таблиці даних (з горизонтальним скролом) */
-                '.wiki-smart-content table { background: #1a1a1a !important; width: 100% !important; margin: 30px 0; border-collapse: collapse; font-size: 0.9em; float: none !important; display: block; overflow-x: auto; border: 1px solid #333; }' +
+                /* ТАБЛИЦІ */
+                '.wiki-smart-content table { background: #1a1a1a !important; width: 100% !important; margin: 30px 0; border-collapse: collapse; font-size: 0.9em; float: none !important; display: block; overflow-x: auto; border: 1px solid #333; -webkit-overflow-scrolling: touch; }' +
                 '.wiki-smart-content table td, .wiki-smart-content table th { border: 1px solid #333; padding: 14px 18px; vertical-align: middle; }' +
                 
-                /* Специфічно для Інфобоксу (головної таблиці збоку) */
+                /* Інфобокс */
                 '.wiki-smart-content .infobox { display: table !important; width: 100% !important; max-width: 100% !important; float: none !important; margin: 0 0 40px 0 !important; }' +
-                '.wiki-smart-content .infobox th { background: #222; width: 30%; text-align: right; color: #aaa; }' + /* Ліва колонка інфобоксу */
-                '.wiki-smart-content .infobox td { text-align: left; }' + /* Права колонка інфобоксу */
-                '.wiki-smart-content .infobox img { max-width: 350px !important; height: auto; display: block; margin: 10px auto; border-radius: 8px; }' + /* Постери по центру */
+                '.wiki-smart-content .infobox th { background: #222; width: 30%; text-align: right; color: #aaa; }' +
+                '.wiki-smart-content .infobox td { text-align: left; }' +
+                '.wiki-smart-content .infobox img { max-width: 350px !important; height: auto; display: block; margin: 10px auto; border-radius: 8px; }' +
                 
-                /* Приховуємо зайві технічні блоки Вікіпедії */
+                /* Технічне сміття Вікіпедії */
                 '.wiki-smart-content .mw-empty-elt, .wiki-smart-content .hatnote, .wiki-smart-content .ambox, .wiki-smart-content .navbox, .wiki-smart-content .reflist, .wiki-smart-content .reference { display: none; }' +
                 '</style>';
 
@@ -316,6 +317,25 @@
                 closeViewer();
             });
 
+            // Функції перемикання для кліків (touch) та пульта
+            var goLeft = function() {
+                if (currentIndex > 0) {
+                    currentIndex--;
+                    updateUI();
+                }
+            };
+
+            var goRight = function() {
+                if (currentIndex < articles.length - 1) {
+                    currentIndex++;
+                    updateUI();
+                }
+            };
+
+            // Обробники кліків по стрілках
+            viewer.find('.arrow-left').on('click', goLeft);
+            viewer.find('.arrow-right').on('click', goRight);
+
             var updateUI = function() {
                 var item = articles[currentIndex];
                 
@@ -362,18 +382,8 @@
                 down: function() { 
                     viewer.find('.wiki-smart-content').scrollTop(viewer.find('.wiki-smart-content').scrollTop() + 300); 
                 },
-                left: function() {
-                    if (currentIndex > 0) {
-                        currentIndex--;
-                        updateUI();
-                    }
-                },
-                right: function() {
-                    if (currentIndex < articles.length - 1) {
-                        currentIndex++;
-                        updateUI();
-                    }
-                },
+                left: goLeft,
+                right: goRight,
                 back: closeViewer
             });
 
