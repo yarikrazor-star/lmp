@@ -38,10 +38,15 @@
         }
       }
 
-      var hasUkr = ukrPattern.test(title);
+      // Вирізаємо згадки субтитрів (укр суб, ukr sub тощо), щоб вони не давали хибне спрацювання по назві
+      var titleClean = title.replace(/(укр[а-яієґї]*|ukr[a-z]*|ua|ukrainian)[\s\.\,\_\-\|]*(sub|суб)[a-zа-яієґї]*/ig, '')
+                            .replace(/(sub|суб)[a-zа-яієґї]*[\s\.\,\_\-\|]*(укр[а-яієґї]*|ukr[a-z]*|ua|ukrainian)/ig, '');
+
+      var hasUkr = ukrPattern.test(titleClean);
+
       if (!hasUkr && item.ffprobe && Array.isArray(item.ffprobe)) {
         hasUkr = item.ffprobe.some(function(s) {
-          if (s.codec_type !== 'audio') return false;
+          if (s.codec_type !== 'audio') return false; // Субтитри в потоках ігноруються тут
           var l = (s.tags && s.tags.language ? s.tags.language : '').toLowerCase();
           var t = (s.tags && s.tags.title ? s.tags.title : '').toLowerCase();
           return l.indexOf('uk') === 0 || ukrPattern.test(t);
@@ -171,7 +176,6 @@
         var cont = $('.quality-badges-container', renderTarget);
         if (!cont.length) { 
             cont = $('<div class="quality-badges-container"></div>'); 
-            // Вставляємо ВНУТРІШНЬО в рядок рейтингів у кінець
             rateLine.append(cont); 
         }
         Lampa.Parser.get({ search: e.data.movie.title || e.data.movie.name, movie: e.data.movie, page: 1 }, function(res) {
@@ -208,7 +212,7 @@
       box-sizing: border-box; \
     }\
     .qb-text { font-size: 1.1em; font-weight: bold; }\
-    .qb-prefix-icon { height: 1em; width: auto; display: block; }\
+    .qb-prefix-icon { height: 100%; padding: 4px 0; box-sizing: border-box; width: auto; display: block; }\
     \
     .card .qb-unified-block { \
       position: absolute; \
@@ -220,12 +224,12 @@
       gap: 3px; \
     }\
     .card .quality-badge { \
-      padding: 2px 4px; \
-      height: auto; \
+      padding: 0px 4px; \
+      height: 1.6em; \
       background: rgba(0, 0, 0, 0.7); \
       border: 1px solid rgba(255, 255, 255, 0.3); \
     }\
-    .card .qb-text { font-size: 0.8em; }\
-    .card .qb-prefix-icon { height: 0.8em; }\
+    .card .qb-text { font-size: 0.85em; }\
+    .card .qb-prefix-icon { height: 100%; padding: 2px 0; box-sizing: border-box; }\
   </style>');
 })();
