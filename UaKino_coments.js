@@ -1,9 +1,7 @@
-(function () {
+(function() {
     'use strict';
 
-    function CombinedComments() {
-        var _this = this;
-        var isLoading = false;
+    function InlineComments() {
         var proxies = [
             'https://cors.lampa.stream/',
             'https://my-finder.kozak-bohdan.workers.dev/?url=',
@@ -12,324 +10,357 @@
             'https://cors.bwa.workers.dev/'
         ];
 
-        var clean = function (str) {
-            return str ? str.toLowerCase().replace(/[^a-z0-9а-яіїєґ]/g, ' ').replace(/\s+/g, ' ').trim() : '';
-        };
-
-        var checkMatch = function (itemText, tUa, tEn) {
-            var text = clean(itemText);
-            var u = clean(tUa);
-            var e = clean(tEn);
-            return (u && text.indexOf(u) !== -1) || (e && text.indexOf(e) !== -1);
-        };
-
-        var request = function (url, onSuccess, onError, proxyIdx) {
-            proxyIdx = proxyIdx || 0;
-            if (proxyIdx >= proxies.length) {
-                if (onError) onError();
-                return;
-            }
-            $.ajax({
-                url: proxies[proxyIdx] + encodeURIComponent(url),
-                method: 'GET',
-                timeout: 5000,
-                success: function (res) {
-                    if ((res || '').length < 200) request(url, onSuccess, onError, proxyIdx + 1);
-                    else onSuccess(res);
-                },
-                error: function () {
-                    request(url, onSuccess, onError, proxyIdx + 1);
-                }
-            });
-        };
-
-        var parseComments = function (html, sourceName) {
-            var comments = [];
-            var doc = $('<div>' + html + '</div>');
-            var items = doc.find('.comment, div[id^="comment-id-"], .comm-item');
-            var uniqueSignatures = [];
-
-            items.each(function () {
-                var el = $(this);
-                if (el.parents('.comment, div[id^="comment-id-"], .comm-item').length > 0) return;
-
-                var author = el.find('.comm-author, .name, .comment-author, .acc-name, b').first().text().trim();
-                var textEl = el.find('.comm-text, .comment-content, .text, .comment-body, div[id^="comm-id-"]').clone();
-                textEl.find('div, script, style, .comm-good-bad').remove();
-                var text = textEl.text().trim();
-
-                var dateClone = el.clone();
-                dateClone.find('.comm-text, .comment-content, .text, .comment-body, div[id^="comm-id-"]').remove();
-                var date = dateClone.find('.comm-date, .date, .comment-date, .comm-two').text().trim();
-
-                if (date.length > 60) date = '';
-                date = date.replace(/Група:.*?$/i, '').trim();
-
-                if (author && text) {
-                    var signature = author + '|' + text.substring(0, 50);
-                    if (uniqueSignatures.indexOf(signature) === -1) {
-                        uniqueSignatures.push(signature);
-                        comments.push({
-                            author: author + ' (' + sourceName + ')',
-                            date: date,
-                            text: text
-                        });
-                    }
-                }
-            });
-            return comments;
-        };
-
-        var searchSite = function (site, movie, callback) {
-            var titleUa = movie.title || movie.name || '';
-            var titleEn = movie.original_title || movie.original_name || '';
-            var year = parseInt(movie.release_date || movie.first_air_date || '0');
-
-            var steps = [];
-            // Для UaKino обов'язково додаємо рік у перші кроки пошуку
-            if (year) {
-                steps.push(titleUa + ' ' + year);
-                steps.push(titleEn + ' ' + year);
-            }
-            steps.push(titleUa);
-            steps.push(titleEn);
-
-            var performSearch = function (stepIdx) {
-                if (stepIdx >= steps.length) {
-                    callback([]);
-                    return;
-                }
-
-                var query = steps[stepIdx];
-                if (!query || query.trim().length < 2) return performSearch(stepIdx + 1);
-
-                var searchUrl = site.base + site.search + encodeURIComponent(query);
-
-                request(searchUrl, function (html) {
-                    var foundUrl = '';
-                    var doc = $('<div>' + html + '</div>');
-                    var items = doc.find(site.selector).slice(0, 5);
-
-                    items.each(function () {
-                        if (foundUrl) return;
-                        var item = $(this);
-                        var link = item.find(site.linkSelector).first();
-                        if (!link.length && item.is('a')) link = item;
-                        var href = link.attr('href');
-                        
-                        // Перевірка відповідності назви
-                        if (checkMatch(item.text(), titleUa, titleEn) && href) {
-                            foundUrl = href;
-                        }
-                    });
-
-                    if (foundUrl) {
-                        if (foundUrl.indexOf('http') !== 0) foundUrl = site.base + (foundUrl.indexOf('/') === 0 ? '' : '/') + foundUrl;
-                        request(foundUrl, function (pageHtml) {
-                            if (site.name === 'UAFlix') {
-                                if (pageHtml.indexOf('Виявлено помилку') !== -1 || 
-                                    pageHtml.indexOf('Гості не мають доступу') !== -1) {
-                                    callback([]);
-                                    return;
-                                }
-                            }
-                            callback(parseComments(pageHtml, site.name));
-                        }, function () { performSearch(stepIdx + 1); });
-                    } else { performSearch(stepIdx + 1); }
-                }, function () { performSearch(stepIdx + 1); });
-            };
-            performSearch(0);
-        };
-
-        this.init = function () {
-            Lampa.Listener.follow('full', function (e) {
-                if (e.type === 'complite') {
-                    var render = e.object.activity.render();
-                    setTimeout(function () {
-                        _this.renderButton(e, render);
-                    }, 150);
-                }
-            });
-            this.addStyles();
-        };
-
-        this.addStyles = function () {
-            var css = `
-                .uk-comments-btn { display: flex !important; align-items: center; justify-content: center; }
-                .uk-comments-btn > img { width: 1.8em; height: 1.8em; object-fit: contain; filter: grayscale(100%) brightness(2); } 
-                .uk-comments-btn.focus > img { filter: none; }
-                .uk-comments-btn > span { display: none; margin-left: 0.6em; }
-                .uk-comments-btn.focus > span { display: inline-block; }
-                
-                .uk-comments-layer { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 2000; display: flex; align-items: center; justify-content: center; backdrop-filter: blur(8px); }
-                .uk-comments-modal { width: 95%; height: 90%; background: #1a1a1a; border-radius: 12px; display: flex; flex-direction: column; overflow: hidden; box-shadow: 0 0 60px rgba(0,0,0,1); border: 1px solid #333; }
-                
-                .uk-comments-head { padding: 25px 30px; font-size: 1.8em; font-weight: bold; border-bottom: 2px solid #333; background: #222; color: #fff; display: flex; justify-content: space-between; align-items: center; flex-shrink: 0; }
-                .uk-comments-list { padding: 20px; overflow-y: auto; flex-grow: 1; position: relative; scroll-behavior: smooth; }
-                
-                .uk-comment-item { background: rgba(255,255,255,0.03); border-radius: 8px; padding: 25px; margin-bottom: 15px; border: 2px solid transparent; }
-                .uk-comment-item.focus { background: #fff; transform: scale(1.01); border-color: #fff; }
-                .uk-comment-item.focus .uk-comment-author, .uk-comment-item.focus .uk-comment-text, .uk-comment-item.focus .uk-comment-meta { color: #000 !important; }
-                
-                .uk-comment-meta { display: flex; justify-content: space-between; margin-bottom: 12px; color: #888; font-size: 0.9em; }
-                .uk-comment-author { color: #ff9500; font-weight: bold; font-size: 1.1em; }
-                .uk-comment-text { font-size: 1.3em; line-height: 1.6; color: #eee; white-space: pre-wrap; }
-                
-                .uk-no-comments { text-align: center; padding: 100px 0; color: #777; font-size: 1.8em; }
-                .uk-close-btn { font-size: 0.9em; padding: 12px 30px; border-radius: 8px; cursor: pointer; background: rgba(255,255,255,0.1); color: #fff; border: 2px solid transparent; }
-                .uk-close-btn.focus { background: #e50914; color: #fff; border-color: #fff; }
-            `;
-            if (!$('#uk-comments-style').length) $('head').append('<style id="uk-comments-style">' + css + '</style>');
-        };
-
-        this.renderButton = function (e, render) {
-            var buttons_container = render.find('.full-start-new__buttons, .full-start__buttons');
-            if (!buttons_container.length || render.find('.uk-comments-btn').length) return;
-
-            var btn = $('<div class="full-start__button selector uk-comments-btn">' +
-                '<img src="https://yarikrazor-star.github.io/lmp/coment.svg">' +
-                '<span>Коментарі</span>' +
-                '</div>');
-
-            btn.on('hover:enter click', function () {
-                if (!isLoading) _this.loadComments(e.data.movie);
-            });
-
-            var neighbors = buttons_container.find('.selector');
-            if (neighbors.length >= 2) btn.insertAfter(neighbors.eq(1));
-            else buttons_container.append(btn);
-
-            // Зберігаємо фокус на Play при старті
-            var current = Lampa.Controller.enabled();
-            if (current && current.name === 'full_start') {
-                Lampa.Controller.collectionSet(buttons_container);
-                var firstBtn = buttons_container.find('.selector').first();
-                if (firstBtn.length) Lampa.Controller.collectionFocus(firstBtn[0], buttons_container);
-            }
-        };
-
-        this.loadComments = function (movie) {
-            isLoading = true;
-            Lampa.Noty.show('Пошук коментарів...');
-
-            var results = { uakino: [], uaflix: [] };
-            var completed = 0;
-            var uaflixFinished = false;
-
-            var checkDone = function () {
-                completed++;
-                if (completed >= 2) {
-                    isLoading = false;
-                    var combined = [];
-                    var maxLen = Math.max(results.uakino.length, results.uaflix.length);
-                    for (var i = 0; i < maxLen; i++) {
-                        if (results.uakino[i]) combined.push(results.uakino[i]);
-                        if (results.uaflix[i]) combined.push(results.uaflix[i]);
-                    }
-                    _this.showModal(combined, movie.title || movie.name);
-                }
-            };
-
-            // UaKino
-            searchSite({
-                name: 'UaKino',
-                base: 'https://uakino.best',
-                search: '/index.php?do=search&subaction=search&story=',
-                selector: 'div.movie-item, .shortstory',
-                linkSelector: 'a.movie-title, a.full-movie, .poster > a',
-                yearCheck: true
-            }, movie, function (comments) {
-                results.uakino = comments;
-                checkDone();
-            });
-
-            // UAFlix з таймаутом 3с
-            var uaflixTimer = setTimeout(function() {
-                if (!uaflixFinished) {
-                    uaflixFinished = true;
-                    results.uaflix = [];
-                    checkDone();
-                }
-            }, 3000);
-
-            searchSite({
-                name: 'UAFlix',
-                base: 'https://uaflix.net',
-                search: '/index.php?do=search&subaction=search&story=',
-                selector: '.video-item, .sres-wrap, article.shortstory',
-                linkSelector: 'a',
-                yearCheck: false
-            }, movie, function (comments) {
-                if (!uaflixFinished) {
-                    uaflixFinished = true;
-                    clearTimeout(uaflixTimer);
-                    results.uaflix = comments;
-                    checkDone();
-                }
-            });
-        };
-
-        this.showModal = function (comments, title) {
-            var prev_controller = Lampa.Controller.enabled().name;
-            var modal = $(
-                '<div class="uk-comments-layer">' +
-                '<div class="uk-comments-modal">' +
-                '<div class="uk-comments-head">' +
-                '<span>' + title + ' (' + comments.length + ')</span>' +
-                '<div class="uk-close-btn selector">✕ Закрити</div>' +
-                '</div>' +
-                '<div class="uk-comments-list"></div>' +
-                '</div>' +
-                '</div>'
-            );
-            var list = modal.find('.uk-comments-list');
-            var closeBtn = modal.find('.uk-close-btn');
-
-            if (comments.length === 0) list.append('<div class="uk-no-comments">Коментарів не знайдено.</div>');
-            else {
-                comments.forEach(function (c) {
-                    list.append('<div class="uk-comment-item selector"><div class="uk-comment-meta"><span class="uk-comment-author">' + c.author + '</span><span>' + c.date + '</span></div><div class="uk-comment-text">' + c.text + '</div></div>');
+        var network = {
+            clean: function(str) { return str ? str.toLowerCase().replace(/[^a-z0-9а-яіїєґ]/g, ' ').replace(/\s+/g, ' ').trim() : ''; },
+            check: function(itemText, tUa, tEn) {
+                var text = this.clean(itemText);
+                var u = this.clean(tUa);
+                var e = this.clean(tEn);
+                return (u && text.indexOf(u) !== -1) || (e && text.indexOf(e) !== -1);
+            },
+            req: function(url, onSuccess, onError, proxyIdx) {
+                proxyIdx = proxyIdx || 0;
+                if (proxyIdx >= proxies.length) { if (onError) onError(); return; }
+                $.ajax({
+                    url: proxies[proxyIdx] + encodeURIComponent(url),
+                    method: 'GET',
+                    timeout: 5000,
+                    success: function(res) {
+                        if ((res || '').length < 200) network.req(url, onSuccess, onError, proxyIdx + 1);
+                        else onSuccess(res);
+                    },
+                    error: function() { network.req(url, onSuccess, onError, proxyIdx + 1); }
                 });
             }
+        };
 
-            $('body').append(modal);
-            var close = function () { modal.remove(); Lampa.Controller.toggle(prev_controller); };
-            closeBtn.on('hover:enter click', close);
-
-            var scrollToFocus = function(el) {
-                if (!el) return;
-                var offset = el.offsetTop - list[0].offsetTop - (list.height() / 3);
-                list.stop().animate({ scrollTop: offset }, 200);
-            };
-
-            Lampa.Controller.add('combined_comments', {
-                toggle: function () {
-                    Lampa.Controller.collectionSet(modal);
-                    Lampa.Controller.collectionFocus(closeBtn[0], modal);
-                },
-                up: function () {
-                    var focused = modal.find('.focus');
-                    if (focused.hasClass('uk-comment-item')) {
-                        var prev = focused.prev('.selector');
-                        if (prev.length) { Lampa.Controller.collectionFocus(prev[0], list); scrollToFocus(prev[0]); }
-                        else Lampa.Controller.collectionFocus(closeBtn[0], modal);
+        var parser = {
+            parse: function(html, source) {
+                var list = [];
+                var doc = $('<div>' + html + '</div>');
+                var items = doc.find('.comment, div[id^="comment-id-"], .comm-item');
+                var signs = [];
+                items.each(function() {
+                    var el = $(this);
+                    if (el.parents('.comment, div[id^="comment-id-"], .comm-item').length > 0) return;
+                    var author = el.find('.comm-author, .name, .comment-author, .acc-name, b').first().text().trim();
+                    var textEl = el.find('.comm-text, .comment-content, .text, .comment-body, div[id^="comm-id-"]').clone();
+                    textEl.find('div, script, style, .comm-good-bad').remove();
+                    var text = textEl.text().trim();
+                    var dateEl = el.clone();
+                    dateEl.find('.comm-text, .comment-content, .text, .comment-body, div[id^="comm-id-"]').remove();
+                    var date = dateEl.find('.comm-date, .date, .comment-date, .comm-two').text().trim();
+                    if (date.length > 60) date = '';
+                    date = date.replace(/Група:.*?$/i, '').trim();
+                    if (author && text) {
+                        var sign = author + '|' + text.substring(0, 50);
+                        if (signs.indexOf(sign) === -1) {
+                            signs.push(sign);
+                            list.push({ author: author + ' (' + source + ')', date: date, text: text });
+                        }
                     }
-                },
-                down: function () {
-                    var focused = modal.find('.focus');
-                    if (focused.hasClass('uk-close-btn')) {
-                        var first = list.find('.selector').first();
-                        if (first.length) { Lampa.Controller.collectionFocus(first[0], list); list.scrollTop(0); }
-                    } else {
-                        var next = focused.next('.selector');
-                        if (next.length) { Lampa.Controller.collectionFocus(next[0], list); scrollToFocus(next[0]); }
-                    }
-                },
-                back: close
+                });
+                return list;
+            }
+        };
+
+        var finder = {
+            search: function(site, movie, callback) {
+                var tUa = movie.title || movie.name || '';
+                var tEn = movie.original_title || movie.original_name || '';
+                var year = parseInt(movie.release_date || movie.first_air_date || '0');
+                var steps = [];
+                if (year) { steps.push(tUa + ' ' + year); steps.push(tEn + ' ' + year); }
+                steps.push(tUa); steps.push(tEn);
+                var run = function(idx) {
+                    if (idx >= steps.length) { callback([]); return; }
+                    var q = steps[idx];
+                    if (!q || q.trim().length < 2) return run(idx + 1);
+                    network.req(site.base + site.search + encodeURIComponent(q), function(html) {
+                        var target = '';
+                        var doc = $('<div>' + html + '</div>');
+                        var els = doc.find(site.selector).slice(0, 5);
+                        els.each(function() {
+                            if (target) return;
+                            var it = $(this);
+                            var lnk = it.find(site.linkSelector).first();
+                            if (!lnk.length && it.is('a')) lnk = it;
+                            var href = lnk.attr('href');
+                            if (network.check(it.text(), tUa, tEn) && href) target = href;
+                        });
+                        if (target) {
+                            if (target.indexOf('http') !== 0) target = site.base + (target.indexOf('/') === 0 ? '' : '/') + target;
+                            network.req(target, function(page) {
+                                if (site.name === 'UAFlix' && (page.indexOf('Виявлено помилку') !== -1 || page.indexOf('Гості не мають доступу') !== -1)) callback([]);
+                                else callback(parser.parse(page, site.name));
+                            }, function() { run(idx + 1); });
+                        } else { run(idx + 1); }
+                    }, function() { run(idx + 1); });
+                };
+                run(0);
+            }
+        };
+
+        var fetchedComments = [];
+        var observer = null;
+        var focusApplied = false;
+
+        this.adaptFontSize = function(cardNode) {
+            var textEl = cardNode.find('.uk-comment-text')[0];
+            if (!textEl) return;
+            textEl.style.fontSize = '1.4em';
+            if (!cardNode.hasClass('is-expanded')) return;
+            var maxH = window.innerHeight * 0.75;
+            var currentSize = 1.4;
+            while (cardNode[0].scrollHeight > maxH && currentSize > 0.7) {
+                currentSize -= 0.05;
+                textEl.style.fontSize = currentSize + 'em';
+            }
+        };
+
+        this.init = function() {
+            var _this = this;
+            var style = document.createElement('style');
+            style.innerHTML = `
+                .uk-comments-slider {
+                    display: flex;
+                    overflow-x: auto;
+                    padding: 20px 5px 50px 5px; 
+                    gap: 20px;
+                    scrollbar-width: none; 
+                    align-items: stretch;
+                    scroll-behavior: smooth;
+                    width: 100%;
+                }
+                .uk-comments-slider::-webkit-scrollbar { display: none; }
+                
+                .uk-comment-card {
+                    flex: 0 0 500px;
+                    width: 500px;
+                    height: auto;
+                    background: rgba(255,255,255,0.08);
+                    border-radius: 16px;
+                    padding: 22px;
+                    box-sizing: border-box;
+                    border: 2px solid transparent;
+                    transition: none !important;
+                    display: flex;
+                    flex-direction: column;
+                    overflow: hidden;
+                    position: relative;
+                    box-shadow: none !important;
+                }
+                
+                .uk-comment-card.is-expanded {
+                    flex: 0 0 750px !important;
+                    width: 750px !important;
+                    max-width: 75vw !important;
+                    max-height: 75vh !important;
+                    background: rgba(255,255,255,0.22);
+                    z-index: 100;
+                    box-shadow: none !important;
+                }
+
+                .uk-comment-card.focus {
+                    background: rgba(255,255,255,0.12);
+                    border-color: #fff;
+                }
+                
+                .uk-comment-text {
+                    font-size: 1.4em;
+                    color: #ffffff;            
+                    line-height: 1.4;
+                    word-wrap: break-word;
+                    display: -webkit-box;
+                    -webkit-line-clamp: 5;
+                    -webkit-box-orient: vertical;
+                    overflow: hidden;
+                    text-overflow: ellipsis;
+                    margin-bottom: 15px;
+                }
+
+                .uk-comment-card.is-expanded .uk-comment-text {
+                    display: block;
+                    overflow: visible;
+                    -webkit-line-clamp: unset;
+                }
+                
+                .uk-comment-footer {
+                    margin-top: auto;
+                    display: flex;
+                    justify-content: space-between;
+                    align-items: center;
+                    border-top: 1px solid rgba(255,255,255,0.25);
+                    padding-top: 12px;
+                    pointer-events: none;
+                }
+                .uk-comment-author { font-size: 0.9em; color: #e0e0e0; font-weight: bold; display: flex; align-items: center; }
+                .uk-comment-date { font-size: 0.85em; color: #e0e0e0; }
+
+                .uk-comment-author img {
+                    height: 1.25em;
+                    margin-left: 8px;
+                    vertical-align: middle;
+                    display: inline-block;
+                }
+
+                .uk-comments-slider .full-review-add {
+                    flex: 0 0 250px !important;
+                    margin: 0 !important;
+                    display: flex !important;
+                    align-items: center;
+                    justify-content: center;
+                    background: rgba(255,255,255,0.05) !important;
+                    border-radius: 16px !important;
+                    border: 2px solid transparent !important;
+                    height: auto !important;
+                    min-height: 200px;
+                    order: 999;
+                }
+                .uk-comments-slider .full-review-add.focus {
+                    background: rgba(255,255,255,0.15) !important;
+                    border-color: #fff !important;
+                }
+            `;
+            document.head.appendChild(style);
+
+            Lampa.Listener.follow('full', function(e) {
+                if (e.type === 'complite') { _this.destroy(); _this.fetch(e.data.movie); }
+                else if (e.type === 'destroy') { _this.destroy(); }
             });
-            Lampa.Controller.toggle('combined_comments');
+
+            Lampa.Controller.listener.follow('focus', function(e) {
+                var expanded = $('.uk-comment-card.is-expanded');
+                if (expanded.length && expanded[0] !== e.target) {
+                    var lastExpanded = expanded;
+                    lastExpanded.removeClass('is-expanded');
+                    _this.adaptFontSize(lastExpanded); 
+                    _this.refreshScroll();
+                }
+            });
+        };
+
+        this.refreshScroll = function() {
+            var mainScroll = $('.scroll').data('iscroll');
+            if (mainScroll) mainScroll.refresh();
+        };
+
+        this.destroy = function() {
+            fetchedComments = [];
+            focusApplied = false;
+            if (observer) { observer.disconnect(); observer = null; }
+            $('.my-custom-comments-wrapper').remove();
+        };
+        
+        this.fetch = function(movie) {
+            var _this = this;
+            var data = { ua: [], fl: [] };
+            var done = 0;
+            var finish = function() {
+                done++;
+                if (done >= 2) {
+                    var all = [];
+                    var max = Math.max(data.ua.length, data.fl.length);
+                    for (var i = 0; i < max; i++) {
+                        if (data.ua[i]) all.push(data.ua[i]);
+                        if (data.fl[i]) all.push(data.fl[i]);
+                    }
+                    if (all.length > 0) { fetchedComments = all; _this.startObserver(); }
+                }
+            };
+            finder.search({ name: 'UaKino', base: 'https://uakino.best', search: '/index.php?do=search&subaction=search&story=', selector: 'div.movie-item, .shortstory', linkSelector: 'a.movie-title, a.full-movie, .poster > a' }, movie, function(res) { data.ua = res; finish(); });
+            var timer = setTimeout(function() { if (done < 1) { data.fl = []; finish(); } }, 3000);
+            finder.search({ name: 'UAFlix', base: 'https://uaflix.net', search: '/index.php?do=search&subaction=search&story=', selector: '.video-item, .sres-wrap, article.shortstory', linkSelector: 'a' }, movie, function(res) { clearTimeout(timer); data.fl = res; finish(); });
+        };
+
+        this.startObserver = function() {
+            var _this = this;
+            _this.inject(); 
+            observer = new MutationObserver(function(mutations) {
+                for (var i = 0; i < mutations.length; i++) {
+                    if (mutations[i].addedNodes.length) {
+                        _this.inject();
+                        break;
+                    }
+                }
+            });
+            observer.observe(document.body, { childList: true, subtree: true });
+        };
+
+        this.inject = function() {
+            var _this = this;
+            var addBlock = $('.full-review-add');
+            
+            if (!addBlock.length || $('.uk-comments-slider').find('.full-review-add').length) return;
+            if (fetchedComments.length === 0) return;
+            if ($('.my-custom-comments-wrapper').length) return;
+
+            var wrapper = $('<div class="my-custom-comments-wrapper" style="flex-basis: 100%; width: 100%; order: -1; margin-bottom: 30px; padding: 0 5px;"></div>');
+            var slider = $('<div class="uk-comments-slider"></div>');
+
+            fetchedComments.forEach(function(comment) {
+                var card = $('<div class="uk-comment-card selector"></div>');
+                card.append('<div class="uk-comment-text">' + comment.text + '</div>');
+                
+                var authorHtml = comment.author;
+                authorHtml = authorHtml.replace('(UaKino)', '<img src="https://yarikrazor-star.github.io/lmp/uak.png">');
+                authorHtml = authorHtml.replace('(UAFlix)', '<img src="https://yarikrazor-star.github.io/lmp/uaf.png">');
+
+                card.append('<div class="uk-comment-footer"><div class="uk-comment-author">' + authorHtml + '</div><div class="uk-comment-date">' + comment.date + '</div></div>');
+
+                card.on('hover:focus', function() {
+                    var otherExpanded = $('.uk-comment-card.is-expanded').not(this);
+                    if(otherExpanded.length) {
+                        otherExpanded.removeClass('is-expanded');
+                        _this.adaptFontSize(otherExpanded);
+                    }
+                    if (!$(this).hasClass('is-expanded')) {
+                        this.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+                    }
+                    _this.refreshScroll();
+                });
+
+                card.on('hover:enter', function() {
+                    var cardNode = $(this);
+                    var otherExpanded = $('.uk-comment-card.is-expanded').not(cardNode);
+                    if(otherExpanded.length) {
+                        otherExpanded.removeClass('is-expanded');
+                        _this.adaptFontSize(otherExpanded);
+                    }
+                    cardNode.toggleClass('is-expanded');
+                    _this.adaptFontSize(cardNode);
+                    if (cardNode.hasClass('is-expanded')) {
+                        cardNode[0].scrollIntoView({ behavior: 'instant', block: 'center', inline: 'center' });
+                    }
+                    _this.refreshScroll();
+                });
+
+                slider.append(card);
+            });
+
+            var originalParent = addBlock.parent();
+            slider.append(addBlock);
+            wrapper.append(slider);
+            originalParent.prepend(wrapper);
+            originalParent.css({ 'flex-wrap': 'wrap', 'display': 'flex' });
+
+            // Реєстрація колекції для стабільного фокусу
+            Lampa.Controller.toggle('content'); 
+            Lampa.Controller.collectionSet(originalParent);
+
+            setTimeout(function() { 
+                if (!focusApplied) {
+                    var firstCard = slider.find('.uk-comment-card').first();
+                    if (firstCard.length) {
+                        Lampa.Controller.focus(firstCard[0]);
+                        focusApplied = true;
+                    }
+                }
+            }, 300);
         };
     }
 
-    if (window.Lampa) new CombinedComments().init();
+    if (window.Lampa) {
+        new InlineComments().init();
+    }
 })();
