@@ -70,8 +70,23 @@
                 var tEn = movie.original_title || movie.original_name || '';
                 var year = parseInt(movie.release_date || movie.first_air_date || '0');
                 var steps = [];
-                if (year) { steps.push(tUa + ' ' + year); steps.push(tEn + ' ' + year); }
-                steps.push(tUa); steps.push(tEn);
+                
+                if (site.name === 'UaKino') {
+                    if (year) { 
+                        steps.push(tUa + ' ' + year); 
+                        steps.push(tEn + ' ' + year); 
+                    } else {
+                        steps.push(tUa); 
+                        steps.push(tEn);
+                    }
+                } else if (site.name === 'UAFlix') {
+                    steps.push(tUa); 
+                    steps.push(tEn);
+                } else {
+                    if (year) { steps.push(tUa + ' ' + year); steps.push(tEn + ' ' + year); }
+                    steps.push(tUa); steps.push(tEn);
+                }
+
                 var run = function(idx) {
                     if (idx >= steps.length) { callback([]); return; }
                     var q = steps[idx];
@@ -91,8 +106,18 @@
                         if (target) {
                             if (target.indexOf('http') !== 0) target = site.base + (target.indexOf('/') === 0 ? '' : '/') + target;
                             network.req(target, function(page) {
-                                if (site.name === 'UAFlix' && (page.indexOf('Виявлено помилку') !== -1 || page.indexOf('Гості не мають доступу') !== -1)) callback([]);
-                                else callback(parser.parse(page, site.name));
+                                if (site.name === 'UAFlix') {
+                                    if (page.indexOf('Виявлено помилку') !== -1 || page.indexOf('Гості не мають доступу') !== -1) {
+                                        return callback([]);
+                                    }
+                                    if (year) {
+                                        var yearRegex = new RegExp('Рік виходу:[\\s\\S]{0,150}?' + year, 'i');
+                                        if (!yearRegex.test(page)) {
+                                            return run(idx + 1);
+                                        }
+                                    }
+                                }
+                                callback(parser.parse(page, site.name));
                             }, function() { run(idx + 1); });
                         } else { run(idx + 1); }
                     }, function() { run(idx + 1); });
@@ -221,6 +246,24 @@
                     background: rgba(255,255,255,0.15) !important;
                     border-color: #fff !important;
                 }
+
+                @media (orientation: portrait), (max-width: 768px) {
+                    .uk-comment-card {
+                        flex: 0 0 85vw !important;
+                        width: 85vw !important;
+                        aspect-ratio: 1 / 1;
+                        min-height: 300px;
+                    }
+                    .uk-comment-card.is-expanded {
+                        flex: 0 0 92vw !important;
+                        width: 92vw !important;
+                        max-width: 92vw !important;
+                        aspect-ratio: auto;
+                    }
+                    .uk-comment-text {
+                        -webkit-line-clamp: 8;
+                    }
+                }
             `;
             document.head.appendChild(style);
 
@@ -344,7 +387,6 @@
             originalParent.prepend(wrapper);
             originalParent.css({ 'flex-wrap': 'wrap', 'display': 'flex' });
 
-            // Реєстрація колекції для стабільного фокусу
             Lampa.Controller.toggle('content'); 
             Lampa.Controller.collectionSet(originalParent);
 
