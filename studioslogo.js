@@ -150,7 +150,7 @@
                 brightness = (r * 299 + g * 587 + b * 114) / 1000;
                 if (brightness < 50) darkPixels++;
             }
-            if (totalPixels > 0 && (darkPixels / totalPixels) * 100 > 75) {
+            if (totalPixels > 0 && (darkPixels / totalPixels) * 100 > 85) {
                 img.style.filter = 'brightness(0) invert(1)';
             }
         } catch (e) {}
@@ -256,3 +256,4 @@
     if (window.appready) startPlugin();
     else Lampa.Listener.follow("app", function (e) { if (e.type === "ready") startPlugin(); });
 })();
+
