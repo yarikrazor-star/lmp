@@ -71,22 +71,16 @@
                 '.wiki-smart-loader { display: flex; justify-content: center; align-items: center; height: 100%; font-size: 1.3em; color: #888; }' +
                 
                 /* Форматування тексту */
-                '.wiki-smart-content h1, .wiki-smart-content h2, .wiki-smart-content h3 { color: #fff; border-bottom: 1px solid #333; margin-top: 1.5em; padding-bottom: 0.3em; font-weight: normal; }' +
-                '.wiki-smart-content p { margin-bottom: 1.2em; text-align: justify; }' +
+                '.wiki-smart-content h1, .wiki-smart-content h2, .wiki-smart-content h3 { color: #fff; border-bottom: 1px solid #333; margin-top: 1em; padding-bottom: 0.3em; font-weight: normal; }' +
+                '.wiki-smart-content p { margin-bottom: 0.8em; text-align: justify; }' +
                 '.wiki-smart-content a { color: #d0d0d0; text-decoration: none; pointer-events: none; border-bottom: 1px dashed #555; }' +
                 
-                /* ТАБЛИЦІ */
-                '.wiki-smart-content table { background: #1a1a1a !important; width: 100% !important; margin: 30px 0; border-collapse: collapse; font-size: 0.9em; float: none !important; display: block; overflow-x: auto; border: 1px solid #333; -webkit-overflow-scrolling: touch; }' +
-                '.wiki-smart-content table td, .wiki-smart-content table th { border: 1px solid #333; padding: 14px 18px; vertical-align: middle; }' +
+                /* Стилі для витягнутого тексту з таблиць */
+                '.wiki-smart-extracted-table { margin: 1.2em 0; padding: 15px 20px; background: #1a1a1a; border-left: 4px solid #444; border-radius: 0 8px 8px 0; color: #bbb; font-size: 0.9em; line-height: 1.7; }' +
+                '.wiki-smart-extracted-img { max-width: 350px !important; height: auto; display: block; margin: 20px auto; border-radius: 8px; box-shadow: 0 4px 15px rgba(0,0,0,0.6); }' +
                 
-                /* Інфобокс */
-                '.wiki-smart-content .infobox { display: table !important; width: 100% !important; max-width: 100% !important; float: none !important; margin: 0 0 40px 0 !important; }' +
-                '.wiki-smart-content .infobox th { background: #222; width: 30%; text-align: right; color: #aaa; }' +
-                '.wiki-smart-content .infobox td { text-align: left; }' +
-                '.wiki-smart-content .infobox img { max-width: 350px !important; height: auto; display: block; margin: 10px auto; border-radius: 8px; }' +
-                
-                /* Технічне сміття Вікіпедії */
-                '.wiki-smart-content .mw-empty-elt, .wiki-smart-content .hatnote, .wiki-smart-content .ambox, .wiki-smart-content .navbox, .wiki-smart-content .reflist, .wiki-smart-content .reference { display: none; }' +
+                /* Технічне сміття Вікіпедії (більшість видаляється скриптом, але залишаємо для підстраховки) */
+                '.wiki-smart-content .mw-empty-elt, .wiki-smart-content .hatnote, .wiki-smart-content .ambox, .wiki-smart-content .navbox, .wiki-smart-content .reflist, .wiki-smart-content .reference, .wiki-smart-content .noprint { display: none !important; }' +
                 '</style>';
 
             if (!$('style#wiki-smart-style').length) $('head').append('<style id="wiki-smart-style">' + style + '</style>');
@@ -317,7 +311,6 @@
                 closeViewer();
             });
 
-            // Функції перемикання для кліків (touch) та пульта
             var goLeft = function() {
                 if (currentIndex > 0) {
                     currentIndex--;
@@ -332,7 +325,6 @@
                 }
             };
 
-            // Обробники кліків по стрілках
             viewer.find('.arrow-left').on('click', goLeft);
             viewer.find('.arrow-right').on('click', goRight);
 
@@ -356,14 +348,70 @@
                     url: apiUrl,
                     timeout: 10000,
                     success: function(htmlContent) {
+                        // 1. Попередня обробка: ВИДАЛЕННЯ ТЕГІВ, ЯКІ ЛАМАЛИ НАВІГАЦІЮ (base)
+                        htmlContent = htmlContent.replace(/<base[^>]*>/gi, '');
+                        htmlContent = htmlContent.replace(/<meta[^>]*>/gi, '');
                         htmlContent = htmlContent.replace(/src="\/\//g, 'src="https://');
                         htmlContent = htmlContent.replace(/href="\//g, 'href="https://wikipedia.org/');
                         htmlContent = htmlContent.replace(/srcset=/g, 'data-srcset=');
                         htmlContent = htmlContent.replace(/style="[^"]*"/g, ""); 
                         htmlContent = htmlContent.replace(/bgcolor="[^"]*"/g, "");
                         
-                        contentDiv.html(htmlContent);
-                        contentDiv.find('script, style, link').remove();
+                        // 2. Створення віртуального DOM для безпечної та точної очистки
+                        var tempDiv = $('<div>').html(htmlContent);
+                        
+                        // 3. Видалення непотрібних блоків (сміття вікіпедії)
+                        tempDiv.find('script, style, link, title, base, meta, .mw-empty-elt, .hatnote, .ambox, .navbox, .reflist, .reference, .noprint, .infobox-header').remove();
+
+                        // 4. ПОВНЕ ПЕРЕТВОРЕННЯ ТАБЛИЦЬ НА ЗВИЧАЙНИЙ ТЕКСТ
+                        tempDiv.find('table').each(function() {
+                            var table = $(this);
+                            var contentHtml = '';
+
+                            // Зберігаємо важливі картинки з таблиці (наприклад, постери)
+                            table.find('img').each(function() {
+                                var img = $(this);
+                                if (img.attr('width') > 50 || img.attr('height') > 50 || !img.attr('width')) {
+                                    contentHtml += '<img src="' + img.attr('src') + '" class="wiki-smart-extracted-img">';
+                                }
+                            });
+
+                            // Витягуємо текст рядок за рядком
+                            var textBlocks = [];
+                            table.find('tr').each(function() {
+                                var rowText = [];
+                                $(this).children('th, td').each(function() {
+                                    // Отримуємо чистий текст (видаляючи зайві пробіли/переноси)
+                                    var cellText = $(this).text().replace(/\s+/g, ' ').trim();
+                                    if (cellText && cellText !== '-' && cellText.length > 0) {
+                                        rowText.push(cellText);
+                                    }
+                                });
+                                
+                                if (rowText.length > 0) {
+                                    textBlocks.push(rowText.join(' — ')); // Об'єднуємо комірки через тире
+                                }
+                            });
+
+                            // Формуємо красивий блок тексту замість таблиці
+                            if (textBlocks.length > 0) {
+                                contentHtml += '<div class="wiki-smart-extracted-table">' + textBlocks.join('<br>') + '</div>';
+                            }
+
+                            // Видаляємо оригінальну таблицю, залишаючи лише наш текст та картинки
+                            table.replaceWith(contentHtml);
+                        });
+
+                        // 5. ОЧИЩЕННЯ ВІД "ВЕЛИКИХ ДІРОК" (видалення порожніх абзаців)
+                        tempDiv.find('p, h1, h2, h3, h4, div').each(function() {
+                            // Якщо блок не має тексту і в ньому немає картинок — видаляємо його
+                            if ($.trim($(this).text()) === '' && $(this).find('img').length === 0 && !$(this).hasClass('wiki-smart-extracted-table')) {
+                                $(this).remove();
+                            }
+                        });
+
+                        // 6. Вставка обробленого контенту на сторінку
+                        contentDiv.html(tempDiv.html());
                     },
                     error: function() {
                         contentDiv.html('<div class="wiki-smart-loader" style="color:#d9534f;">Помилка завантаження статті.</div>');
