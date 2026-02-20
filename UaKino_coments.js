@@ -107,7 +107,8 @@
                             if (target.indexOf('http') !== 0) target = site.base + (target.indexOf('/') === 0 ? '' : '/') + target;
                             network.req(target, function(page) {
                                 if (site.name === 'UAFlix') {
-                                    if (page.indexOf('Виявлено помилку') !== -1 || page.indexOf('Гості не мають доступу') !== -1) {
+                                    // Перевірка на помилку UAFlix (оновлено)
+                                    if (page.indexOf('Увага! Виявлено помилку') !== -1 || page.indexOf('Виявлено помилку') !== -1 || page.indexOf('Гості не мають доступу') !== -1) {
                                         return callback([]);
                                     }
                                     if (year) {
@@ -299,6 +300,7 @@
             var _this = this;
             var data = { ua: [], fl: [] };
             var done = 0;
+            
             var finish = function() {
                 done++;
                 if (done >= 2) {
@@ -311,9 +313,31 @@
                     if (all.length > 0) { fetchedComments = all; _this.startObserver(); }
                 }
             };
-            finder.search({ name: 'UaKino', base: 'https://uakino.best', search: '/index.php?do=search&subaction=search&story=', selector: 'div.movie-item, .shortstory', linkSelector: 'a.movie-title, a.full-movie, .poster > a' }, movie, function(res) { data.ua = res; finish(); });
-            var timer = setTimeout(function() { if (done < 1) { data.fl = []; finish(); } }, 3000);
-            finder.search({ name: 'UAFlix', base: 'https://uaflix.net', search: '/index.php?do=search&subaction=search&story=', selector: '.video-item, .sres-wrap, article.shortstory', linkSelector: 'a' }, movie, function(res) { clearTimeout(timer); data.fl = res; finish(); });
+
+            // UaKino - запускаємо стандартно
+            finder.search({ name: 'UaKino', base: 'https://uakino.best', search: '/index.php?do=search&subaction=search&story=', selector: 'div.movie-item, .shortstory', linkSelector: 'a.movie-title, a.full-movie, .poster > a' }, movie, function(res) { 
+                data.ua = res; 
+                finish(); 
+            });
+
+            // UAFlix - запускаємо з тайм-аутом 2.5 секунди
+            var flixCompleted = false;
+            var flixTimeout = setTimeout(function() {
+                if (!flixCompleted) {
+                    flixCompleted = true;
+                    data.fl = []; // Час вийшов, ігноруємо UAFlix
+                    finish();
+                }
+            }, 2500); // 2.5 секунди
+
+            finder.search({ name: 'UAFlix', base: 'https://uaflix.net', search: '/index.php?do=search&subaction=search&story=', selector: '.video-item, .sres-wrap, article.shortstory', linkSelector: 'a' }, movie, function(res) { 
+                if (!flixCompleted) {
+                    clearTimeout(flixTimeout);
+                    flixCompleted = true;
+                    data.fl = res; 
+                    finish(); 
+                }
+            });
         };
 
         this.startObserver = function() {
