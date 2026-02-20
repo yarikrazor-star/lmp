@@ -328,7 +328,7 @@
                     data.fl = []; // Час вийшов, ігноруємо UAFlix
                     finish();
                 }
-            }, 2500); // 2.5 секунди
+            }, 3500); // 3.5 секунди
 
             finder.search({ name: 'UAFlix', base: 'https://uaflix.net', search: '/index.php?do=search&subaction=search&story=', selector: '.video-item, .sres-wrap, article.shortstory', linkSelector: 'a' }, movie, function(res) { 
                 if (!flixCompleted) {
@@ -420,3 +420,4 @@
         new InlineComments().init();
     }
 })();
+
