@@ -387,18 +387,8 @@
             originalParent.prepend(wrapper);
             originalParent.css({ 'flex-wrap': 'wrap', 'display': 'flex' });
 
-            Lampa.Controller.toggle('content'); 
+            // Оновлюємо колекцію елементів для контролера, але НЕ викликаємо Lampa.Controller.focus
             Lampa.Controller.collectionSet(originalParent);
-
-            setTimeout(function() { 
-                if (!focusApplied) {
-                    var firstCard = slider.find('.uk-comment-card').first();
-                    if (firstCard.length) {
-                        Lampa.Controller.focus(firstCard[0]);
-                        focusApplied = true;
-                    }
-                }
-            }, 300);
         };
     }
 
