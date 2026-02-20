@@ -107,7 +107,6 @@
                             if (target.indexOf('http') !== 0) target = site.base + (target.indexOf('/') === 0 ? '' : '/') + target;
                             network.req(target, function(page) {
                                 if (site.name === 'UAFlix') {
-                                    // Перевірка на помилку UAFlix (оновлено)
                                     if (page.indexOf('Увага! Виявлено помилку') !== -1 || page.indexOf('Виявлено помилку') !== -1 || page.indexOf('Гості не мають доступу') !== -1) {
                                         return callback([]);
                                     }
@@ -129,7 +128,8 @@
 
         var fetchedComments = [];
         var observer = null;
-        var focusApplied = false;
+        var currentStatus = '';
+        var isSearchFinished = false;
 
         this.adaptFontSize = function(cardNode) {
             var textEl = cardNode.find('.uk-comment-text')[0];
@@ -154,16 +154,33 @@
                     padding: 20px 5px 50px 5px; 
                     gap: 20px;
                     scrollbar-width: none; 
-                    align-items: stretch;
+                    align-items: flex-start; /* Дозволяє карткам бути різної висоти */
                     scroll-behavior: smooth;
                     width: 100%;
                 }
                 .uk-comments-slider::-webkit-scrollbar { display: none; }
                 
+                .uk-status-card {
+                    width: 100%;
+                    background: rgba(255,255,255,0.08);
+                    border-radius: 16px;
+                    padding: 22px;
+                    box-sizing: border-box;
+                    border: 2px solid transparent;
+                    text-align: center;
+                    color: #fff;
+                    font-size: 1.3em;
+                    margin: 15px 5px 30px 5px;
+                    transition: border-color 0.3s ease;
+                }
+                .uk-status-card.focus {
+                    background: rgba(255,255,255,0.12);
+                    border-color: #fff;
+                }
+
                 .uk-comment-card {
                     flex: 0 0 500px;
                     width: 500px;
-                    height: auto;
                     background: rgba(255,255,255,0.08);
                     border-radius: 16px;
                     padding: 22px;
@@ -241,6 +258,7 @@
                     border: 2px solid transparent !important;
                     height: auto !important;
                     min-height: 200px;
+                    align-self: stretch;
                     order: 999;
                 }
                 .uk-comments-slider .full-review-add.focus {
@@ -252,14 +270,11 @@
                     .uk-comment-card {
                         flex: 0 0 85vw !important;
                         width: 85vw !important;
-                        aspect-ratio: 1 / 1;
-                        min-height: 300px;
                     }
                     .uk-comment-card.is-expanded {
                         flex: 0 0 92vw !important;
                         width: 92vw !important;
                         max-width: 92vw !important;
-                        aspect-ratio: auto;
                     }
                     .uk-comment-text {
                         -webkit-line-clamp: 8;
@@ -291,7 +306,8 @@
 
         this.destroy = function() {
             fetchedComments = [];
-            focusApplied = false;
+            isSearchFinished = false;
+            currentStatus = '';
             if (observer) { observer.disconnect(); observer = null; }
             $('.my-custom-comments-wrapper').remove();
         };
@@ -301,8 +317,17 @@
             var data = { ua: [], fl: [] };
             var done = 0;
             
+            isSearchFinished = false;
+            currentStatus = 'Пошук коментарів UaKino...';
+            _this.startObserver(); 
+            
             var finish = function() {
                 done++;
+                if (done === 1) {
+                    currentStatus = 'Пошук коментарів UAFlix...';
+                    _this.inject();
+                }
+
                 if (done >= 2) {
                     var all = [];
                     var max = Math.max(data.ua.length, data.fl.length);
@@ -310,25 +335,30 @@
                         if (data.ua[i]) all.push(data.ua[i]);
                         if (data.fl[i]) all.push(data.fl[i]);
                     }
-                    if (all.length > 0) { fetchedComments = all; _this.startObserver(); }
+                    
+                    fetchedComments = all;
+                    isSearchFinished = true;
+
+                    if (all.length === 0) {
+                        currentStatus = 'Коментарі не знайдено';
+                    }
+                    _this.inject(); 
                 }
             };
 
-            // UaKino - запускаємо стандартно
             finder.search({ name: 'UaKino', base: 'https://uakino.best', search: '/index.php?do=search&subaction=search&story=', selector: 'div.movie-item, .shortstory', linkSelector: 'a.movie-title, a.full-movie, .poster > a' }, movie, function(res) { 
                 data.ua = res; 
                 finish(); 
             });
 
-            // UAFlix - запускаємо з тайм-аутом 2.5 секунди
             var flixCompleted = false;
             var flixTimeout = setTimeout(function() {
                 if (!flixCompleted) {
                     flixCompleted = true;
-                    data.fl = []; // Час вийшов, ігноруємо UAFlix
+                    data.fl = []; 
                     finish();
                 }
-            }, 3500); // 3.5 секунди
+            }, 3500); 
 
             finder.search({ name: 'UAFlix', base: 'https://uaflix.net', search: '/index.php?do=search&subaction=search&story=', selector: '.video-item, .sres-wrap, article.shortstory', linkSelector: 'a' }, movie, function(res) { 
                 if (!flixCompleted) {
@@ -344,11 +374,18 @@
             var _this = this;
             _this.inject(); 
             observer = new MutationObserver(function(mutations) {
+                var shouldInject = false;
                 for (var i = 0; i < mutations.length; i++) {
                     if (mutations[i].addedNodes.length) {
-                        _this.inject();
-                        break;
+                        // Щоб уникнути зависання, ігноруємо зміни, які плагін робить сам всередині свого блоку
+                        if ($(mutations[i].target).closest('.my-custom-comments-wrapper').length === 0) {
+                            shouldInject = true;
+                            break;
+                        }
                     }
+                }
+                if (shouldInject) {
+                    _this.inject();
                 }
             });
             observer.observe(document.body, { childList: true, subtree: true });
@@ -358,61 +395,96 @@
             var _this = this;
             var addBlock = $('.full-review-add');
             
-            if (!addBlock.length || $('.uk-comments-slider').find('.full-review-add').length) return;
-            if (fetchedComments.length === 0) return;
-            if ($('.my-custom-comments-wrapper').length) return;
-
-            var wrapper = $('<div class="my-custom-comments-wrapper" style="flex-basis: 100%; width: 100%; order: -1; margin-bottom: 30px; padding: 0 5px;"></div>');
-            var slider = $('<div class="uk-comments-slider"></div>');
-
-            fetchedComments.forEach(function(comment) {
-                var card = $('<div class="uk-comment-card selector"></div>');
-                card.append('<div class="uk-comment-text">' + comment.text + '</div>');
-                
-                var authorHtml = comment.author;
-                authorHtml = authorHtml.replace('(UaKino)', '<img src="https://yarikrazor-star.github.io/lmp/uak.png">');
-                authorHtml = authorHtml.replace('(UAFlix)', '<img src="https://yarikrazor-star.github.io/lmp/uaf.png">');
-
-                card.append('<div class="uk-comment-footer"><div class="uk-comment-author">' + authorHtml + '</div><div class="uk-comment-date">' + comment.date + '</div></div>');
-
-                card.on('hover:focus', function() {
-                    var otherExpanded = $('.uk-comment-card.is-expanded').not(this);
-                    if(otherExpanded.length) {
-                        otherExpanded.removeClass('is-expanded');
-                        _this.adaptFontSize(otherExpanded);
-                    }
-                    if (!$(this).hasClass('is-expanded')) {
-                        this.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
-                    }
-                    _this.refreshScroll();
-                });
-
-                card.on('hover:enter', function() {
-                    var cardNode = $(this);
-                    var otherExpanded = $('.uk-comment-card.is-expanded').not(cardNode);
-                    if(otherExpanded.length) {
-                        otherExpanded.removeClass('is-expanded');
-                        _this.adaptFontSize(otherExpanded);
-                    }
-                    cardNode.toggleClass('is-expanded');
-                    _this.adaptFontSize(cardNode);
-                    if (cardNode.hasClass('is-expanded')) {
-                        cardNode[0].scrollIntoView({ behavior: 'instant', block: 'center', inline: 'center' });
-                    }
-                    _this.refreshScroll();
-                });
-
-                slider.append(card);
-            });
+            if (!addBlock.length) return; 
+            
+            if ($('.uk-comments-slider').length) return;
 
             var originalParent = addBlock.parent();
-            slider.append(addBlock);
-            wrapper.append(slider);
-            originalParent.prepend(wrapper);
-            originalParent.css({ 'flex-wrap': 'wrap', 'display': 'flex' });
+            var wrapper = $('.my-custom-comments-wrapper');
 
-            // Оновлюємо колекцію елементів для контролера, але НЕ викликаємо Lampa.Controller.focus
-            Lampa.Controller.collectionSet(originalParent);
+            if (!wrapper.length) {
+                wrapper = $('<div class="my-custom-comments-wrapper" style="flex-basis: 100%; width: 100%; order: -1; padding: 0 5px;"></div>');
+                originalParent.prepend(wrapper);
+                originalParent.css({ 'flex-wrap': 'wrap', 'display': 'flex' });
+            }
+
+            // --- Фаза відображення статусу ---
+            if (!isSearchFinished || (isSearchFinished && fetchedComments.length === 0)) {
+                var statusCard = wrapper.find('.uk-status-card');
+                if (!statusCard.length) {
+                    statusCard = $('<div class="uk-status-card selector"></div>');
+                    wrapper.append(statusCard);
+                }
+                
+                // КРИТИЧНЕ ВИПРАВЛЕННЯ ВІД ЗАВИСАННЯ:
+                // Змінюємо текст тільки тоді, коли він дійсно інший
+                if (statusCard.text() !== currentStatus) {
+                    statusCard.text(currentStatus);
+                }
+                return;
+            }
+
+            // --- Фаза виводу коментарів ---
+            if (isSearchFinished && fetchedComments.length > 0) {
+                var isStatusCardFocused = wrapper.find('.uk-status-card').hasClass('focus');
+                var isAddBlockFocused = addBlock.hasClass('focus');
+                var currentFocus = $('.focus').last();
+
+                wrapper.empty(); // Видаляємо картку стану
+                var slider = $('<div class="uk-comments-slider"></div>');
+
+                fetchedComments.forEach(function(comment) {
+                    var card = $('<div class="uk-comment-card selector"></div>');
+                    card.append('<div class="uk-comment-text">' + comment.text + '</div>');
+                    
+                    var authorHtml = comment.author;
+                    authorHtml = authorHtml.replace('(UaKino)', '<img src="https://yarikrazor-star.github.io/lmp/uak.png">');
+                    authorHtml = authorHtml.replace('(UAFlix)', '<img src="https://yarikrazor-star.github.io/lmp/uaf.png">');
+
+                    card.append('<div class="uk-comment-footer"><div class="uk-comment-author">' + authorHtml + '</div><div class="uk-comment-date">' + comment.date + '</div></div>');
+
+                    card.on('hover:focus', function() {
+                        var otherExpanded = $('.uk-comment-card.is-expanded').not(this);
+                        if(otherExpanded.length) {
+                            otherExpanded.removeClass('is-expanded');
+                            _this.adaptFontSize(otherExpanded);
+                        }
+                        if (!$(this).hasClass('is-expanded')) {
+                            this.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+                        }
+                        _this.refreshScroll();
+                    });
+
+                    card.on('hover:enter', function() {
+                        var cardNode = $(this);
+                        var otherExpanded = $('.uk-comment-card.is-expanded').not(cardNode);
+                        if(otherExpanded.length) {
+                            otherExpanded.removeClass('is-expanded');
+                            _this.adaptFontSize(otherExpanded);
+                        }
+                        cardNode.toggleClass('is-expanded');
+                        _this.adaptFontSize(cardNode);
+                        if (cardNode.hasClass('is-expanded')) {
+                            cardNode[0].scrollIntoView({ behavior: 'instant', block: 'center', inline: 'center' });
+                        }
+                        _this.refreshScroll();
+                    });
+
+                    slider.append(card);
+                });
+
+                slider.append(addBlock);
+                wrapper.append(slider);
+
+                // Відновлюємо фокус (звертаючись до [0], щоб уникнути помилки dispatchEvent)
+                if (isStatusCardFocused && slider.find('.uk-comment-card').length) {
+                    Lampa.Controller.focus(slider.find('.uk-comment-card')[0]);
+                } else if (isAddBlockFocused && addBlock.length) {
+                    Lampa.Controller.focus(addBlock[0]);
+                } else if (currentFocus.length && currentFocus[0] !== document.body) {
+                    Lampa.Controller.focus(currentFocus[0]);
+                }
+            }
         };
     }
 
@@ -420,4 +492,3 @@
         new InlineComments().init();
     }
 })();
-
