@@ -41,7 +41,7 @@
                 }
 
                 // Якщо 80% і більше пікселів темні — інвертуємо в білий
-                if (totalPixels > 0 && (darkPixels / totalPixels) >= 0.8) {
+                if (totalPixels > 0 && (darkPixels / totalPixels) >= 0.85) {
                     img.style.filter += " brightness(0) invert(1)";
                 }
             } catch (e) {
@@ -273,3 +273,4 @@
 
     if (!window.logoplugin_smart) startPlugin();
 })();
+
