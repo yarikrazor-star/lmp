@@ -136,22 +136,22 @@
     {
       base: 'lampa_ua',
       name: 'LampaUA (bazarnetua)',
-      settings: { url: 'http://jackettua.mooo.com', key: 'ua', parser_torrent_type: 'jackett' }
+      settings: { url: 'https://parserbridge.lampame.v6.rocks/http://jackettua.mooo.com', key: 'ua', parser_torrent_type: 'jackett' }
     },
     {
       base: 'spawnum_duckdns_org_49117',
       name: 'SpawnUA (Toloka/Mazepa Only)',
-      settings: { url: 'http://spawnum.duckdns.org:49117', key: '2', parser_torrent_type: 'jackett' }
+      settings: { url: 'https://parserbridge.lampame.v6.rocks/http://spawnum.duckdns.org:49117', key: '2', parser_torrent_type: 'jackett' }
     }, 
     {
       base: 'spawnum_duckdns_org_59117',
       name: 'SpawnUA (All Trackers)',
-      settings: { url: 'http://spawnum.duckdns.org:59117', key: '2', parser_torrent_type: 'jackett' }
+      settings: { url: 'https://parserbridge.lampame.v6.rocks/http://spawnum.duckdns.org:59117', key: '2', parser_torrent_type: 'jackett' }
     },
     {
       base: 'jiket',
       name: 'Jacblack (SNG/11Track)',
-      settings: { url: 'http://jacblack.ru:9117', key: '', parser_torrent_type: 'jackett' }
+      settings: { url: 'https://parserbridge.lampame.v6.rocks/http://jacblack.ru:9117', key: '', parser_torrent_type: 'jackett' }
     },
     {
       base: 'jacred_xyz',
@@ -166,7 +166,7 @@
     {
       base: 'otlampa',
       name: 'Всяке різне 6',
-      settings: { url: 'http://87.120.84.218:9117', key: '333', parser_torrent_type: 'jackett' }
+      settings: { url: 'https://parserbridge.lampame.v6.rocks/http://87.120.84.218:9117', key: '333', parser_torrent_type: 'jackett' }
     },
     {
       base: 'jacred_torrservera',
