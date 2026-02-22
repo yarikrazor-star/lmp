@@ -63,10 +63,16 @@
                 container.style.transition = "none";
                 container.style.boxSizing = "";
                 container.style.opacity = "1";
+                
+                // Вирівнювання контейнера для вертикального екрана
+                if (window.innerHeight > window.innerWidth) {
+                    container.style.textAlign = "center";
+                } else {
+                    container.style.textAlign = "left";
+                }
             }
 
             img.style.marginTop = "0";
-            img.style.marginLeft = "0";
             img.style.marginBottom = "0";
             img.style.paddingTop = PADDING_TOP_EM + "em";
             img.style.paddingBottom = PADDING_BOTTOM_EM + "em";
@@ -95,16 +101,28 @@
             img.style.boxSizing = "border-box";
             img.style.display = "block";
             img.style.objectFit = "contain";
-            img.style.objectPosition = "left bottom";
+            
+            // ЛОГІКА ВИРІВНЮВАННЯ ЛОГОТИПА
+            if (window.innerHeight > window.innerWidth) {
+                img.style.objectPosition = "center";
+                img.style.marginLeft = "auto";
+                img.style.marginRight = "auto";
+            } else {
+                img.style.objectPosition = "left bottom";
+                img.style.marginLeft = "0";
+                img.style.marginRight = "0";
+            }
+
             img.style.opacity = "1";
             img.style.transition = "none";
             
-            // Тінь для кращої видимості на світлих фонах
-            img.style.filter = "drop-shadow(3px 3px 3px rgba(0, 0, 0, 0.5))";
+            // Тінь + Насиченість
+            var saturation = Lampa.Storage.get("logo_saturation", "1");
+            img.style.filter = "drop-shadow(3px 3px 3px rgba(0, 0, 0, 0.5)) saturate(" + saturation + ")";
         }
 
         Lampa.Listener.follow("full", function (e) {
-            if (e.type == "complite" && Lampa.Storage.get("logo_glav") != "1") {
+            if (e.type == "complite") {
                 var data = e.data.movie;
                 var type = data.name ? "tv" : "movie";
 
@@ -113,13 +131,22 @@
                 var details_elem = e.object.activity.render().find(".full-start-new__details");
                 var dom_title = title_elem[0];
 
+                // Автоматичне вирівнювання тексту назви, якщо лого ще не завантажилось або вимкнено
+                if (window.innerHeight > window.innerWidth) {
+                    title_elem.css("text-align", "center");
+                } else {
+                    title_elem.css("text-align", "left");
+                }
+
+                if (Lampa.Storage.get("logo_glav") == "1") return;
+
                 var user_lang = Lampa.Storage.get("logo_lang", "");
                 var target_lang = user_lang ? user_lang : Lampa.Storage.get("language");
                 var size = Lampa.Storage.get("logo_size", "original");
 
                 var cache_key = getCacheKey(type, data.id, target_lang);
 
-                // Переміщення інформації (дати, рейтингу) в деталі, якщо активовано лого
+                // Переміщення інформації (дати, рейтингу) в деталі
                 if (head_elem.length && details_elem.length && details_elem.find(".logo-moved-head").length === 0) {
                     var content = head_elem.html();
                     if (content) {
@@ -133,14 +160,14 @@
                     if (save_to_cache && !DISABLE_CACHE) Lampa.Storage.set(cache_key, img_url);
                     
                     var img = new Image();
-                    img.crossOrigin = "anonymous"; // Дозволяє читати пікселі
+                    img.crossOrigin = "anonymous";
                     img.src = img_url;
 
                     var start_text_height = dom_title ? dom_title.getBoundingClientRect().height : 0;
                     
                     img.onload = function () {
                         applyFinalStyles(img, dom_title, start_text_height);
-                        analyzeAndInvert(img); // Перевірка кольору
+                        analyzeAndInvert(img); 
                         title_elem.empty().append(img);
                         title_elem.css({ opacity: "1", transition: "none" });
                     };
@@ -241,6 +268,18 @@
         field: { name: "Якість (Розмір)", description: "Роздільна здатність файлу зображення" }
     });
 
+    // Пункт "Насиченість"
+    Lampa.SettingsApi.addParam({
+        component: LOGO_COMPONENT,
+        param: { 
+            name: "logo_saturation", 
+            type: "select", 
+            values: { "1": "100%", "0.75": "75%", "0.5": "50%", "0.25": "25%", "0": "0% (Ч/Б)" }, 
+            default: "1" 
+        },
+        field: { name: "Насиченість", description: "Рівень насиченості кольорів логотипа" }
+    });
+
     Lampa.SettingsApi.addParam({
         component: LOGO_COMPONENT,
         param: { name: "logo_use_text_height", type: "trigger", default: false },
@@ -273,4 +312,3 @@
 
     if (!window.logoplugin_smart) startPlugin();
 })();
-
