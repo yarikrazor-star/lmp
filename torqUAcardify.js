@@ -1,15 +1,24 @@
 (function () {
   'use strict';
 
+  var COMPONENT_NAME = 'uator_settings';
+  var STORAGE_PREFIX = 'uator_';
+
   var icons = {
     ua: 'https://yarikrazor-star.github.io/lmp/ua.svg',
     none: 'https://yarikrazor-star.github.io/lmp/dontknow.svg',
     top: 'https://yarikrazor-star.github.io/lmp/stream.svg',
     seeds: 'https://yarikrazor-star.github.io/lmp/upload.svg',
-    audio: 'https://yarikrazor-star.github.io/lmp/zvuk.svg'
+    audio: 'https://yarikrazor-star.github.io/lmp/zvuk.svg',
+    dv: 'https://upload.wikimedia.org/wikipedia/commons/0/03/Dolby_Vision_2021_logo.svg',
+    hdr: 'https://yarikrazor-star.github.io/lmp/hdr.svg'
   };
 
   var resultsCache = {};
+
+  function getSetting(name, def) {
+    return Lampa.Storage.get(STORAGE_PREFIX + name, def);
+  }
 
   function getResolutionLabel(width) {
     var w = parseInt(width || 0);
@@ -38,7 +47,6 @@
         }
       }
 
-      // Вирізаємо згадки субтитрів (укр суб, ukr sub тощо), щоб вони не давали хибне спрацювання по назві
       var titleClean = title.replace(/(укр[а-яієґї]*|ukr[a-z]*|ua|ukrainian)[\s\.\,\_\-\|]*(sub|суб)[a-zа-яієґї]*/ig, '')
                             .replace(/(sub|суб)[a-zа-яієґї]*[\s\.\,\_\-\|]*(укр[а-яієґї]*|ukr[a-z]*|ua|ukrainian)/ig, '');
 
@@ -46,7 +54,7 @@
 
       if (!hasUkr && item.ffprobe && Array.isArray(item.ffprobe)) {
         hasUkr = item.ffprobe.some(function(s) {
-          if (s.codec_type !== 'audio') return false; // Субтитри в потоках ігноруються тут
+          if (s.codec_type !== 'audio') return false;
           var l = (s.tags && s.tags.language ? s.tags.language : '').toLowerCase();
           var t = (s.tags && s.tags.title ? s.tags.title : '').toLowerCase();
           return l.indexOf('uk') === 0 || ukrPattern.test(t);
@@ -124,22 +132,42 @@
     container.find('.qb-unified-block').remove();
     if (!data) return;
 
-    var block = $('<div class="qb-unified-block"></div>');
+    var size = getSetting('rating_size', '0.8em');
+    var saturation = getSetting('saturation', '100%');
+    
+    var block = $('<div class="qb-unified-block" style="font-size: '+size+'"></div>');
+    
     if (!data.ukr) {
-      block.append('<div class="quality-badge"><img src="'+icons.none+'" class="qb-prefix-icon"><span class="qb-text">UA не знайдено</span></div>');
+        var iconHtml = (saturation === '0%') ? '<span class="qb-text-icon">UA</span>' : '<img src="'+icons.none+'" class="qb-prefix-icon" style="filter: saturate('+saturation+')">';
+        block.append('<div class="quality-badge qb-not-found">' + iconHtml + '<span class="qb-text">немає</span></div>');
     } else {
       var items = [
-        {i: icons.ua, t: data.bestRes},
+        {i: icons.ua, t: data.bestRes, type: 'ua'},
         {i: icons.top, t: data.popRes},
         {i: icons.seeds, t: data.popSeeds}
       ];
       if (data.tech.audio) items.push({i: icons.audio, t: data.tech.audio});
-      if (data.tech.dv) items.push({i: null, t: 'Dolby Vision'});
-      if (data.tech.hdr) items.push({i: null, t: 'HDR'});
+      if (data.tech.dv) items.push({i: icons.dv, t: '', type: 'dv'});
+      if (data.tech.hdr) items.push({i: icons.hdr, t: '', type: 'hdr'});
       
       items.forEach(function(it) {
-        var icon = it.i ? '<img src="'+it.i+'" class="qb-prefix-icon">' : '';
-        block.append('<div class="quality-badge">' + icon + '<span class="qb-text">' + it.t + '</span></div>');
+        var iconHtml = '';
+        if (it.i) {
+            var style = 'filter: saturate('+saturation+');';
+            
+            if (it.type === 'ua' && saturation === '0%') {
+                iconHtml = '<span class="qb-text-icon">UA</span>';
+            } else {
+                if (it.type === 'dv') {
+                    style = 'filter: brightness(0) invert(1);';
+                } else if (it.type === 'hdr') {
+                    style = 'filter: grayscale(1);';
+                }
+                iconHtml = '<img src="'+it.i+'" class="qb-prefix-icon" style="'+style+'">';
+            }
+        }
+        var textHtml = it.t ? '<span class="qb-text">' + it.t + '</span>' : '';
+        block.append('<div class="quality-badge">' + iconHtml + textHtml + '</div>');
       });
     }
     container.append(block);
@@ -167,69 +195,154 @@
   }
 
   Lampa.Listener.follow('full', function(e) {
-    if (e.type !== 'complite') return;
+    if (e.type !== 'complite' && e.type !== 'complete') return;
     
     var renderTarget = e.object.activity.render();
-    var rateLine = $('.full-start-new__rate-line', renderTarget);
+    var isPortrait = window.innerHeight > window.innerWidth;
     
-    if (rateLine.length) {
-        var cont = $('.quality-badges-container', renderTarget);
-        if (!cont.length) { 
-            cont = $('<div class="quality-badges-container"></div>'); 
-            rateLine.append(cont); 
+    var cont = $('.quality-badges-container', renderTarget);
+    if (!cont.length) { 
+        cont = $('<div class="quality-badges-container"></div>'); 
+        
+        if (isPortrait) {
+            var title = $('.full-start-new__title, .full-start__title', renderTarget);
+            title.after(cont);
+        } else {
+            var rateLine = $('.full-start-new__rate-line, .full-start__rate-line', renderTarget);
+            if (rateLine.length) rateLine.append(cont);
+            else $('.full-start__info', renderTarget).append(cont);
         }
-        Lampa.Parser.get({ search: e.data.movie.title || e.data.movie.name, movie: e.data.movie, page: 1 }, function(res) {
-            if (res && res.Results) render(cont, getBestAndPopular(res.Results, e.data.movie), false);
-        }, function() { });
     }
+
+    Lampa.Parser.get({ search: e.data.movie.title || e.data.movie.name, movie: e.data.movie, page: 1 }, function(res) {
+        if (res && res.Results) render(cont, getBestAndPopular(res.Results, e.data.movie), false);
+    }, function() { });
   });
 
   setInterval(processCards, 2000);
 
+  function setupSettings() {
+    Lampa.SettingsApi.addComponent({ component: COMPONENT_NAME, name: 'Uator' });
+
+    Lampa.SettingsApi.addParam({
+        component: "interface",
+        param: { name: "uator_entry_btn", type: "static" },
+        field: { name: "Uator", description: "Налаштування відображення UA контенту" },
+        onRender: function (item) { item.on("hover:enter", function () { Lampa.Settings.create(COMPONENT_NAME); }); }
+    });
+
+    Lampa.SettingsApi.addParam({
+        component: COMPONENT_NAME,
+        param: { name: "uator_back", type: "static" },
+        field: { name: "Назад", description: "До інтерфейсу" },
+        onRender: function (item) { item.on("hover:enter", function () { Lampa.Settings.create("interface"); }); }
+    });
+
+    Lampa.SettingsApi.addParam({
+        component: COMPONENT_NAME,
+        param: { 
+            name: STORAGE_PREFIX + 'saturation', 
+            type: 'select', 
+            values: { '100%': '100% (Стандарт)', '75%': '75%', '50%': '50%', '25%': '25%', '0%': '0% (Ч/Б)' }, 
+            default: '100%' 
+        },
+        field: { name: 'Насиченість', description: 'Рівень кольоровості іконок' }
+    });
+
+    Lampa.SettingsApi.addParam({
+        component: COMPONENT_NAME,
+        param: { 
+            name: STORAGE_PREFIX + 'rating_size', 
+            type: 'select', 
+            values: { '0.5em': 'XS', '0.8em': 'S', '1.1em': 'M', '1.5em': 'L', '2.0em': 'XL' }, 
+            default: '0.8em' 
+        },
+        field: { name: 'Розмір значків', description: 'Розмір елементів на картці та в описі' }
+    });
+  }
+
+  if (window.Lampa) setupSettings();
+
   $('body').append('<style>\
-    .full-start-new__rate-line { display: flex !important; flex-wrap: wrap !important; align-items: center !important; gap: 8px !important; }\
+    /* Хак для приховування дублювання у головному списку налаштувань */\
+    div[data-component="' + COMPONENT_NAME + '"] { display: none !important; }\
+    \
     .quality-badges-container { \
-        display: inline-flex; \
-        vertical-align: middle; \
-        margin-left: 4px; \
+        display: flex; \
+        align-items: center; \
     }\
     .qb-unified-block { \
         display: flex; \
-        gap: 6px; \
+        flex-wrap: nowrap; \
         align-items: center; \
+        gap: 0.45em; \
+    }\
+    @media screen and (orientation: portrait) { \
+        .quality-badges-container { \
+            width: 100%; \
+            justify-content: center; \
+            display: block !important; \
+            margin: 10px 0; \
+            clear: both; \
+        } \
+        .qb-unified-block { \
+            flex-wrap: wrap; \
+            justify-content: center; \
+            width: 100%; \
+        } \
     }\
     .quality-badge { \
-      display: flex; \
+      display: inline-flex; \
       align-items: center; \
-      gap: 5px; \
+      gap: 0.35em; \
       color: #fff; \
-      padding: 0px 8px; \
-      height: 2.2em; \
-      background: rgba(255, 255, 255, 0.08); \
-      border: 1px solid rgba(255, 255, 255, 0.15); \
-      border-radius: 6px; \
       white-space: nowrap; \
-      box-sizing: border-box; \
+      flex-shrink: 0; \
+      height: 1.1em; \
     }\
-    .qb-text { font-size: 1.1em; font-weight: bold; }\
-    .qb-prefix-icon { height: 100%; padding: 4px 0; box-sizing: border-box; width: auto; display: block; }\
+    .qb-text { font-weight: bold; line-height: 1.1em; height: 1.1em; display: flex; align-items: center; }\
+    .qb-prefix-icon { \
+        height: 1.1em !important; \
+        width: auto; \
+        display: block; \
+        object-fit: contain; \
+        margin: 0; \
+    }\
+    .qb-text-icon { \
+        height: 1.1em !important; \
+        line-height: 1.1em !important; \
+        font-size: 0.85em !important; \
+        font-weight: 900; \
+        display: inline-flex; \
+        align-items: center; \
+        justify-content: center; \
+        background: #fff; \
+        color: #000; \
+        padding: 0 0.25em; \
+        border-radius: 2px; \
+        box-sizing: border-box; \
+        vertical-align: top; \
+    }\
+    .qb-not-found { opacity: 0.6; }\
     \
     .card .qb-unified-block { \
       position: absolute; \
-      top: 5px; \
-      left: 5px; \
+      top: 0.5rem; \
+      left: 0.5rem; \
       z-index: 10; \
       flex-direction: column; \
       align-items: flex-start; \
-      gap: 3px; \
+      gap: 0.2rem; \
+      font-size: 0.7em !important; \
     }\
     .card .quality-badge { \
-      padding: 0px 4px; \
-      height: 1.6em; \
-      background: rgba(0, 0, 0, 0.7); \
-      border: 1px solid rgba(255, 255, 255, 0.3); \
+      background: rgba(0, 0, 0, 0.6); \
+      padding: 2px 4px; \
+      border-radius: 4px; \
+      height: 1em; \
     }\
-    .card .qb-text { font-size: 0.85em; }\
-    .card .qb-prefix-icon { height: 100%; padding: 2px 0; box-sizing: border-box; }\
+    .card .qb-prefix-icon, .card .qb-text-icon { height: 1em !important; }\
+    .card .qb-text { height: 1em; line-height: 1em; }\
   </style>');
+
 })();
