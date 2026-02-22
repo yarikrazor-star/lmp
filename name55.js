@@ -5,6 +5,17 @@
         var CACHE_TTL = 30 * 24 * 60 * 60 * 1000;
         var titleCache = Lampa.Storage.get("title_cache_hybrid_v3") || {};
 
+        // Додаємо стилі для адаптивного вирівнювання
+        var style = '<style>' +
+            '.plugin-hybrid-title { margin-top: 5px; margin-bottom: 5px; width: 100%; position: relative; z-index: 10; text-align: left; }' +
+            '.plugin-hybrid-title__body { line-height: 1.2; font-weight: bold; display: flex; align-items: baseline; flex-wrap: wrap; justify-content: flex-start; }' +
+            '@media screen and (orientation: portrait), screen and (max-width: 767px) {' +
+                '.plugin-hybrid-title { text-align: center !important; }' +
+                '.plugin-hybrid-title__body { justify-content: center !important; }' +
+            '}' +
+        '</style>';
+        $('head').append(style);
+
         // 1. Створення компонента налаштувань
         var SETTINGS_COMPONENT = "hybrid_title_settings";
 
@@ -129,7 +140,6 @@
                     });
                 }
 
-                // Захист від undefined: беремо оригінальну назву з картки або з даних API
                 var originalName = data.original_title || data.original_name || card.original_title || card.original_name || "";
                 var enTitle = data.title || data.name || originalName;
                 var ukTitle = enTitle;
@@ -162,7 +172,6 @@
 
                 renderTitle(ukTitle, enTitle, hasUkrainianLogo, year, countryString);
             }).fail(function() {
-                // Якщо запит не вдався, показуємо хоча б те, що є в об'єкті картки
                 var fallbackTitle = card.title || card.name || card.original_title || "";
                 renderTitle(fallbackTitle, fallbackTitle, false, "", "");
             });
@@ -179,7 +188,6 @@
 
             var displayTitle = (mode === 'smart' && hasLogo) ? enTitle : ukTitle;
             
-            // Фінальна перевірка, щоб ні в якому разі не вивести "undefined" як текст
             if (!displayTitle || displayTitle === "undefined") displayTitle = "";
 
             var sizes = {
@@ -199,17 +207,16 @@
             if (country && country !== "undefined") details.push(country);
             var secondaryInfo = details.length > 0 ? ' • ' + details.join(' • ') : '';
 
-            var html = '<div class="plugin-hybrid-title" style="margin-top: 5px; margin-bottom: 5px; text-align: left; width: 100%; position: relative; z-index: 10;">' +
-                '<div style="line-height: 1.2; font-weight: bold; display: flex; align-items: baseline; flex-wrap: wrap;">' +
+            var html = '<div class="plugin-hybrid-title">' +
+                '<div class="plugin-hybrid-title__body">' +
                     '<span style="font-size: ' + currentSize.title + '; color: #fff; opacity: 0.8;">' + displayTitle + '</span>' + 
-                    '<span style="font-size: ' + currentSize.info + '; color: #fff; opacity: 0.5; margin-left: 3px;">' + secondaryInfo + '</span>' +
+                    '<span style="font-size: ' + currentSize.info + '; color: #fff; opacity: 0.5; margin-left: 6px;">' + secondaryInfo + '</span>' +
                 '</div>' +
            '</div>';
 
-// Використовуємо .after(), щоб він став одразу під оригінальним заголовком
-var target = $(".full-start-new__title", render);
-if(!target.length) target = $(".full-start__title", render);
-target.after(html);
+            var target = $(".full-start-new__title", render);
+            if(!target.length) target = $(".full-start__title", render);
+            target.after(html);
         }
 
         if (!window.hybrid_title_plugin_loaded) {
