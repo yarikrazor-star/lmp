@@ -48,10 +48,12 @@
             min-height: 25px;\
             margin: 0;\
         }\
-        .' + CONTAINER_CLASS + '.bw-mode .custom-rating img {\
-            filter: grayscale(100%);\
+        @media screen and (orientation: portrait) {\
+            .' + CONTAINER_CLASS + ' {\
+                justify-content: center;\
+            }\
         }\
-        .' + CONTAINER_CLASS + '.bw-mode .custom-rating div {\
+        .' + CONTAINER_CLASS + '.is-bw-text .custom-rating div {\
             color: #cccccc !important;\
         }\
         .full-start__rate.custom-rating {\
@@ -95,12 +97,18 @@
     function getRatingSize() { return Lampa.Storage.get('omdb_rating_size', '0.8em'); }
     function getRatingGap() { return Lampa.Storage.get('omdb_rating_gap', '0.5em'); }
     function getRatingMargin() { return Lampa.Storage.get('omdb_rating_margin', '10px'); }
-    function isBWMode() { return Lampa.Storage.get('omdb_rating_bw', false); }
+    function getSaturation() { return Lampa.Storage.get('omdb_rating_saturation', '100%'); }
 
     function createBlock(className, iconUrl, value, color, orderKey) {
         var size = getRatingSize();
-        var order = renderOrder[orderKey] || 50; 
-        return $('<div class="full-start__rate custom-rating ' + className + '" style="font-size: ' + size + '; order: ' + order + ';"><div class="rating-icon-wrap"><img src="' + iconUrl + '" /></div><div style="color: ' + (color || '#fff') + '">' + value + '</div></div>');
+        var order = renderOrder[orderKey] || 50;
+        var sat = getSaturation();
+        var imgStyle = 'filter: saturate(' + sat + ');';
+        
+        return $('<div class="full-start__rate custom-rating ' + className + '" style="font-size: ' + size + '; order: ' + order + ';">\
+            <div class="rating-icon-wrap"><img src="' + iconUrl + '" style="' + imgStyle + '" /></div>\
+            <div style="color: ' + (color || '#fff') + '">' + value + '</div>\
+        </div>');
     }
 
     function addRatingBlock(container, className, iconUrl, rawValue, keyName) {
@@ -188,18 +196,18 @@
             }
         }
 
-        // Оновлюємо стилі при кожному виклику (відступи та Ч/Б)
         var marginVal = getRatingMargin();
+        var sat = getSaturation();
         container.css({
             'gap': getRatingGap(),
             'margin-top': marginVal,
             'margin-bottom': marginVal
         });
 
-        if (isBWMode()) {
-            container.addClass('bw-mode');
+        if (sat === '0%') {
+            container.addClass('is-bw-text');
         } else {
-            container.removeClass('bw-mode');
+            container.removeClass('is-bw-text');
         }
 
         var tmdbVal = movie.vote_average || 0;
@@ -343,8 +351,13 @@
 
         Lampa.SettingsApi.addParam({
             component: COMPONENT_NAME,
-            param: { name: 'omdb_rating_bw', type: 'trigger', default: false },
-            field: { name: 'Чорно-білий режим (Ч/Б)', description: 'Прибрати всі кольори з рейтингів' }
+            param: { 
+                name: 'omdb_rating_saturation', 
+                type: 'select', 
+                values: { '100%': '100% (Стандарт)', '75%': '75%', '50%': '50%', '25%': '25%', '0%': '0% (Ч/Б)' }, 
+                default: '100%' 
+            },
+            field: { name: 'Насиченість', description: 'Рівень кольоровості іконок' }
         });
 
         Lampa.SettingsApi.addParam({
