@@ -2,6 +2,7 @@
     'use strict';
 
     function InlineComments() {
+        // --- 1. Налаштування проксі ---
         var proxies = [
             'https://cors.lampa.stream/',
             'https://my-finder.kozak-bohdan.workers.dev/?url=',
@@ -10,6 +11,7 @@
             'https://cors.bwa.workers.dev/'
         ];
 
+        // --- 2. Мережевий шар ---
         var network = {
             clean: function(str) { return str ? str.toLowerCase().replace(/[^a-z0-9а-яіїєґ]/g, ' ').replace(/\s+/g, ' ').trim() : ''; },
             check: function(itemText, tUa, tEn) {
@@ -34,6 +36,7 @@
             }
         };
 
+        // --- 3. Парсер коментарів ---
         var parser = {
             parse: function(html, source) {
                 var list = [];
@@ -64,6 +67,7 @@
             }
         };
 
+        // --- 4. Пошукова логіка ---
         var finder = {
             search: function(site, movie, callback) {
                 var tUa = movie.title || movie.name || '';
@@ -131,6 +135,7 @@
         var currentStatus = '';
         var isSearchFinished = false;
 
+        // --- 5. Адаптація шрифту ---
         this.adaptFontSize = function(cardNode) {
             var textEl = cardNode.find('.uk-comment-text')[0];
             if (!textEl) return;
@@ -144,33 +149,47 @@
             }
         };
 
+        // --- 6. Стилі та Ініціалізація ---
         this.init = function() {
             var _this = this;
             var style = document.createElement('style');
             style.innerHTML = `
+                .uk-comments-root {
+                    width: 100%;
+                    max-width: 100vw;
+                    overflow: hidden; 
+                    position: relative;
+                    margin-bottom: 20px; /* Відступ від нижнього блоку */
+                    display: block;
+                    clear: both;
+                    z-index: 5;
+                }
+
                 .uk-comments-slider {
                     display: flex;
+                    flex-wrap: nowrap;
                     overflow-x: auto;
-                    padding: 20px 5px 50px 5px; 
+                    padding: 10px 5px 20px 5px; 
                     gap: 20px;
                     scrollbar-width: none; 
-                    align-items: flex-start; /* Дозволяє карткам бути різної висоти */
+                    align-items: flex-start;
                     scroll-behavior: smooth;
                     width: 100%;
+                    box-sizing: border-box;
                 }
                 .uk-comments-slider::-webkit-scrollbar { display: none; }
                 
                 .uk-status-card {
-                    width: 100%;
+                    width: 98%;
                     background: rgba(255,255,255,0.08);
                     border-radius: 16px;
-                    padding: 22px;
+                    padding: 15px;
                     box-sizing: border-box;
                     border: 2px solid transparent;
                     text-align: center;
                     color: #fff;
-                    font-size: 1.3em;
-                    margin: 15px 5px 30px 5px;
+                    font-size: 1.2em;
+                    margin: 0 auto;
                     transition: border-color 0.3s ease;
                 }
                 .uk-status-card.focus {
@@ -181,6 +200,7 @@
                 .uk-comment-card {
                     flex: 0 0 500px;
                     width: 500px;
+                    max-width: 80vw;
                     background: rgba(255,255,255,0.08);
                     border-radius: 16px;
                     padding: 22px;
@@ -192,21 +212,23 @@
                     overflow: hidden;
                     position: relative;
                     box-shadow: none !important;
+                    flex-shrink: 0; 
                 }
                 
                 .uk-comment-card.is-expanded {
                     flex: 0 0 750px !important;
                     width: 750px !important;
-                    max-width: 75vw !important;
-                    max-height: 75vh !important;
+                    max-width: 90vw !important;
+                    max-height: 80vh !important;
                     background: rgba(255,255,255,0.22);
                     z-index: 100;
-                    box-shadow: none !important;
+                    box-shadow: 0 0 20px rgba(0,0,0,0.5) !important;
                 }
 
                 .uk-comment-card.focus {
                     background: rgba(255,255,255,0.12);
                     border-color: #fff;
+                    transform: scale(1.02);
                 }
                 
                 .uk-comment-text {
@@ -245,25 +267,6 @@
                     margin-left: 8px;
                     vertical-align: middle;
                     display: inline-block;
-                }
-
-                .uk-comments-slider .full-review-add {
-                    flex: 0 0 250px !important;
-                    margin: 0 !important;
-                    display: flex !important;
-                    align-items: center;
-                    justify-content: center;
-                    background: rgba(255,255,255,0.05) !important;
-                    border-radius: 16px !important;
-                    border: 2px solid transparent !important;
-                    height: auto !important;
-                    min-height: 200px;
-                    align-self: stretch;
-                    order: 999;
-                }
-                .uk-comments-slider .full-review-add.focus {
-                    background: rgba(255,255,255,0.15) !important;
-                    border-color: #fff !important;
                 }
 
                 @media (orientation: portrait), (max-width: 768px) {
@@ -309,9 +312,10 @@
             isSearchFinished = false;
             currentStatus = '';
             if (observer) { observer.disconnect(); observer = null; }
-            $('.my-custom-comments-wrapper').remove();
+            $('.uk-comments-root').remove();
         };
         
+        // --- 7. Отримання даних ---
         this.fetch = function(movie) {
             var _this = this;
             var data = { ua: [], fl: [] };
@@ -370,6 +374,7 @@
             });
         };
 
+        // --- 8. Спостерігач (Observer) ---
         this.startObserver = function() {
             var _this = this;
             _this.inject(); 
@@ -377,8 +382,7 @@
                 var shouldInject = false;
                 for (var i = 0; i < mutations.length; i++) {
                     if (mutations[i].addedNodes.length) {
-                        // Щоб уникнути зависання, ігноруємо зміни, які плагін робить сам всередині свого блоку
-                        if ($(mutations[i].target).closest('.my-custom-comments-wrapper').length === 0) {
+                        if ($(mutations[i].target).closest('.uk-comments-root').length === 0) {
                             shouldInject = true;
                             break;
                         }
@@ -391,50 +395,70 @@
             observer.observe(document.body, { childList: true, subtree: true });
         };
 
+        // --- 9. Вставка (Inject) та Видалення старого блоку ---
         this.inject = function() {
             var _this = this;
-            var addBlock = $('.full-review-add');
             
-            if (!addBlock.length) return; 
-            
+            // --- ЛОГІКА ВИДАЛЕННЯ ШТАТНОГО БЛОКУ ---
+            // Шукаємо .items-line, який містить заголовок "Коментарі" або кнопку full-review-add
+            $('.items-line').each(function() {
+                var el = $(this);
+                var title = el.find('.items-line__title').text().trim();
+                var hasAddBtn = el.find('.full-review-add').length > 0;
+                
+                if (title === 'Коментарі' || hasAddBtn) {
+                    el.remove();
+                }
+            });
+            // ----------------------------------------
+
             if ($('.uk-comments-slider').length) return;
 
-            var originalParent = addBlock.parent();
-            var wrapper = $('.my-custom-comments-wrapper');
+            // 1. Пошук якоря: full-descr__details, що містить budget/countries/info
+            var targetBlock = null;
+            $('.full-descr__details').each(function() {
+                var el = $(this);
+                // Перевіряємо наявність маркерів всередині блоку
+                if (el.find('.full-descr__info, .full--budget, .full--countries').length > 0) {
+                    targetBlock = el;
+                }
+            });
 
-            if (!wrapper.length) {
-                wrapper = $('<div class="my-custom-comments-wrapper" style="flex-basis: 100%; width: 100%; order: -1; padding: 0 5px;"></div>');
-                originalParent.prepend(wrapper);
-                originalParent.css({ 'flex-wrap': 'wrap', 'display': 'flex' });
+            if (!targetBlock || !targetBlock.length) return; 
+
+            // 2. Створення кореневого контейнера (якщо немає)
+            var root = $('.uk-comments-root');
+            if (!root.length) {
+                root = $('<div class="uk-comments-root"></div>');
+                // Вставка ПЕРЕД блоком details
+                targetBlock.before(root);
             }
 
-            // --- Фаза відображення статусу ---
+            // --- Фаза статусу ---
             if (!isSearchFinished || (isSearchFinished && fetchedComments.length === 0)) {
-                var statusCard = wrapper.find('.uk-status-card');
+                var statusCard = root.find('.uk-status-card');
                 if (!statusCard.length) {
                     statusCard = $('<div class="uk-status-card selector"></div>');
-                    wrapper.append(statusCard);
+                    root.append(statusCard);
                 }
-                
-                // КРИТИЧНЕ ВИПРАВЛЕННЯ ВІД ЗАВИСАННЯ:
-                // Змінюємо текст тільки тоді, коли він дійсно інший
                 if (statusCard.text() !== currentStatus) {
                     statusCard.text(currentStatus);
                 }
                 return;
             }
 
-            // --- Фаза виводу коментарів ---
+            // --- Фаза результатів ---
             if (isSearchFinished && fetchedComments.length > 0) {
-                var isStatusCardFocused = wrapper.find('.uk-status-card').hasClass('focus');
-                var isAddBlockFocused = addBlock.hasClass('focus');
+                var isStatusCardFocused = root.find('.uk-status-card').hasClass('focus');
                 var currentFocus = $('.focus').last();
 
-                wrapper.empty(); // Видаляємо картку стану
+                root.empty(); 
+
                 var slider = $('<div class="uk-comments-slider"></div>');
 
                 fetchedComments.forEach(function(comment) {
                     var card = $('<div class="uk-comment-card selector"></div>');
+                    
                     card.append('<div class="uk-comment-text">' + comment.text + '</div>');
                     
                     var authorHtml = comment.author;
@@ -449,9 +473,9 @@
                             otherExpanded.removeClass('is-expanded');
                             _this.adaptFontSize(otherExpanded);
                         }
-                        if (!$(this).hasClass('is-expanded')) {
-                            this.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
-                        }
+                        
+                        this.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+                        
                         _this.refreshScroll();
                     });
 
@@ -464,6 +488,7 @@
                         }
                         cardNode.toggleClass('is-expanded');
                         _this.adaptFontSize(cardNode);
+                        
                         if (cardNode.hasClass('is-expanded')) {
                             cardNode[0].scrollIntoView({ behavior: 'instant', block: 'center', inline: 'center' });
                         }
@@ -473,14 +498,10 @@
                     slider.append(card);
                 });
 
-                slider.append(addBlock);
-                wrapper.append(slider);
+                root.append(slider);
 
-                // Відновлюємо фокус (звертаючись до [0], щоб уникнути помилки dispatchEvent)
                 if (isStatusCardFocused && slider.find('.uk-comment-card').length) {
                     Lampa.Controller.focus(slider.find('.uk-comment-card')[0]);
-                } else if (isAddBlockFocused && addBlock.length) {
-                    Lampa.Controller.focus(addBlock[0]);
                 } else if (currentFocus.length && currentFocus[0] !== document.body) {
                     Lampa.Controller.focus(currentFocus[0]);
                 }
