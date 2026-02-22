@@ -85,6 +85,28 @@
             }
         });
 
+        // Новий пункт: Насиченість
+        Lampa.SettingsApi.addParam({
+            component: SETTINGS_COMPONENT,
+            param: {
+                name: "studio_logo_saturation",
+                type: "select",
+                values: {
+                    '1': '100%',
+                    '0.75': '75%',
+                    '0.5': '50%',
+                    '0.25': '25%',
+                    '0': '0% (Ч/Б)'
+                },
+                default: '1'
+            },
+            field: { name: "Насиченість", description: "Насиченість кольорів логотипів" },
+            onChange: function (value) {
+                Lampa.Storage.set("studio_logo_saturation", value);
+                updateStyles();
+            }
+        });
+
         Lampa.SettingsApi.addParam({
             component: SETTINGS_COMPONENT,
             param: { name: "studio_logo_clear_cache", type: "static" },
@@ -105,6 +127,7 @@
     function updateStyles() {
         var showBg = Lampa.Storage.get("studio_logo_bg", true);
         var sizeEm = Lampa.Storage.get("studio_logo_size", '1.3');
+        var saturation = Lampa.Storage.get("studio_logo_saturation", '1');
 
         var bgCSS = showBg 
             ? 'background: rgba(255,255,255,0.08) !important; border: 1px solid transparent;' 
@@ -115,10 +138,16 @@
             : 'padding: 5px 0px !important; margin-right: 20px !important; margin-bottom: 0.2em !important;';
 
         var css = 
-            '.rate--studio.studio-logo { align-items: center; vertical-align: middle; ' + layoutCSS + bgCSS + ' border-radius: 8px; transition: all 0.2s ease; height: auto; cursor: pointer; }' +
+            '.rate--studio.studio-logo { align-items: center; vertical-align: middle; ' + layoutCSS + bgCSS + ' border-radius: 8px; transition: all 0.2s ease; height: auto; cursor: pointer; filter: saturate(' + saturation + '); }' +
             '.rate--studio.studio-logo.focus { background: rgba(255,255,255,0.2) !important; border: 1px solid #fff; transform: scale(1.05); }' +
             '.rate--studio.studio-logo img { height: ' + sizeEm + 'em !important; max-width: 200px; width: auto; object-fit: contain; filter: brightness(1) invert(0); transition: filter 0.3s ease; }' +
-            '.studio-logo-text { font-size: 0.8em; font-weight: bold; color: #fff !important; white-space: nowrap; }';
+            '.studio-logo-text { font-size: 0.8em; font-weight: bold; color: #fff !important; white-space: nowrap; }' +
+            
+            // Адаптивність: вирівнювання по центру для вертикальних екранів/телефонів
+            '@media screen and (orientation: portrait), screen and (max-width: 767px) {' +
+                '.plugin-uk-title-combined { align-items: center !important; text-align: center !important; }' +
+                '.studio-logos-container { justify-content: center !important; }' +
+            '}';
 
         var styleEl = $('#' + STYLE_ID);
         if (styleEl.length) {
@@ -256,4 +285,3 @@
     if (window.appready) startPlugin();
     else Lampa.Listener.follow("app", function (e) { if (e.type === "ready") startPlugin(); });
 })();
-
