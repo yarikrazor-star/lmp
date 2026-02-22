@@ -154,15 +154,17 @@
             var _this = this;
             var style = document.createElement('style');
             style.innerHTML = `
+                /* Додаємо властивості, щоб блок сприймався як частина потоку */
                 .uk-comments-root {
                     width: 100%;
                     max-width: 100vw;
                     overflow: hidden; 
                     position: relative;
-                    margin-bottom: 20px; /* Відступ від нижнього блоку */
+                    margin-bottom: 20px; 
                     display: block;
                     clear: both;
                     z-index: 5;
+                    min-height: 100px; /* Резервуємо місце, щоб фокус не губився */
                 }
 
                 .uk-comments-slider {
@@ -400,7 +402,6 @@
             var _this = this;
             
             // --- ЛОГІКА ВИДАЛЕННЯ ШТАТНОГО БЛОКУ ---
-            // Шукаємо .items-line, який містить заголовок "Коментарі" або кнопку full-review-add
             $('.items-line').each(function() {
                 var el = $(this);
                 var title = el.find('.items-line__title').text().trim();
@@ -418,7 +419,6 @@
             var targetBlock = null;
             $('.full-descr__details').each(function() {
                 var el = $(this);
-                // Перевіряємо наявність маркерів всередині блоку
                 if (el.find('.full-descr__info, .full--budget, .full--countries').length > 0) {
                     targetBlock = el;
                 }
@@ -429,8 +429,8 @@
             // 2. Створення кореневого контейнера (якщо немає)
             var root = $('.uk-comments-root');
             if (!root.length) {
-                root = $('<div class="uk-comments-root"></div>');
-                // Вставка ПЕРЕД блоком details
+                // !!! ВИПРАВЛЕННЯ 1: Додаємо клас items-line, щоб Lampa бачила це як рядок !!!
+                root = $('<div class="uk-comments-root items-line"></div>');
                 targetBlock.before(root);
             }
 
@@ -440,6 +440,7 @@
                 if (!statusCard.length) {
                     statusCard = $('<div class="uk-status-card selector"></div>');
                     root.append(statusCard);
+                    _this.refreshScroll(); // Оновлюємо скролл
                 }
                 if (statusCard.text() !== currentStatus) {
                     statusCard.text(currentStatus);
@@ -467,14 +468,23 @@
 
                     card.append('<div class="uk-comment-footer"><div class="uk-comment-author">' + authorHtml + '</div><div class="uk-comment-date">' + comment.date + '</div></div>');
 
+                    // --- ВИПРАВЛЕНА ЛОГІКА СКРОЛЛУ (ТВ) ---
                     card.on('hover:focus', function() {
-                        var otherExpanded = $('.uk-comment-card.is-expanded').not(this);
+                        var cardEl = $(this);
+                        var otherExpanded = $('.uk-comment-card.is-expanded').not(cardEl);
                         if(otherExpanded.length) {
                             otherExpanded.removeClass('is-expanded');
                             _this.adaptFontSize(otherExpanded);
                         }
                         
-                        this.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+                        // Ручний розрахунок скролу
+                        var container = cardEl.parent();
+                        var targetLeft = cardEl[0].offsetLeft;
+                        var targetWidth = cardEl.width();
+                        var containerWidth = container.width();
+                        
+                        var scrollLeft = targetLeft - (containerWidth / 2) + (targetWidth / 2);
+                        container.stop().animate({ scrollLeft: scrollLeft }, 300);
                         
                         _this.refreshScroll();
                     });
@@ -490,7 +500,9 @@
                         _this.adaptFontSize(cardNode);
                         
                         if (cardNode.hasClass('is-expanded')) {
-                            cardNode[0].scrollIntoView({ behavior: 'instant', block: 'center', inline: 'center' });
+                            var container = cardNode.parent();
+                            var scrollLeft = cardNode[0].offsetLeft - (container.width() / 2) + (cardNode.width() / 2);
+                            container.stop().animate({ scrollLeft: scrollLeft }, 200);
                         }
                         _this.refreshScroll();
                     });
@@ -500,9 +512,20 @@
 
                 root.append(slider);
 
+                // !!! ВИПРАВЛЕННЯ 2: Примусово оновлюємо розмітку сторінки для контролера !!!
+                _this.refreshScroll(); 
+                
+                // Якщо контролер Lampa доступний, сповіщаємо про зміну контенту
+                if (Lampa.Controller && Lampa.Controller.collectionLink) {
+                   // Це внутрішній метод, який може допомогти, але не завжди доступний
+                }
+
                 if (isStatusCardFocused && slider.find('.uk-comment-card').length) {
                     Lampa.Controller.focus(slider.find('.uk-comment-card')[0]);
                 } else if (currentFocus.length && currentFocus[0] !== document.body) {
+                    // Якщо фокус був десь, пробуємо оновити карту навігації
+                    // Найпростіший спосіб - повторно сфокусувати поточний елемент,
+                    // це змушує Lampa перерахувати сусідів.
                     Lampa.Controller.focus(currentFocus[0]);
                 }
             }
