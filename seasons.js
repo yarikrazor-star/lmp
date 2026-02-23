@@ -27,10 +27,6 @@
         })();
     }
 
-    if (typeof window.requestAnimationFrame === 'undefined') {
-        window.requestAnimationFrame = function (cb) { return setTimeout(cb, 16); };
-    }
-
     // --- ДОПОМІЖНІ ФУНКЦІЇ ---
     var safeStorage = (function () {
         var memoryStore = {};
@@ -71,23 +67,25 @@
 
     function tmdbGet(tvId, resolve, reject) {
         try {
-            if (window.Lampa && Lampa.TMDB) {
-                if (typeof Lampa.TMDB.tv === 'function') { Lampa.TMDB.tv(tvId, function (data) { resolve(data); }, function (err) { reject(err); }, { language: CONFIG.language }); return; }
+            if (window.Lampa && Lampa.TMDB && typeof Lampa.TMDB.tv === 'function') {
+                Lampa.TMDB.tv(tvId, function (data) { resolve(data); }, function (err) { reject(err); }, { language: CONFIG.language });
+                return;
             }
         } catch (e) {}
         var url = 'https://api.themoviedb.org/3/tv/' + tvId + '?api_key=' + CONFIG.tmdbApiKey + '&language=' + CONFIG.language;
         safeFetch(url).then(function (r) { return r.json(); }).then(resolve).catch(reject);
     }
 
-    // --- СТИЛІ (МОДИФІКОВАНО ПІД ВАШ ЗАПИТ) ---
+    // --- СТИЛІ (НОВИЙ ДИЗАЙН: 3 КУТИ ТА ТЕМНИЙ ФОН) ---
     var style = document.createElement('style');
     style.textContent =
-        ".card--season-complete, .card--season-progress { position: absolute; left: 0; margin-left: -0.4em; bottom: 1.8em; z-index: 12; width: fit-content; max-width: calc(100% - 1em); border-radius: 0.5em 0 0.5em 0; overflow: hidden; opacity: 0; transition: opacity 0.22s, bottom 0.3s; pointer-events: none; }\n" +
-        ".card--season-complete { background-color: rgba(61, 161, 141, 0.95); }\n" +
-        ".card--season-progress { background-color: rgba(255, 66, 66, 0.95); }\n" +
-        ".card--season-complete div, .card--season-progress div { text-transform: uppercase; font-family: Roboto, Arial, sans-serif; font-weight: 700; font-size: 0.95em; padding: 0.25em 0.5em 0.25em 0.7em; white-space: nowrap; display: flex; align-items: center; color: #fff; text-shadow: 0.5px 0.5px 1px rgba(0,0,0,0.5); }\n" +
-        ".card--season-complete.show, .card--season-progress.show { opacity: 1; }\n" +
-        "@media (max-width: 768px) { .card--season-complete div, .card--season-progress div { font-size: 0.8em; } }";
+        ".card--season-badge { position: absolute; left: 0; margin-left: -0.4em; z-index: 12; width: fit-content; max-width: calc(100% - 1em); " +
+        "background-color: rgba(0, 0, 0, 0.6); color: #fff; " +
+        "border-radius: 0.5em 0.5em 0.5em 0; overflow: hidden; opacity: 0; transition: opacity 0.22s, bottom 0.3s; pointer-events: none; }\n" +
+        ".card--season-badge div { text-transform: uppercase; font-family: Roboto, Arial, sans-serif; font-weight: 700; font-size: 0.9em; " +
+        "padding: 0.25em 0.5em 0.25em 0.7em; white-space: nowrap; display: flex; align-items: center; text-shadow: 0.5px 0.5px 1px rgba(0,0,0,0.8); }\n" +
+        ".card--season-badge.show { opacity: 1; }\n" +
+        "@media (max-width: 768px) { .card--season-badge div { font-size: 0.75em; } }";
     document.head.appendChild(style);
 
     // --- ЛОГІКА ---
@@ -110,23 +108,22 @@
     function adjustBadgePosition(cardEl, badge) {
         if (!cardEl || !badge) return;
         
-        // Шукаємо стандартні бейджі Lampa (рейтинг або якість)
         var vote = cardEl.querySelector('.card__vote');
         var quality = cardEl.querySelector('.card__quality');
         
         var baseBottom = 0;
-        var elementHeight = 0;
+        var targetHeight = 0;
 
-        // Визначаємо, який елемент вище
+        // Визначаємо верхню межу нижніх бейджів
         var target = vote || quality;
         if (target) {
-            elementHeight = target.offsetHeight || 20;
-            var style = window.getComputedStyle(target);
-            baseBottom = parseFloat(style.bottom) || 0;
+            targetHeight = target.offsetHeight || 20;
+            var st = window.getComputedStyle(target);
+            baseBottom = parseFloat(st.bottom) || 0;
         }
 
-        // Встановлюємо наш бейдж: висота цільового + його відступ + 0.5em (приблизно 8-10px)
-        var finalBottom = baseBottom + elementHeight + 8; 
+        // Позиція: (відступ знизу + висота нижнього бейджа) + ще 0.5em (приблизно 8-10px)
+        var finalBottom = baseBottom + targetHeight + 10; 
         badge.style.bottom = finalBottom + 'px';
     }
 
@@ -141,7 +138,7 @@
         if (!view) return;
 
         var badge = document.createElement('div');
-        badge.className = 'card--season-progress';
+        badge.className = 'card--season-badge';
         badge.innerHTML = '<div>...</div>';
         view.appendChild(badge);
         cardEl.setAttribute('data-season-processed', 'loading');
@@ -154,7 +151,6 @@
             
             if (currentSeason && last.season_number > 0) {
                 var isComplete = last.episode_number >= currentSeason.episode_count;
-                badge.className = isComplete ? 'card--season-complete' : 'card--season-progress';
                 var text = isComplete ? "S" + last.season_number : "S" + last.season_number + " " + last.episode_number + "/" + currentSeason.episode_count;
                 badge.innerHTML = '<div>' + text + '</div>';
                 
@@ -191,7 +187,7 @@
         }
     }
 
-    // --- НАЛАШТУВАННЯ LAMPA ---
+    // --- НАЛАШТУВАННЯ ---
     (function () {
         var SETTINGS_KEY = 'sbadger_settings_v1';
         function load() {
