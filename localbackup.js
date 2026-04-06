@@ -36,47 +36,65 @@
                     Lampa.Controller.toggle('settings_component'); 
                 }
             });
-        }, 50); 
+        }, 150); 
     }
 
-    // === ФУНКЦІЇ РОБОТИ З ФАЙЛАМИ ТА БУФЕРОМ (КРОСПЛАТФОРМЕННІ) ===
-    function fallbackDownload(blob, filename, jsonStr) {
-        var url;
-        try { url = window.URL.createObjectURL(blob); } 
-        catch(e) { url = 'data:application/json;charset=utf-8,' + encodeURIComponent(jsonStr); }
-        
-        var a = document.createElement('a');
-        a.style.display = 'none';
-        a.href = url; 
-        a.download = filename;
-        a.target = '_blank';
-        document.body.appendChild(a); 
-        a.click(); 
-        
-        setTimeout(function() {
-            document.body.removeChild(a);
-            if (url.indexOf('blob:') === 0) window.URL.revokeObjectURL(url);
-        }, 2000);
-        Lampa.Noty.show('Запит на збереження відправлено');
+    // === НАДІЙНІ МЕРЕЖЕВІ ТА ФАЙЛОВІ ФУНКЦІЇ ===
+    function fetchJSON(url, onSuccess) {
+        var xhr = new XMLHttpRequest();
+        xhr.open('GET', url, true);
+        xhr.onreadystatechange = function () {
+            if (xhr.readyState === 4) {
+                if (xhr.status === 200) { onSuccess(xhr.responseText); } 
+                else { Lampa.Noty.show('Помилка мережі. Перевірте посилання.'); }
+            }
+        };
+        xhr.onerror = function() { Lampa.Noty.show('Помилка завантаження (CORS або файл відсутній)'); };
+        xhr.send();
     }
 
     function downloadLocalFile(dataObj, filename) {
         try {
             var jsonStr = JSON.stringify(dataObj, null, 2);
             var blob = new Blob([jsonStr], { type: 'application/json' });
-            
-            // Використання Native Share (ідеально для Android/iOS смартфонів)
-            if (navigator.canShare && navigator.canShare({ files: [new File([blob], filename, {type: 'application/json'})] })) {
-                navigator.share({
-                    files: [new File([blob], filename, {type: 'application/json'})],
-                    title: filename
-                }).catch(function() { fallbackDownload(blob, filename, jsonStr); });
-            } else {
-                fallbackDownload(blob, filename, jsonStr);
-            }
+            var url = URL.createObjectURL(blob);
+            var a = document.createElement('a');
+            a.style.display = 'none';
+            a.href = url;
+            a.download = filename;
+            document.body.appendChild(a);
+            a.click();
+            setTimeout(function() {
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+            }, 3000);
+            Lampa.Noty.show('Запит на збереження файлу...');
         } catch (e) {
             Lampa.Noty.show('Помилка формування файлу');
         }
+    }
+
+    function copyText(dataObj) {
+        try {
+            var text = JSON.stringify(dataObj, null, 2);
+            if (navigator.clipboard && window.isSecureContext) {
+                navigator.clipboard.writeText(text).then(function() { Lampa.Noty.show('Скопійовано в буфер обміну!'); })
+                .catch(function() { fallbackCopyText(text); });
+            } else { fallbackCopyText(text); }
+        } catch (e) { Lampa.Noty.show('Помилка форматування даних'); }
+    }
+
+    function fallbackCopyText(text) {
+        var textArea = document.createElement("textarea");
+        textArea.value = text;
+        textArea.style.position = "fixed"; textArea.style.top = "0"; textArea.style.left = "0"; textArea.style.opacity = "0";
+        document.body.appendChild(textArea);
+        textArea.focus(); textArea.select();
+        try {
+            if (document.execCommand('copy')) Lampa.Noty.show('Скопійовано в буфер обміну!');
+            else Lampa.Noty.show('Система забороняє копіювання');
+        } catch (err) { Lampa.Noty.show('Помилка копіювання'); }
+        document.body.removeChild(textArea);
     }
 
     function uploadLocalFile(callback) {
@@ -89,160 +107,114 @@
             var file = e.target.files[0];
             if (!file) return;
             var reader = new FileReader();
-            reader.onload = function(evt) {
-                try { callback(JSON.parse(evt.target.result)); } 
-                catch (err) { Lampa.Noty.show('Помилка формату файлу (не JSON)!'); }
-            };
+            reader.onload = function(evt) { callback(evt.target.result); };
             reader.readAsText(file);
         };
         document.body.appendChild(input);
-        input.click();
-        setTimeout(function() { document.body.removeChild(input); }, 5000);
-    }
-
-    function copyToClipboard(text) {
-        var fallback = function() {
-            var textArea = document.createElement("textarea");
-            textArea.value = text;
-            textArea.style.position = "fixed"; textArea.style.opacity = "0";
-            document.body.appendChild(textArea);
-            textArea.focus(); textArea.select();
-            try {
-                if (document.execCommand('copy')) Lampa.Noty.show('Скопійовано в буфер обміну');
-                else Lampa.Noty.show('Помилка копіювання (Обмеження ОС)');
-            } catch (err) { Lampa.Noty.show('Помилка копіювання'); }
-            document.body.removeChild(textArea);
-        };
-
-        if (navigator.clipboard && window.isSecureContext) {
-            navigator.clipboard.writeText(text).then(function() {
-                Lampa.Noty.show('Скопійовано в буфер обміну');
-            }).catch(fallback);
-        } else { fallback(); }
-    }
-
-    function fetchJSON(url, onSuccess) {
-        var req;
-        if (window.Lampa && Lampa.Reguest) req = new Lampa.Reguest();
-        else if (window.Lampa && Lampa.Network) req = new Lampa.Network();
         
-        if (req) {
-            req.silent(url, function(data) { onSuccess(data); }, function() { Lampa.Noty.show('Помилка мережі (CORS або файл відсутній)'); }, false, {dataType: 'text'});
-        } else {
-            $.ajax({
-                url: url, type: 'GET', dataType: 'text',
-                success: function(data) { onSuccess(data); },
-                error: function() { Lampa.Noty.show('Помилка завантаження'); }
-            });
-        }
+        setTimeout(function() {
+            input.click();
+            setTimeout(function() { document.body.removeChild(input); }, 5000);
+        }, 100);
     }
 
-    // === ЛОГІКА ДАНИХ (БЕЗ ЗМІН ФОРМАТУ) ===
-    var BackupModules = {
-        plugins: {
-            exportData: function() { return JSON.parse(localStorage.getItem('plugins') || '[]'); },
-            importData: function(data) {
-                localStorage.setItem('plugins', JSON.stringify(data));
-                reloadApp('Файл плагінів завантажено');
-            }
-        },
-        data: {
-            exportData: function() {
-                var exportData = {};
-                backup_keys.forEach(function(k) { exportData[k] = Lampa.Storage.get(k); });
-                return exportData;
+    // === ДАНІ ТА ЛОГІКА (100% СУМІСНІСТЬ) ===
+    function getBackupModules() {
+        return {
+            plugins: {
+                exportData: function() { try { return JSON.parse(localStorage.getItem('plugins') || '[]'); } catch(e) { return[]; } },
+                importData: function(data) { localStorage.setItem('plugins', JSON.stringify(data)); reloadApp('Плагіни завантажено'); }
             },
-            importData: function(data) {
-                for (var k in data) {
-                    if (backup_keys.indexOf(k) !== -1) { Lampa.Storage.set(k, data[k], true); }
+            data: {
+                exportData: function() {
+                    var exportData = {};
+                    backup_keys.forEach(function(k) { exportData[k] = Lampa.Storage.get(k); });
+                    return exportData;
+                },
+                importData: function(data) {
+                    for (var k in data) { if (backup_keys.indexOf(k) !== -1) { Lampa.Storage.set(k, data[k], true); } }
+                    reloadApp('Історію та Обране застосовано');
                 }
-                reloadApp('Файл Історії/Обраного застосовано');
-            }
-        },
-        tc: {
-            getStorageKey: function() { return (typeof Lampa.Timeline.filename === 'function') ? Lampa.Timeline.filename() : 'file_view'; },
-            exportData: function() { return Lampa.Storage.get(this.getStorageKey(), {}); },
-            importData: function(data) {
-                var local = Lampa.Storage.get(this.getStorageKey(), {});
-                for (var hash in data) {
-                    if (data[hash] && data[hash].percent !== undefined) { local[hash] = data[hash]; }
-                }
-                Lampa.Storage.set(this.getStorageKey(), local, true); 
-                reloadApp('Файл таймкодів імпортовано');
-            }
-        },
-        backup: {
-            exportData: function() {
-                var backupData = {};
-                for (var i = 0; i < localStorage.length; i++) {
-                    var k = localStorage.key(i); 
-                    backupData[k] = localStorage.getItem(k);
-                }
-                return backupData;
             },
-            importData: function(data) {
-                var keysCount = 0;
-                for (var i in data) { try { localStorage.setItem(i, data[i]); keysCount++; } catch (err) {} }
-                reloadApp('Локальний бекап відновлено (' + keysCount + ' ключів)');
+            tc: {
+                getStorageKey: function() { return (typeof Lampa.Timeline.filename === 'function') ? Lampa.Timeline.filename() : 'file_view'; },
+                exportData: function() { return Lampa.Storage.get(this.getStorageKey(), {}); },
+                importData: function(data) {
+                    var local = Lampa.Storage.get(this.getStorageKey(), {});
+                    for (var hash in data) { if (data[hash] && data[hash].percent !== undefined) { local[hash] = data[hash]; } }
+                    Lampa.Storage.set(this.getStorageKey(), local, true); 
+                    reloadApp('Таймкоди імпортовано');
+                }
+            },
+            backup: {
+                exportData: function() {
+                    var backupData = {};
+                    for (var i = 0; i < localStorage.length; i++) {
+                        var k = localStorage.key(i); backupData[k] = localStorage.getItem(k);
+                    }
+                    return backupData;
+                },
+                importData: function(data) {
+                    var keysCount = 0;
+                    for (var i in data) { try { localStorage.setItem(i, data[i]); keysCount++; } catch (err) {} }
+                    reloadApp('Повний бекап відновлено (' + keysCount + ' ключів)');
+                }
             }
-        }
-    };
+        };
+    }
 
-    // === ОБРОБНИКИ ДІЙ ===
+    // === ОБРОБКА ДІЙ ===
+    function processImport(data, moduleKey) {
+        var parsed = data;
+        if (typeof data === 'string') {
+            try { parsed = JSON.parse(data); } 
+            catch (e) { return Lampa.Noty.show('Помилка: Невірний формат (має бути JSON)'); }
+        }
+        confirmAction(function() {
+            var modules = getBackupModules();
+            modules[moduleKey].importData(parsed);
+        });
+    }
+
     function handleAction(action, moduleKey) {
+        var modules = getBackupModules();
+        var dataObj = modules[moduleKey].exportData();
+        
         if (action === 'exp_file') {
-            downloadLocalFile(BackupModules[moduleKey].exportData(), fileNames[moduleKey]);
+            downloadLocalFile(dataObj, fileNames[moduleKey]);
         } 
         else if (action === 'exp_copy') {
-            Lampa.Noty.show('Підготовка даних...');
-            setTimeout(function() { copyToClipboard(JSON.stringify(BackupModules[moduleKey].exportData(), null, 2)); }, 200);
+            copyText(dataObj);
         } 
         else if (action === 'imp_file') {
-            uploadLocalFile(function(data) {
-                confirmAction(function() { BackupModules[moduleKey].importData(data); });
-            });
+            uploadLocalFile(function(data) { processImport(data, moduleKey); });
         } 
         else if (action === 'imp_url') {
             Lampa.Input.edit({
-                title: 'Пряме посилання (Pastebin / GitHub Gist)',
-                value: '', free: true, nosave: true
+                title: 'Вставте посилання на файл (JSON/TXT)', value: '', free: true, nosave: true
             }, function(new_value) {
-                if (new_value && new_value.trim().indexOf('http') === 0) {
+                if (new_value && new_value.trim().length > 5) {
                     Lampa.Noty.show('Завантаження...');
-                    fetchJSON(new_value.trim(), function(data) {
-                        var parsed = data;
-                        if (typeof data === 'string') {
-                            try { parsed = JSON.parse(data); } 
-                            catch (e) { return Lampa.Noty.show('Помилка: За посиланням не JSON формат'); }
-                        }
-                        confirmAction(function() { BackupModules[moduleKey].importData(parsed); });
-                    });
-                } else { Lampa.Noty.show('Невірне посилання'); }
+                    fetchJSON(new_value.trim(), function(data) { processImport(data, moduleKey); });
+                }
             });
         } 
         else if (action === 'imp_text') {
             Lampa.Input.edit({
-                title: 'Вставте скопійований JSON текст',
-                value: '', free: true, nosave: true
+                title: 'Вставте скопійований текст JSON', value: '', free: true, nosave: true
             }, function(new_value) {
-                if (new_value && new_value.trim().length > 0) {
-                    try {
-                        var parsed = JSON.parse(new_value.trim());
-                        confirmAction(function() { BackupModules[moduleKey].importData(parsed); });
-                    } catch(e) { Lampa.Noty.show('Помилка формату JSON'); }
-                }
+                if (new_value && new_value.trim().length > 5) { processImport(new_value.trim(), moduleKey); }
             });
         }
     }
 
-    // === ІНІЦІАЛІЗАЦІЯ ІНТЕРФЕЙСУ ===
     function openSubMenu(moduleKey, titleText) {
         var items =[
-            { title: '💾 Зберегти: У файл (на пристрій)', id: 'exp_file' },
+            { title: '💾 Зберегти: У файл', id: 'exp_file' },
             { title: '📋 Зберегти: Скопіювати текст', id: 'exp_copy' },
-            { title: '📂 Відновити: Вибрати файл', id: 'imp_file' },
+            { title: '📂 Відновити: З файлу', id: 'imp_file' },
             { title: '🌐 Відновити: За посиланням (URL)', id: 'imp_url' },
-            { title: '📝 Відновити: Вставити текст', id: 'imp_text' }
+            { title: '📝 Відновити: Вставивши текст', id: 'imp_text' }
         ];
 
         Lampa.Select.show({
@@ -250,12 +222,13 @@
             items: items,
             onSelect: function(a) {
                 Lampa.Controller.toggle('settings_component');
-                setTimeout(function() { handleAction(a.id, moduleKey); }, 150); // Затримка для закриття меню
+                setTimeout(function() { handleAction(a.id, moduleKey); }, 300); // Затримка, щоб меню закрилося без помилок
             },
             onBack: function() { Lampa.Controller.toggle('settings_component'); }
         });
     }
 
+    // === ІНІЦІАЛІЗАЦІЯ ===
     function initPlugin() {
         window.lampa_local_backup_plugin = true;
 
@@ -265,29 +238,21 @@
             name: 'Локальний Бекап'
         });
 
-        Lampa.SettingsApi.addParam({
-            component: 'local_backup_menu', param: { type: 'button' },
-            field: { name: '🧩 Плагіни' },
-            onChange: function() { openSubMenu('plugins', 'Плагіни'); }
-        });
-        Lampa.SettingsApi.addParam({
-            component: 'local_backup_menu', param: { type: 'button' },
-            field: { name: '⭐ Обране / Історія' },
-            onChange: function() { openSubMenu('data', 'Обране та Історія'); }
-        });
-        Lampa.SettingsApi.addParam({
-            component: 'local_backup_menu', param: { type: 'button' },
-            field: { name: '⏱ Таймкоди' },
-            onChange: function() { openSubMenu('tc', 'Таймкоди'); }
-        });
-        Lampa.SettingsApi.addParam({
-            component: 'local_backup_menu', param: { type: 'button' },
-            field: { name: '📦 Повний Бекап (Усі налаштування)' },
-            onChange: function() { openSubMenu('backup', 'Повний Бекап'); }
+        var options =[
+            { name: '🧩 Плагіни', key: 'plugins', title: 'Плагіни' },
+            { name: '⭐ Обране / Історія', key: 'data', title: 'Обране та Історія' },
+            { name: '⏱ Таймкоди', key: 'tc', title: 'Таймкоди' },
+            { name: '📦 Повний Бекап (Усі налаштування)', key: 'backup', title: 'Повний Бекап' }
+        ];
+
+        options.forEach(function(opt) {
+            Lampa.SettingsApi.addParam({
+                component: 'local_backup_menu', param: { type: 'button' }, field: { name: opt.name },
+                onChange: function() { openSubMenu(opt.key, opt.title); }
+            });
         });
     }
 
-    // Чекаємо готовності системи перед ініціалізацією
     var checkTimer = setInterval(function() {
         if (window.Lampa && window.Lampa.SettingsApi && window.Lampa.Storage && window.Lampa.Timeline && window.Lampa.Input) {
             clearInterval(checkTimer);
