@@ -8,28 +8,58 @@
         ytranslate_title: true,
         ytranslate_slogan: true,
         ytranslate_desc: true,
-        ytranslate_proxies: '' // Базово пусто, лише прямі запити
+        ytranslate_proxies: '' // Базово пусто
     };
 
-     var instances = [
-        'https://lingva.ml',
-        'https://translate.plausibility.cloud',
-        'https://lingva.garudalinux.org',
-        'https://translate.projectsegfau.lt',
-    ];
-
+    // Розширені селектори для покриття більшості тем і парсерів
     var selectors = {
         title: [
             '.full-start-new__title', '.cardify-moved-title', '.m-disp__title', 
-            '.info__title', '.full-start__title', '.card__title', '.ydesign-text-title'
+            '.info__title', '.full-start__title', '.card__title', '.ydesign-text-title',
+            '.full-start__name', '.full-start-new__name', '.torrent-item__title', '.torrent-item__name'
         ],
         slogan: [
-            '.full-start__slogan', '.info__slogan', '.m-disp__slogan', '.ydesign-slogan'
+            '.full-start__slogan', '.info__slogan', '.m-disp__slogan', '.ydesign-slogan',
+            '.full-start-new__slogan', '.full-start__original-title'
         ],
         desc: [
-            '.full-descr__text', '.info__desc', '.ydesign-desc-under'
+            '.full-descr__text', '.info__desc', '.ydesign-desc-under',
+            '.full-start__desc', '.full-start-new__desc', '.full-start__text'
         ]
     };
+
+    // Список бекендів для перекладу (Google пріоритетний, Lingva запасні)
+    var backends = [
+        {
+            // Google Translate API (швидкий, стабільний, рідко дає 500)
+            url: function(text) { return 'https://translate.googleapis.com/translate_a/single?client=gtx&sl=auto&tl=uk&dt=t&q=' + encodeURIComponent(text); },
+            parse: function(res) {
+                var trans = '';
+                if (res && res[0] && Array.isArray(res[0])) {
+                    res[0].forEach(function(item) {
+                        if (item && item[0]) trans += item[0];
+                    });
+                }
+                return trans;
+            }
+        },
+        {
+            url: function(text) { return 'https://lingva.ml/api/v1/auto/uk/' + encodeURIComponent(text); },
+            parse: function(res) { return res && res.translation ? res.translation : ''; }
+        },
+        {
+            url: function(text) { return 'https://translate.plausibility.cloud/api/v1/auto/uk/' + encodeURIComponent(text); },
+            parse: function(res) { return res && res.translation ? res.translation : ''; }
+        }
+        {
+            url: function(text) { return 'https://lingva.garudalinux.org/api/v1/auto/uk/' + encodeURIComponent(text); },
+            parse: function(res) { return res && res.translation ? res.translation : ''; }
+        }
+        {
+            url: function(text) { return 'https://translate.projectsegfau.lt/api/v1/auto/uk/' + encodeURIComponent(text); },
+            parse: function(res) { return res && res.translation ? res.translation : ''; }
+        }
+    ];
 
     function getSet(key) {
         var val = Lampa.Storage.get(key);
@@ -46,22 +76,29 @@
         return hash;
     }
 
+    // Евристика: чи потрібно перекладати?
     function needsTranslation(text) {
         if (!text || typeof text !== 'string') return false;
-
-        // 1. Якщо є специфічні російські літери - точно перекладаємо
-        if (/[ыэъёЫЭЪЁ]/.test(text)) return true;
-
-        // 2. Видаляємо ВСЮ кирилицю (і українську, і російську)
-        var withoutCyrillic = text.replace(/[а-яА-ЯіІїЇєЄґҐёЁ]/g, '');
+        text = text.trim();
         
-        // 3. Якщо після видалення кирилиці залишилися БУДЬ-ЯКІ літери 
-        // (латиниця, китайські ієрогліфи, арабська в'язь, гінді тощо) - перекладаємо.
-        // \p{L} з прапорцем 'u' знаходить будь-яку літеру з будь-якої мови світу.
-        if (/\p{L}/u.test(withoutCyrillic)) return true;
+        // 1. Якщо лише цифри/знаки - не перекладаємо
+        if (!/\p{L}/u.test(text)) return false;
 
-        // 4. Інакше (це суто кирилиця без російських букв, або просто цифри/символи) - не перекладаємо.
-        return false;
+        // 2. Якщо є іноземні літери - точно перекладаємо
+        if (/[a-zA-ZыэъёЫЭЪЁ]/.test(text) || /[^\u0400-\u04FF\u0500-\u052F\s\d\p{P}]/u.test(text)) return true;
+
+        // 3. Якщо є унікальні українські літери - це вже українська, пропускаємо
+        if (/[іІїЇєЄґҐ]/.test(text)) return false;
+
+        // 4. Пошук російських слів-маркерів, що складаються зі "спільних" літер
+        var ruMarkers = /\b(что|как|это|так|для|меня|тебя|себя|его|ее|они|мы|вы|он|она|быть|сказать|очень|только|еще|нет|да)\b/i;
+        if (ruMarkers.test(text)) return true;
+
+        // 5. Дуже короткі незрозумілі слова ігноруємо
+        if (text.replace(/[\s\d\p{P}]/gu, '').length <= 2) return false;
+
+        // 6. Все інше (напр. "Один дома", "Начало") - йде на автовизначення до API
+        return true;
     }
 
     async function doTranslate(text) {
@@ -74,26 +111,39 @@
         var proxiesStr = getSet('ytranslate_proxies') || '';
         var proxies = proxiesStr.split(',').map(function(p){ return p.trim(); }).filter(function(p){ return p; });
         
-        // Першим завжди йде прямий запит (''), потім ваші проксі
-        var attempts = ['']; 
+        var attempts = [];
+        // ВАЖЛИВО: Спочатку додаємо CORS проксі (якщо користувач їх ввів)
         proxies.forEach(function(p) { attempts.push(p); });
+        // В кінці завжди додаємо прямий запит як останній шанс
+        attempts.push('');
 
-        for (var i = 0; i < instances.length; i++) {
-            var inst = instances[i];
-            
-            for (var j = 0; j < attempts.length; j++) {
-                var proxy = attempts[j];
+        for (var b = 0; b < backends.length; b++) {
+            var backend = backends[b];
+            var targetUrl = backend.url(text);
+
+            for (var a = 0; a < attempts.length; a++) {
+                var proxy = attempts[a];
+                var reqUrl = targetUrl;
+                
+                if (proxy) {
+                    // Якщо проксі формату "...?url=", цільовий URL треба енкодити
+                    if (proxy.endsWith('=')) {
+                        reqUrl = proxy + encodeURIComponent(targetUrl);
+                    } else {
+                        reqUrl = proxy + targetUrl; // Стандарт для corsproxy.io/?
+                    }
+                }
+
                 try {
-                    var url = proxy ? (proxy + inst) : inst;
-                    var reqUrl = url + '/api/v1/auto/uk/' + encodeURIComponent(text);
-                    
                     var res = await $.ajax({url: reqUrl, timeout: 5000, dataType: 'json'});
-                    if (res && res.translation) {
-                        Lampa.Storage.set(cacheKey, res.translation);
-                        return res.translation;
+                    var translatedText = backend.parse(res);
+                    
+                    if (translatedText && translatedText.trim()) {
+                        Lampa.Storage.set(cacheKey, translatedText);
+                        return translatedText;
                     }
                 } catch(e) {
-                    // Йдемо до наступного проксі або інстансу
+                    // Якщо помилка (403, 500, CORS) - просто йдемо до наступного проксі або бекенду
                 }
             }
         }
@@ -109,9 +159,6 @@
         var origText = $el.text().trim();
         if (!origText) return;
 
-        // ДИНАМІЧНА ПЕРЕВІРКА: 
-        // Якщо текст такий самий, як ми вже обробляли для цього вузла - пропускаємо.
-        // Якщо Lampa підвантажила нову назву (китайську), origText зміниться і ми підемо далі!
         if ($el.data('ytranslate-orig-text') === origText) return;
 
         if (!needsTranslation(origText)) {
@@ -120,7 +167,7 @@
         }
 
         $el.data('ytranslate-loading', true);
-        $el.data('ytranslate-orig-text', origText); // Запам'ятовуємо, щоб уникнути зациклення
+        $el.data('ytranslate-orig-text', origText); 
 
         var loaderHTML = '<span class="ytrans-loader-dots"></span>';
         var origHtml = $el.html();
@@ -132,10 +179,9 @@
             
             if (translatedText && translatedText !== origText) {
                 $el.text(translatedText);
-                // Зберігаємо перекладений текст як "оригінальний", щоб сканер його більше не чіпав
                 $el.data('ytranslate-orig-text', translatedText); 
             } else {
-                $el.html(origHtml); // Якщо переклад не вдався - повертаємо як було
+                $el.html(origHtml); 
                 $el.data('ytranslate-orig-text', origText);
             }
         });
@@ -147,28 +193,22 @@
         selectors.title.forEach(function(sel) {
             context.find(sel).each(function() { processElement($(this), 'title'); });
         });
-
         selectors.slogan.forEach(function(sel) {
             context.find(sel).each(function() { processElement($(this), 'slogan'); });
         });
-
         selectors.desc.forEach(function(sel) {
             context.find(sel).each(function() { processElement($(this), 'desc'); });
         });
     }
 
     function injectCSS() {
+        if (document.getElementById('ytrans-style')) return;
         var style = document.createElement('style');
+        style.id = 'ytrans-style';
         style.innerHTML = `
-            .ytrans-loader-dots {
-                display: inline-block; font-weight: bold; min-width: 2em; opacity: 0.7;
-            }
-            .ytrans-loader-dots::after {
-                content: ''; animation: ytransdots 1.5s infinite steps(4, end);
-            }
-            @keyframes ytransdots {
-                0% { content: ''; } 25% { content: '.'; } 50% { content: '..'; } 75% { content: '...'; } 100% { content: ''; }
-            }
+            .ytrans-loader-dots { display: inline-block; font-weight: bold; min-width: 2em; opacity: 0.7; }
+            .ytrans-loader-dots::after { content: ''; animation: ytransdots 1.5s infinite steps(4, end); }
+            @keyframes ytransdots { 0% { content: ''; } 25% { content: '.'; } 50% { content: '..'; } 75% { content: '...'; } 100% { content: ''; } }
         `;
         document.head.appendChild(style);
     }
@@ -238,7 +278,6 @@
         createSettings();
         injectCSS();
 
-        // 1. Сканування карток при появі
         var CardMaker = Lampa.Maker.map('Card');
         if (CardMaker && CardMaker.Card) {
             var origOnVisible = CardMaker.Card.onVisible;
@@ -249,7 +288,6 @@
             };
         }
 
-        // 2. Сканування при відкритті картки
         Lampa.Listener.follow('full', function (e) {
             if (e.type === 'build') {
                 var html = e.html || (e.object && e.object.render ? e.object.render() : null);
@@ -262,24 +300,17 @@
             }
         });
 
-        // 3. РОЗУМНИЙ OBSERVER (Ключове виправлення для китайської назви)
-        // Тепер він реагує на зміну самого тексту (characterData), а не лише на появу нових div'ів
         var scanTimer;
         var observer = new MutationObserver(function(mutations) {
             var shouldScan = false;
-            
             for (var i = 0; i < mutations.length; i++) {
-                var m = mutations[i];
-                // Якщо змінився текст або додалися нові вузли
-                if (m.type === 'characterData' || m.addedNodes.length > 0) {
+                if (mutations[i].type === 'characterData' || mutations[i].addedNodes.length > 0) {
                     shouldScan = true;
                     break;
                 }
             }
-            
             if (shouldScan) {
                 clearTimeout(scanTimer);
-                // Чекаємо 300мс після останньої зміни (щоб Lampa встигла завантажити всі дані), і запускаємо сканер
                 scanTimer = setTimeout(function() {
                     var activeHtml = $('.activity--active');
                     if (activeHtml.length) scanAndTranslate(activeHtml);
@@ -288,12 +319,10 @@
         });
 
         observer.observe(document.body, { 
-            childList: true, 
-            subtree: true, 
-            characterData: true // ДОДАНО: слухає зміну самого тексту
+            childList: true, subtree: true, characterData: true
         });
         
-        console.log('YTranslate Plugin loaded: Smart DOM text tracking enabled.');
+        console.log('YTranslate Plugin loaded: Primary Google Engine + CORS First enabled.');
     }
 
     if (window.appready) init();
