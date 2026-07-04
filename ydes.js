@@ -9,14 +9,14 @@
         tmdbKey: function() { return (Lampa.TMDB && Lampa.TMDB.key) ? Lampa.TMDB.key() : '4ef0d7355d9ffb5151e987764708ce96'; }
     };
 
-    var rateIcons = {
+     var rateIcons = {
         imdb: 'https://upload.wikimedia.org/wikipedia/commons/5/53/IMDB_-_SuperTinyIcons.svg',
         rt: 'https://upload.wikimedia.org/wikipedia/commons/5/5b/Rotten_Tomatoes.svg',
-        mc: 'https://upload.wikimedia.org/wikipedia/commons/e/e1/Metacritic_logo_Roundel.svg',
+        mc: 'https://yarikrazor-star.github.io/lmp/mc.svg',
         tmdb: 'https://upload.wikimedia.org/wikipedia/commons/8/89/Tmdb.new.logo.svg',
         trakt: 'https://upload.wikimedia.org/wikipedia/commons/3/3d/Trakt.tv-favicon.svg',
         mdblist: "data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' width='24' height='24' fill='%23ffffff'%3E%3Cpath d='M1.928.029A2.47 2.47 0 0 0 .093 1.673c-.085.248-.09.629-.09 10.33s.005 10.08.09 10.33a2.51 2.51 0 0 0 1.512 1.558l.276.108h20.237l.277-.108a2.51 2.51 0 0 0 1.512-1.559c.085-.25.09-.63.09-10.33s-.005-10.08-.09-10.33A2.51 2.51 0 0 0 22.395.115l-.277-.109L12.117 0C6.615-.004 2.032.011 1.929.029m7.48 8.067l2.123 2.004v1.54c0 .897-.02 1.536-.043 1.527s-.92-.845-1.995-1.86c-1.071-1.01-1.962-1.84-1.977-1.84s-.024 1.91-.024 4.248v4.25H4.911V6.085h1.188l1.183.006zm9.729 3.93v5.94h-2.63l-.01-4.25l-.013-4.25l-1.907 1.795a367 367 0 0 1-1.98 1.864c-.076.056-.08-.047-.08-1.489v-1.555l2.127-1.995l2.127-1.995l1.187-.005h1.184z'/%3E%3C/svg%3E",
-        popcorn: 'https://upload.wikimedia.org/wikipedia/commons/d/da/Rotten_Tomatoes_positive_audience.svg',
+        popcorn: 'https://yarikrazor-star.github.io/lmp/rt.svg',
         letterboxd: 'https://upload.wikimedia.org/wikipedia/commons/9/9b/Letterboxd_2023_logo.png'
     };
 
@@ -34,7 +34,9 @@
         ydesign_text_slogan_size: '0.85',
         ydesign_text_badge_size: '0.75',
         ydesign_text_rating_size: '0.8',
-        ydesign_desc_size: '0.85', 
+        ydesign_desc_size: '0.85',
+        ydesign_text_add_title_size: '0.9',
+        ydesign_text_genres_size: '0.75', 
         ydesign_card_type_main: 'horizontal', 
         ydesign_card_type_other: 'vertical',
         ydesign_badges_one_row: false, 
@@ -44,19 +46,38 @@
         ydesign_show_ua: true,
         ydesign_show_age: true,
         ydesign_show_slogan: true,
+        ydesign_show_add_title: true, 
+        ydesign_add_title_lang: 'auto',
+        ydesign_show_genres: true, 
         ydesign_lazy_load: true,
         ydesign_card_gap: '0.8',
         ydesign_badge_rows_gap: '0.4',
+        ydesign_badges_gap_vert: '0.15', 
+        ydesign_badges_gap_horz: '0.15', 
+        ydesign_genres_gap: '0.15',
         ydesign_content_pb: '0.8',
         ydesign_slogan_padding: '0.3',
         ydesign_logo_mb: '1.2', 
+        ydesign_add_title_mb: '0.3', 
+        ydesign_uniform_v_gaps_vert: true, 
+        ydesign_uniform_v_gap_val_vert: '0.05', 
+        ydesign_uniform_v_gaps_horz: true, 
+        ydesign_uniform_v_gap_val_horz: '0.30', 
         ydesign_ratings_saturate: '100', 
         ydesign_align_logo: 'center',
         ydesign_align_badges: 'center',
         ydesign_align_slogan: 'center',
         ydesign_ratings_order: 'tmdb, imdb, rt, popcorn', 
         ydesign_omdb_key: '',
-        ydesign_mdblist_key: ''
+        ydesign_mdblist_key: '',
+        ydesign_series_redesign: true,
+        ydesign_series_cards: '2',
+        ydesign_horz_ratings_row: false,
+        ydesign_border_ratings: true, 
+        ydesign_border_badges: true, 
+        ydesign_uniform_badges: false,
+        ydesign_grid_items_v: '5',
+        ydesign_grid_items_h: '3'
     };
 
     function getSet(key) {
@@ -76,6 +97,20 @@
         }
     };
 
+    var IconCache = {};
+    function preloadIcon(key, url) {
+        return new Promise(function(resolve) {
+            if (IconCache[key] || url.startsWith('data:')) {
+                IconCache[key] = true;
+                return resolve();
+            }
+            var img = new Image();
+            img.onload = function() { IconCache[key] = true; resolve(); };
+            img.onerror = function() { IconCache[key] = true; resolve(); }; 
+            img.src = url;
+        });
+    }
+
     var LazyLoader = {
         observer: null,
         init: function() {
@@ -91,7 +126,7 @@
                         observer.unobserve(el);
                     }
                 });
-            }, { rootMargin: '150px' }); // Зменшено до 150px, щоб вантажилось тільки трохи за межами екрану
+            }, { rootMargin: '150px' });
         },
         add: function(el, fn) {
             this.init();
@@ -213,7 +248,7 @@
             var sloganLang = getSet('ydesign_slogan_lang');
             var descLang = getSet('ydesign_desc_lang');
             
-            var cacheKey = type + '_' + id + '_' + langPref + '_' + sloganLang + '_' + descLang;
+            var cacheKey = type + '_' + id + '_' + langPref + '_' + sloganLang + '_' + descLang + '_v3';
             var cached = ApiCache.get(cacheKey);
             if (cached) return resolve(cached);
 
@@ -249,12 +284,36 @@
                 else if (descLang === 'en') finalOverview = enData ? enData.overview : '';
                 else finalOverview = data.overview || (enData ? enData.overview : ''); 
 
+                var se_str = '';
+                if (type === 'tv') {
+                    var ds = data.number_of_seasons;
+                    var de = data.number_of_episodes;
+                    if (data.last_episode_to_air) {
+                        var last_ep = data.last_episode_to_air;
+                        var s_obj = data.seasons ? data.seasons.find(x => x.season_number === last_ep.season_number) : null;
+                        if (s_obj) {
+                            if (last_ep.episode_number < s_obj.episode_count) {
+                                ds = last_ep.season_number;
+                                de = last_ep.episode_number + '/' + s_obj.episode_count;
+                            } else {
+                                ds = last_ep.season_number;
+                                de = s_obj.episode_count;
+                            }
+                        }
+                    }
+                    if (ds) se_str = 'S:' + ds + (de ? ' E:' + de : '');
+                }
+
                 var result = {
                     tagline: finalTagline || '',
                     overview: finalOverview || '',
-                    clean_poster: null, clean_backdrop: null, logo: null,
+                    genres: data.genres || (enData ? enData.genres : []),
+                    clean_poster: null, clean_backdrop: null, logo: null, logo_lang: null,
                     age: null, seasons: data.number_of_seasons, episodes: data.number_of_episodes,
-                    tmdb_rating: data.vote_average
+                    tmdb_rating: data.vote_average,
+                    se_str: se_str,
+                    title_uk: data.title || data.name || '',
+                    title_en: enData ? (enData.title || enData.name) : ''
                 };
 
                 if (data.images) {
@@ -276,7 +335,10 @@
                         logo = data.images.logos.find(l => l.iso_639_1 === 'en');
                         if(!logo && data.images.logos.length) logo = data.images.logos[0];
                     }
-                    if(logo) result.logo = logo.file_path;
+                    if (logo) {
+                        result.logo = logo.file_path;
+                        result.logo_lang = logo.iso_639_1;
+                    }
                 }
 
                 if (type === 'movie' && data.release_dates && data.release_dates.results) {
@@ -297,27 +359,43 @@
         });
     }
 
-    function renderRatings(container, baseData, tmdbData, extRatings) {
+    async function renderRatingsAsync(container, baseData, tmdbData, extRatings) {
         var orderStr = String(getSet('ydesign_ratings_order') || 'tmdb,imdb,kp,rt,popcorn');
         var order = orderStr.split(',').map(function(s) { return s.trim().toLowerCase(); });
 
-        var available = {
-            tmdb: tmdbData.tmdb_rating ? parseFloat(tmdbData.tmdb_rating).toFixed(1) : null,
-            kp: baseData.kp_rating ? parseFloat(baseData.kp_rating).toFixed(1) : null,
-            imdb: (extRatings && extRatings.imdb) ? parseFloat(extRatings.imdb).toFixed(1) : (baseData.imdb_rating ? parseFloat(baseData.imdb_rating).toFixed(1) : null),
-            rt: (extRatings && extRatings.rt) ? parseFloat(extRatings.rt).toFixed(0) + '%' : null,
-            mc: (extRatings && extRatings.mc) ? parseFloat(extRatings.mc).toFixed(0) : null,
-            trakt: (extRatings && extRatings.trakt) ? parseFloat(extRatings.trakt).toFixed(1) : null,
-            mdblist: (extRatings && extRatings.mdblist) ? parseFloat(extRatings.mdblist).toFixed(1) : null,
-            popcorn: (extRatings && extRatings.popcorn) ? parseFloat(extRatings.popcorn).toFixed(0) + '%' : null,
-            letterboxd: (extRatings && extRatings.letterboxd) ? (parseFloat(extRatings.letterboxd) * 2).toFixed(1) : null
+        var formatR = function(v, is100) {
+            if (v === null || v === undefined || v === '' || v === 'N/A') return null;
+            var n = parseFloat(String(v).replace('%',''));
+            if (isNaN(n)) return null;
+            if (is100 || n > 10) n = n / 10;
+            return n.toFixed(1);
         };
+
+        var available = {
+            tmdb: formatR(tmdbData.tmdb_rating, false),
+            kp: formatR(baseData.kp_rating, false),
+            imdb: formatR((extRatings && extRatings.imdb) ? extRatings.imdb : baseData.imdb_rating, false),
+            rt: formatR(extRatings && extRatings.rt, true),
+            mc: formatR(extRatings && extRatings.mc, true),
+            trakt: formatR(extRatings && extRatings.trakt, true),
+            mdblist: formatR(extRatings && extRatings.mdblist, true),
+            popcorn: formatR(extRatings && extRatings.popcorn, true),
+            letterboxd: (extRatings && extRatings.letterboxd) ? formatR(parseFloat(extRatings.letterboxd) * 2, false) : null
+        };
+
+        var iconsToLoad = [];
+        order.forEach(function(key) {
+            if (available[key] && key !== 'kp' && rateIcons[key]) {
+                iconsToLoad.push(preloadIcon(key, rateIcons[key]));
+            }
+        });
+        await Promise.all(iconsToLoad);
 
         container.innerHTML = '';
         order.forEach(function(key) {
             if (available[key]) {
                 if (key === 'kp') {
-                    container.innerHTML += '<span class="ydesign-rating"><b style="color:#f60; font-weight:800; font-size:1.1em;">Kp</b> ' + available[key] + '</span>';
+                    container.innerHTML += '<span class="ydesign-rating"><b style="color:#f60; font-weight:800; font-size:1.1em; line-height:1; display:flex; align-items:center;">Kp</b> ' + available[key] + '</span>';
                 } else {
                     var iconUrl = rateIcons[key] || rateIcons.tmdb;
                     container.innerHTML += '<span class="ydesign-rating"><img src="' + iconUrl + '" /> ' + available[key] + '</span>';
@@ -328,71 +406,67 @@
 
     function buildCardCustomDOM(cardHtml, data) {
         var el = cardHtml[0] || cardHtml;
-        var activeComp = Lampa.Activity.active() ? Lampa.Activity.active().component : 'main';
-        var isHorz = activeComp === 'main' ? getSet('ydesign_card_type_main') === 'horizontal' : getSet('ydesign_card_type_other') === 'horizontal';
+        var isMain = el._ydesign_isMain !== undefined ? el._ydesign_isMain : (Lampa.Activity.active() ? Lampa.Activity.active().component === 'main' : true);
+        var isHorz = isMain ? getSet('ydesign_card_type_main') === 'horizontal' : getSet('ydesign_card_type_other') === 'horizontal';
         
         el.classList.add('ydesign-card');
         el.classList.remove('ydesign-vertical', 'ydesign-horizontal');
         el.classList.add(isHorz ? 'ydesign-horizontal' : 'ydesign-vertical');
 
-        var view = el.querySelector('.card__view');
-        if (!view) return;
-        view.innerHTML = '';
-
-        var imgLayer = document.createElement('div'); imgLayer.className = 'ydesign-img-layer';
-        var gradientLayer = document.createElement('div'); gradientLayer.className = 'ydesign-gradient-layer';
-        var contentLayer = document.createElement('div'); contentLayer.className = 'ydesign-content-layer';
-
-        view.appendChild(imgLayer);
-        view.appendChild(gradientLayer);
-        view.appendChild(contentLayer);
-
         var type = data.media_type || (data.name ? 'tv' : 'movie');
         if (!data.id) return;
 
-        var bgQuality = isHorz ? getSet('ydesign_backdrop_quality') : getSet('ydesign_poster_quality');
-        var initialBg = isHorz ? (data.backdrop_path || data.poster_path) : (data.poster_path || data.backdrop_path);
-        
-        var applyBg = function(path) {
-            if (!path) return;
-            var img = new Image();
-            img.crossOrigin = "Anonymous";
-            img.onload = function() {
-                imgLayer.style.backgroundImage = 'url(' + img.src + ')';
-                imgLayer.classList.add('loaded');
-                getProminentColor(img, function(color) {
-                    view.style.backgroundColor = color;
-                    gradientLayer.style.background = 'linear-gradient(to top, ' + color + ' 0%, ' + color.replace('rgb', 'rgba').replace(')', ', 0.95)') + ' 40%, transparent 100%)';
-                    contentLayer.style.background = 'linear-gradient(to top, ' + color + ' 10%, transparent 100%)';
-                });
-            };
-            img.src = 'https://image.tmdb.org/t/p/' + bgQuality + path;
-        };
-
-        // Логіка перевірки бекграунду та завантаження інших даних винесена всередину
         var buildExtendedCard = function() {
+            var view = el.querySelector('.card__view');
+            if (!view) return;
+            view.innerHTML = '';
+
+            var imgLayer = document.createElement('div'); imgLayer.className = 'ydesign-img-layer';
+            var gradientLayer = document.createElement('div'); gradientLayer.className = 'ydesign-gradient-layer';
+            var contentLayer = document.createElement('div'); contentLayer.className = 'ydesign-content-layer';
+
+            view.appendChild(imgLayer);
+            view.appendChild(gradientLayer);
+            view.appendChild(contentLayer);
+
+            var bgQuality = isHorz ? getSet('ydesign_backdrop_quality') : getSet('ydesign_poster_quality');
+            var initialBg = isHorz ? (data.backdrop_path || data.poster_path) : (data.poster_path || data.backdrop_path);
+            
+            var applyBg = function(path) {
+                if (!path) return;
+                var img = new Image();
+                img.crossOrigin = "Anonymous";
+                img.onload = function() {
+                    imgLayer.style.backgroundImage = 'url(' + img.src + ')';
+                    imgLayer.classList.add('loaded');
+                    getProminentColor(img, function(color) {
+                        view.style.backgroundColor = color;
+                        gradientLayer.style.background = 'linear-gradient(to top, ' + color + ' 0%, ' + color.replace('rgb', 'rgba').replace(')', ', 0.95)') + ' 40%, transparent 100%)';
+                        contentLayer.style.background = 'linear-gradient(to top, ' + color + ' 10%, transparent 100%)';
+                    });
+                };
+                img.src = 'https://image.tmdb.org/t/p/' + bgQuality + path;
+            };
+
             fetchExtendedData(data.id, type).then(function(extData) {
-                var bgToLoad = initialBg; // за замовчуванням оригінальний постер/бекграунд
+                var bgToLoad = initialBg; 
 
                 if (extData) {
-                    // Якщо плагін повернув чистий бекграунд, пріоритет віддаємо йому
                     var cleanBg = isHorz ? extData.clean_backdrop : extData.clean_poster;
-                    if (cleanBg && cleanBg !== initialBg) {
-                        bgToLoad = cleanBg;
-                    }
+                    if (cleanBg && cleanBg !== initialBg) bgToLoad = cleanBg;
                 }
 
-                // Вантажимо картинку ТІЛЬКИ ПІСЛЯ ТОГО, як плагін прийняв рішення
                 if (bgToLoad) applyBg(bgToLoad);
-
-                if (!extData) return; // Якщо fetch впав, ми принаймні завантажили базову картинку
+                if (!extData) return; 
 
                 var logoContainer = document.createElement('div');
                 logoContainer.className = 'ydesign-logo-container';
                 
                 var titleText = document.createElement('div');
                 titleText.className = 'ydesign-text-title ydesign-fallback-text';
-                titleText.innerText = data.title || data.name || data.original_title || data.original_name;
+                
+                var mainTitle = data.title || data.name || data.original_title || data.original_name || '';
+                titleText.innerText = mainTitle;
 
                 if (extData.logo) {
                     var logoImg = document.createElement('img');
@@ -405,6 +479,42 @@
                 logoContainer.appendChild(titleText);
                 contentLayer.appendChild(logoContainer);
 
+                var addTitleWrap = null;
+                if (getSet('ydesign_show_add_title')) {
+                    addTitleWrap = document.createElement('div');
+                    addTitleWrap.className = 'ydesign-add-title';
+                    contentLayer.appendChild(addTitleWrap);
+                }
+
+                var updateAddTitleWrap = function() {
+                    if (!addTitleWrap) return;
+                    if (!extData.logo) { addTitleWrap.innerText = ' '; return; }
+                    var uTitle = '';
+                    var addTitleLang = getSet('ydesign_add_title_lang');
+                    var ukT = extData.title_uk || mainTitle;
+                    var enT = extData.title_en || data.original_title || data.original_name;
+
+                    if (addTitleLang === 'uk') {
+                        uTitle = ukT;
+                    } else if (addTitleLang === 'en') {
+                        uTitle = enT;
+                    } else {
+                        if (extData.logo_lang === 'en') uTitle = ukT;
+                        else if (extData.logo_lang === 'uk' || extData.logo_lang === 'ru') uTitle = enT;
+                        else uTitle = ukT;
+                    }
+
+                    if (uTitle) {
+                        var fTitle = '"' + uTitle + '"';
+                        if (fTitle.length > 30) fTitle = fTitle.substring(0, 30) + '...';
+                        addTitleWrap.innerText = fTitle;
+                    } else {
+                        addTitleWrap.innerText = ' '; 
+                    }
+                };
+
+                updateAddTitleWrap();
+
                 var infoWrap = document.createElement('div');
                 infoWrap.className = 'ydesign-info-wrap';
 
@@ -416,7 +526,9 @@
                     if(year && year !== 'unde') badgesWrap.innerHTML += '<span class="ydesign-badge ydesign-badge-year">' + year + '</span>';
                 }
                 
-                if (type === 'tv' && extData.seasons) {
+                if (type === 'tv' && extData.se_str) {
+                    badgesWrap.innerHTML += '<span class="ydesign-badge ydesign-badge-seasons">' + extData.se_str + '</span>';
+                } else if (type === 'tv' && extData.seasons) {
                     var str = 'S:' + extData.seasons + (extData.episodes ? ' E:' + extData.episodes : '');
                     badgesWrap.innerHTML += '<span class="ydesign-badge ydesign-badge-seasons">' + str + '</span>';
                 }
@@ -435,33 +547,71 @@
                     }
                 });
 
+                var genresWrap = null;
+                if (getSet('ydesign_show_genres')) {
+                    genresWrap = document.createElement('div');
+                    genresWrap.className = 'ydesign-genres';
+                    if (extData.genres && extData.genres.length) {
+                        extData.genres.forEach(g => {
+                            var gb = document.createElement('span');
+                            gb.className = 'ydesign-genre-badge';
+                            gb.innerText = g.name;
+                            genresWrap.appendChild(gb);
+                        });
+                    } else {
+                        genresWrap.innerText = ' ';
+                    }
+                }
+
                 var ratingsWrap = document.createElement('div');
                 ratingsWrap.className = 'ydesign-ratings';
-                renderRatings(ratingsWrap, data, extData, null); 
-                infoWrap.appendChild(ratingsWrap);
-
-                contentLayer.appendChild(infoWrap);
-
+                
+                renderRatingsAsync(ratingsWrap, data, extData, null); 
                 fetchExternalRatings(data.id, type).then(function(extRatings) {
                     if (extRatings && Object.keys(extRatings).length > 0) {
-                        renderRatings(ratingsWrap, data, extData, extRatings);
+                        renderRatingsAsync(ratingsWrap, data, extData, extRatings);
                     }
                 });
+
+                if (isHorz) {
+                    if (getSet('ydesign_horz_ratings_row')) {
+                        contentLayer.appendChild(infoWrap);
+                        var infoWrap2 = document.createElement('div');
+                        infoWrap2.className = 'ydesign-info-wrap ydesign-info-wrap-2';
+                        infoWrap2.appendChild(ratingsWrap);
+                        contentLayer.appendChild(infoWrap2);
+                        if (genresWrap) contentLayer.appendChild(genresWrap);
+                    } else {
+                        infoWrap.appendChild(ratingsWrap);
+                        contentLayer.appendChild(infoWrap);
+                        if (genresWrap) contentLayer.appendChild(genresWrap);
+                    }
+                } else {
+                    if (genresWrap) infoWrap.appendChild(genresWrap); 
+                    infoWrap.appendChild(ratingsWrap);
+                    contentLayer.appendChild(infoWrap);
+                }
 
                 var oldSlogan = contentLayer.querySelector('.ydesign-slogan');
                 if (oldSlogan) oldSlogan.remove();
                 var oldDesc = el.querySelector('.ydesign-desc-under');
                 if (oldDesc) oldDesc.remove();
 
+                var slogan = null;
                 if (getSet('ydesign_show_slogan')) {
-                    var slogan = document.createElement('div');
+                    slogan = document.createElement('div');
                     slogan.className = 'ydesign-slogan ydesign-slogan-text';
-                    slogan.innerText = extData.tagline ? extData.tagline : ' '; 
+                    var sText = extData.tagline || ' ';
+                    if (!isHorz && sText.trim() !== '' && sText.length > 46) {
+                        sText = sText.substring(0, 44) + '...';
+                    }
+                    slogan.innerText = sText;
                     contentLayer.appendChild(slogan);
                 }
 
+                var desc = null;
                 if (isHorz && getSet('ydesign_show_desc_horz')) {
-                    var desc = document.createElement('div');
+                    desc = document.createElement('div');
                     desc.className = 'ydesign-desc-under';
                     desc.innerText = extData.overview ? extData.overview : ' '; 
                     el.appendChild(desc);
@@ -487,7 +637,7 @@
             .ydesign-active .items-line .scroll__body {
                 display: flex; flex-wrap: nowrap; 
                 gap: var(--ydesign-card-gap, 0.8em); 
-                padding-bottom: 1.5em; /* Запобігає зрізанню хвостиків тексту та тіней знизу */
+                padding-bottom: 1.5em; 
             }
 
             .ydesign-active .card {
@@ -520,26 +670,29 @@
             .ydesign-active .card.ydesign-horizontal .card__view { padding-bottom: 68.75% !important; } 
 
             @media (min-width: 769px) {
-                .ydesign-active .card.ydesign-vertical { width: 18.5vw; height: auto !important; }   
-                .ydesign-active .card.ydesign-horizontal { width: 31.5vw; height: auto !important; } 
+                .ydesign-active .card.ydesign-vertical { width: calc(100% / var(--ydesign-grid-items-v, 5)); height: auto !important; }   
+                .ydesign-active .card.ydesign-horizontal { width: calc(100% / var(--ydesign-grid-items-h, 3)); height: auto !important; } 
+                .ydesign-active .items-line .card.ydesign-vertical { width: 18.5vw; }   
+                .ydesign-active .items-line .card.ydesign-horizontal { width: 31.5vw; } 
             }
 
             @media (max-width: 768px) {
-                .ydesign-active .card.ydesign-vertical { width: 46vw; height: auto !important; }    
-                .ydesign-active .card.ydesign-horizontal { width: 94vw; height: auto !important; }  
+                .ydesign-active .card.ydesign-vertical { width: calc(100% / 2); height: auto !important; }    
+                .ydesign-active .card.ydesign-horizontal { width: calc(100% / 2); height: auto !important; }  
+                .ydesign-active .items-line .card.ydesign-vertical { width: 46vw; }    
+                .ydesign-active .items-line .card.ydesign-horizontal { width: 94vw; }  
             }
 
             .ydesign-img-layer {
                 position: absolute; top: 0; left: 0; width: 100%; height: 100%;
                 background-color: #222;
                 background-image: url('./img/img_load.svg');
-                background-size: 30%; 
+                background-size: cover !important; 
                 background-repeat: no-repeat; 
                 background-position: center center;
                 opacity: 1; transition: background-image 0.4s ease, background-size 0.4s ease;
             }
             .ydesign-img-layer.loaded { 
-                background-size: cover; 
                 background-position: center 20%;
                 background-color: transparent; 
             }
@@ -580,102 +733,347 @@
                 width: var(--ydesign-logo-w, 100%);
                 max-height: 100%;
                 display: flex; align-items: flex-end; justify-content: var(--ydesign-align-logo, center);
-                font-size: var(--ydesign-title-size, 1.2em); font-weight: 800; color: #fff; 
+                font-size: calc(var(--ydesign-title-size-val, 1.2) * 1em) !important; font-weight: 800; color: #fff; 
                 text-align: var(--ydesign-text-logo, center); 
                 text-shadow: 0 2px 4px rgba(0,0,0,0.9);
                 line-height: 1.25; 
                 padding-bottom: 0.15em; 
             }
 
+            .ydesign-add-title {
+                width: 100%;
+                --ydesign-add-title-size-eff: var(--ydesign-add-title-size-val, 0.9);
+                font-size: calc(var(--ydesign-add-title-size-eff) * 1em) !important;
+                color: rgba(255, 255, 255, 0.9);
+                font-weight: 600; font-style: italic;
+                text-align: var(--ydesign-align-logo, center);
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                min-height: calc(var(--ydesign-add-title-size-eff) * 1.3em);
+                margin-bottom: var(--ydesign-add-title-mb, 0.3em);
+                text-shadow: 0 1px 3px rgba(0,0,0,0.9);
+            }
+
             .ydesign-info-wrap {
                 display: flex; width: 100%; overflow: hidden;
             }
 
+            /* --- СУПЕР ЖОРСТКА БЛОКОВКА ВИСОТИ ТА ОБРІЗАННЯ --- */
+            .ydesign-horizontal .ydesign-info-wrap,
+            .ydesign-horizontal .ydesign-info-wrap-2,
+            body.ydesign-badges-one-row .ydesign-vertical .ydesign-info-wrap {
+                display: flex; flex-direction: row; flex-wrap: wrap;
+                align-content: flex-start !important;
+                align-items: flex-start !important;
+                justify-content: var(--ydesign-align-badges, center);
+                column-gap: var(--ydesign-badges-gap-h, 0.15em) !important;
+                
+                height: 1.95em !important;
+                max-height: 1.95em !important;
+                min-height: 1.95em !important;
+                
+                padding-top: 0.15em !important;
+                padding-bottom: 0 !important;
+                padding-left: 0.2em !important;
+                padding-right: 0.2em !important;
+                
+                margin-left: -0.2em !important;
+                margin-right: -0.2em !important;
+                
+                overflow: hidden !important;
+                clip-path: none !important;
+                transform: translateZ(0);
+            }
+            .ydesign-horizontal .ydesign-info-wrap-2 {
+                margin-top: var(--ydesign-badge-rows-gap, 0.4em);
+            }
+
             .ydesign-vertical .ydesign-info-wrap {
                 flex-direction: column;
-                align-items: var(--ydesign-align-badges, center);
+                align-items: var(--ydesign-align-badges, center) !important;
+                height: auto !important; 
+                max-height: none !important;
+                overflow: visible !important;
+                clip-path: none !important;
+                transform: none !important;
                 gap: var(--ydesign-badge-rows-gap, 0.4em);
             }
 
-            .ydesign-horizontal .ydesign-info-wrap {
-                flex-direction: row; flex-wrap: nowrap;
+            .ydesign-vertical .ydesign-badges, 
+            .ydesign-vertical .ydesign-ratings, 
+            .ydesign-vertical .ydesign-genres {
+                display: flex; 
+                flex-wrap: wrap; 
+                align-content: flex-start !important;
+                align-items: flex-start !important;
+                column-gap: var(--ydesign-badges-gap-v, 0.15em) !important; 
                 justify-content: var(--ydesign-align-badges, center);
-                align-items: center; gap: 0.4em;
+                width: 100% !important; 
+                
+                height: 1.95em !important;
+                max-height: 1.95em !important;
+                min-height: 1.95em !important;
+                
+                padding-top: 0.15em !important;
+                padding-bottom: 0 !important;
+                padding-left: 0.2em !important;
+                padding-right: 0.2em !important;
+                
+                margin-left: -0.2em !important;
+                margin-right: -0.2em !important;
+                
+                overflow: hidden !important; 
+                clip-path: none !important;
+                transform: translateZ(0);
             }
 
-            body.ydesign-badges-one-row .ydesign-vertical .ydesign-info-wrap {
-                flex-direction: row;
-                flex-wrap: wrap;
-                justify-content: var(--ydesign-align-badges, center);
-                align-items: center;
-                gap: 0.4em;
+            body.ydesign-badges-one-row .ydesign-vertical .ydesign-genres,
+            body.ydesign-badges-one-row .ydesign-vertical .ydesign-badges,
+            body.ydesign-badges-one-row .ydesign-vertical .ydesign-ratings,
+            .ydesign-horizontal .ydesign-badges,
+            .ydesign-horizontal .ydesign-ratings { 
+                display: flex;
+                flex-wrap: nowrap; 
+                width: auto !important; 
+                height: 1.65em !important; 
+                margin: 0; padding: 0; flex-shrink: 0; 
+                column-gap: var(--ydesign-badges-gap-h, 0.15em) !important; 
+                overflow: visible !important;
+                margin-bottom: 100px !important; /* Магія: якщо цей блок переноситься, він падає на 100px вниз */
             }
 
-            .ydesign-horizontal .ydesign-badges, .ydesign-horizontal .ydesign-ratings,
-            body.ydesign-badges-one-row .ydesign-vertical .ydesign-badges, 
-            body.ydesign-badges-one-row .ydesign-vertical .ydesign-ratings {
-                width: auto; flex-shrink: 1;
+            .ydesign-horizontal .ydesign-genres {
+                display: flex; 
+                flex-wrap: wrap; 
+                align-content: flex-start !important;
+                align-items: flex-start !important;
+                column-gap: var(--ydesign-badges-gap-h, 0.15em) !important; 
+                width: 100% !important; 
+                justify-content: var(--ydesign-align-badges, center);
+                
+                height: 1.95em !important;
+                max-height: 1.95em !important;
+                min-height: 1.95em !important;
+                
+                padding-top: 0.15em !important;
+                padding-bottom: 0 !important;
+                padding-left: 0.2em !important;
+                padding-right: 0.2em !important;
+                
+                margin-left: -0.2em !important;
+                margin-right: -0.2em !important;
+                
+                overflow: hidden !important; 
+                clip-path: none !important;
+                transform: translateZ(0);
             }
 
-            .ydesign-badges, .ydesign-ratings {
-                display: flex; flex-direction: row; flex-wrap: nowrap; white-space: nowrap;
-                gap: 0.4em; width: 100%; 
-                justify-content: var(--ydesign-align-badges, center);
-                overflow: hidden; margin-bottom: 0;
+            /* Контроль шрифтів */
+            .ydesign-badges {
+                --ydesign-badge-size-eff: var(--ydesign-badge-size-val, 0.75);
+                font-size: calc(var(--ydesign-badge-size-eff) * 1em) !important;
+            }
+            .ydesign-ratings {
+                --ydesign-rating-size-eff: var(--ydesign-rating-size-val, 0.8);
+                font-size: calc(var(--ydesign-rating-size-eff) * 1em) !important;
+            }
+            .ydesign-genres {
+                --ydesign-genres-size-eff: var(--ydesign-genres-size-val, 0.75);
+                font-size: calc(var(--ydesign-genres-size-eff) * 1em) !important;
+                margin-top: var(--ydesign-genres-gap, 0.15em);
+                margin-bottom: var(--ydesign-genres-gap, 0.15em);
+            }
+
+            /* --- ІДЕАЛЬНА ВИСОТА БЕЙДЖІВ ТА ЦЕНТРУВАННЯ --- */
+            .ydesign-badge, .ydesign-genre-badge, .ydesign-rating {
+                display: inline-flex !important; 
+                align-items: center !important; 
+                justify-content: center !important;
+                
+                height: 1.65em !important; 
+                min-height: 1.65em !important;
+                max-height: 1.65em !important;
+                
+                padding: 0 0.4em !important; 
+                box-sizing: border-box !important; 
+                text-shadow: 0 1px 3px rgba(0,0,0,0.9) !important;
+                white-space: nowrap !important;
+                flex-shrink: 0 !important; 
+                
+                line-height: 1 !important; 
+                vertical-align: top !important;
+                border-radius: 0.25em !important; 
+                
+                /* Магія 2: якщо окремий бейдж переноситься (наприклад у жанрах), він падає на 100px вниз! */
+                margin-bottom: 100px !important; 
+            }
+
+            .ydesign-badge, .ydesign-genre-badge {
+                border: 1px solid rgba(255,255,255,0.6) !important;
+                background: transparent !important; 
             }
 
             .ydesign-badge {
-                display: inline-flex; align-items: center; justify-content: center;
-                font-size: var(--ydesign-badge-size, 0.75em); font-weight: 700; color: #fff;
-                padding: 0.25em 0.4em; border: 1px solid rgba(255,255,255,0.7);
-                border-radius: 0.3em; background: transparent; 
-                box-sizing: border-box; text-shadow: 0 1px 3px rgba(0,0,0,0.9);
+                font-size: 1em !important; 
+                font-weight: 700 !important; color: #fff !important;
+            }
+
+            .ydesign-genre-badge {
+                font-size: 1em !important; 
+                font-weight: 600 !important; color: rgba(255,255,255,0.95) !important;
+                border-color: rgba(255,255,255,0.4) !important;
             }
             
             .ydesign-rating {
-                display: flex; align-items: center; gap: 0.2em;
-                font-size: var(--ydesign-rating-size, 0.8em); font-weight: 700; color: #fff;
-                text-shadow: 0 1px 3px rgba(0,0,0,0.9); 
+                gap: 0.25em !important;
+                font-size: 1em !important; font-weight: 700 !important; color: #fff !important;
+                border: 1px solid transparent !important; 
+                padding: 0 !important; 
             }
+
             .ydesign-rating img {
-                width: 1.1em; height: 1.1em; object-fit: contain; 
+                width: 1.1em !important; 
+                height: 1.1em !important; 
+                object-fit: contain !important; 
+                display: block !important; 
                 filter: saturate(var(--ydesign-ratings-saturate, 100%)) drop-shadow(0 1px 2px rgba(0,0,0,0.8)); 
+            }
+
+            body.ydesign-border-ratings .ydesign-rating {
+                border-color: rgba(255,255,255,0.6) !important;
+                padding: 0 0.4em !important; 
+                background: transparent !important;
+            }
+
+            /* --- УСІ БЕЙДЖІ ОДНОГО РОЗМІРУ --- */
+            body.ydesign-uniform-badges .ydesign-ratings {
+                --ydesign-rating-size-eff: var(--ydesign-badge-size-val, 0.75) !important;
+            }
+            body.ydesign-uniform-badges .ydesign-genres {
+                --ydesign-genres-size-eff: var(--ydesign-badge-size-val, 0.75) !important;
+            }
+            body.ydesign-uniform-badges .ydesign-genre-badge {
+                font-weight: 700 !important;
+            }
+            body.ydesign-uniform-badges .ydesign-rating img {
+                width: 1.15em !important; 
+                height: 1.15em !important;
+            }
+
+            /* --- УСІ ВЕРТИКАЛЬНІ ВІДСТУПИ ОДНАКОВІ (МАТЕМАТИЧНО ВИРІВНЯНИЙ РЕЖИМ) --- */
+            body.ydesign-uniform-v-gaps-v .ydesign-vertical .ydesign-add-title,
+            body.ydesign-uniform-v-gaps-v .ydesign-vertical .ydesign-info-wrap,
+            body.ydesign-uniform-v-gaps-v .ydesign-vertical .ydesign-genres,
+            body.ydesign-uniform-v-gaps-v .ydesign-vertical .ydesign-slogan {
+                margin-top: 0 !important;
+                margin-bottom: 0 !important;
+            }
+            body.ydesign-uniform-v-gaps-v:not(.ydesign-badges-one-row) .ydesign-vertical .ydesign-info-wrap {
+                gap: 0 !important;
+                row-gap: 0 !important;
+            }
+            body.ydesign-uniform-v-gaps-v .ydesign-vertical .ydesign-info-wrap > * {
+                margin-top: 0 !important;
+                margin-bottom: 0 !important;
+            }
+
+            body.ydesign-uniform-v-gaps-h .ydesign-horizontal .ydesign-add-title,
+            body.ydesign-uniform-v-gaps-h .ydesign-horizontal .ydesign-info-wrap,
+            body.ydesign-uniform-v-gaps-h .ydesign-horizontal .ydesign-info-wrap-2,
+            body.ydesign-uniform-v-gaps-h .ydesign-horizontal .ydesign-genres,
+            body.ydesign-uniform-v-gaps-h .ydesign-horizontal .ydesign-slogan {
+                margin-top: 0 !important;
+                margin-bottom: 0 !important;
+            }
+
+            body.ydesign-uniform-v-gaps-v .ydesign-vertical .ydesign-content-layer > *:not(.ydesign-logo-container) + * {
+                margin-top: var(--ydesign-uniform-v-gap-v, 0.05em) !important;
+            }
+            body.ydesign-uniform-v-gaps-v .ydesign-vertical .ydesign-add-title {
+                margin-top: calc(var(--ydesign-uniform-v-gap-v) / var(--ydesign-add-title-size-eff, 0.9)) !important;
+            }
+            body.ydesign-uniform-v-gaps-v .ydesign-vertical .ydesign-add-title + .ydesign-info-wrap {
+                margin-top: calc(var(--ydesign-uniform-v-gap-v) / var(--ydesign-badge-size-eff, 0.75)) !important;
+            }
+            body.ydesign-uniform-v-gaps-v .ydesign-vertical .ydesign-add-title + .ydesign-genres {
+                margin-top: calc(var(--ydesign-uniform-v-gap-v) / var(--ydesign-genres-size-eff, 0.75)) !important;
+            }
+            body.ydesign-uniform-v-gaps-v .ydesign-vertical .ydesign-add-title + .ydesign-slogan {
+                margin-top: calc(var(--ydesign-uniform-v-gap-v) / var(--ydesign-slogan-size-eff, 0.85)) !important;
+            }
+            body.ydesign-uniform-v-gaps-v:not(.ydesign-badges-one-row) .ydesign-vertical .ydesign-info-wrap > .ydesign-badges + .ydesign-genres {
+                margin-top: calc(var(--ydesign-uniform-v-gap-v) / var(--ydesign-genres-size-eff, 0.75)) !important;
+            }
+            body.ydesign-uniform-v-gaps-v:not(.ydesign-badges-one-row) .ydesign-vertical .ydesign-info-wrap > .ydesign-genres + .ydesign-ratings {
+                margin-top: calc(var(--ydesign-uniform-v-gap-v) / var(--ydesign-rating-size-eff, 0.8)) !important;
+            }
+            body.ydesign-uniform-v-gaps-v:not(.ydesign-badges-one-row) .ydesign-vertical .ydesign-info-wrap > .ydesign-badges + .ydesign-ratings {
+                margin-top: calc(var(--ydesign-uniform-v-gap-v) / var(--ydesign-rating-size-eff, 0.8)) !important;
+            }
+            body.ydesign-uniform-v-gaps-v .ydesign-vertical .ydesign-info-wrap + .ydesign-slogan {
+                margin-top: calc(var(--ydesign-uniform-v-gap-v) / var(--ydesign-slogan-size-eff, 0.85)) !important;
+            }
+
+            body.ydesign-uniform-v-gaps-h .ydesign-horizontal .ydesign-content-layer > *:not(.ydesign-logo-container) + * {
+                margin-top: var(--ydesign-uniform-v-gap-h, 0.30em) !important;
+            }
+            body.ydesign-uniform-v-gaps-h .ydesign-horizontal .ydesign-add-title {
+                margin-top: calc(var(--ydesign-uniform-v-gap-h) / var(--ydesign-add-title-size-eff, 0.9)) !important;
+            }
+            body.ydesign-uniform-v-gaps-h .ydesign-horizontal .ydesign-add-title + .ydesign-info-wrap {
+                margin-top: calc(var(--ydesign-uniform-v-gap-h) / var(--ydesign-badge-size-eff, 0.75)) !important;
+            }
+            body.ydesign-uniform-v-gaps-h .ydesign-horizontal .ydesign-info-wrap + .ydesign-info-wrap-2 {
+                margin-top: calc(var(--ydesign-uniform-v-gap-h) / var(--ydesign-rating-size-eff, 0.8)) !important;
+            }
+            body.ydesign-uniform-v-gaps-h .ydesign-horizontal .ydesign-info-wrap + .ydesign-genres {
+                margin-top: calc(var(--ydesign-uniform-v-gap-h) / var(--ydesign-genres-size-eff, 0.75)) !important;
+            }
+            body.ydesign-uniform-v-gaps-h .ydesign-horizontal .ydesign-info-wrap-2 + .ydesign-genres {
+                margin-top: calc(var(--ydesign-uniform-v-gap-h) / var(--ydesign-genres-size-eff, 0.75)) !important;
+            }
+            body.ydesign-uniform-v-gaps-h .ydesign-horizontal .ydesign-genres + .ydesign-slogan {
+                margin-top: calc(var(--ydesign-uniform-v-gap-h) / var(--ydesign-slogan-size-eff, 0.85)) !important;
+            }
+            body.ydesign-uniform-v-gaps-h .ydesign-horizontal .ydesign-info-wrap + .ydesign-slogan {
+                margin-top: calc(var(--ydesign-uniform-v-gap-h) / var(--ydesign-slogan-size-eff, 0.85)) !important;
+            }
+            body.ydesign-uniform-v-gaps-h .ydesign-horizontal .ydesign-info-wrap-2 + .ydesign-slogan {
+                margin-top: calc(var(--ydesign-uniform-v-gap-h) / var(--ydesign-slogan-size-eff, 0.85)) !important;
             }
 
             .ydesign-slogan {
                 width: 100%;
-                font-size: var(--ydesign-slogan-size, 0.85em); color: #fff;
+                --ydesign-slogan-size-eff: var(--ydesign-slogan-size-val, 0.85);
+                font-size: calc(var(--ydesign-slogan-size-eff) * 1em) !important; color: #fff;
                 text-align: var(--ydesign-text-slogan, center); 
                 margin-top: var(--ydesign-slogan-padding, 0.3em); 
                 line-height: 1.4; font-weight: 500;
                 text-shadow: 0 2px 4px rgba(0,0,0,0.9);
-                display: -webkit-box; 
-                -webkit-line-clamp: 2; 
-                -webkit-box-orient: vertical; 
+                display: block; 
+                white-space: nowrap;
                 overflow: hidden;
-                /* Замість фіксованої висоти використовуємо min-height та padding, щоб не різало літери */
-                min-height: calc(var(--ydesign-slogan-size, 0.85em) * 1.4 * 2);
-                padding-bottom: 0.2em; 
+                text-overflow: ellipsis;
+                min-height: calc(var(--ydesign-slogan-size-eff) * 1.4em);
+                padding-bottom: 0.1em; 
             }
 
             .ydesign-desc-under {
                 position: relative;
                 z-index: 10;
                 width: 100%;
-                font-size: var(--ydesign-desc-size, 0.85em);
+                font-size: calc(var(--ydesign-desc-size-val, 0.85) * 1em) !important;
                 color: rgba(255,255,255,0.75);
                 margin-top: 0.5em;
                 text-align: left;
                 line-height: 1.35;
                 text-shadow: 0 1px 3px rgba(0,0,0,0.8);
-                white-space: normal;
                 display: -webkit-box;
                 -webkit-line-clamp: 3;
                 -webkit-box-orient: vertical;
                 overflow: hidden;
-                /* Замість height використовуємо min-height та padding */
-                min-height: calc(var(--ydesign-desc-size, 0.85em) * 1.35 * 3);
-                padding-bottom: 0.2em;
+                height: calc(1.35em * 3) !important; 
             }
 
             body.ydesign-hide-year .ydesign-badge-year { display: none !important; }
@@ -687,6 +1085,166 @@
             body[data-ydesign-logo="text"] .ydesign-logo-img { display: none !important; }
             body[data-ydesign-logo="text"] .ydesign-fallback-text { display: flex !important; }
             body[data-ydesign-logo="logo"] .ydesign-fallback-text { display: none !important; }
+
+            /* ========================================================
+               СТИЛІ ДЛЯ СЕРІЙ (HISTORY & PRESTIGE REDESIGN)
+               Активуються класом .ydesign-series-active на body 
+               ======================================================== */
+            .ydesign-series-active .online-prestige--full {
+                -webkit-animation: prestigeFadeIn 0.3s ease;
+                animation: prestigeFadeIn 0.3s ease;
+            }
+
+            @-webkit-keyframes prestigeFadeIn {
+                from { opacity: 0; }
+                to { opacity: 1; }
+            }
+
+            @keyframes prestigeFadeIn {
+                from { opacity: 0; }
+                to { opacity: 1; }
+            }
+
+            .ydesign-series-active .online-prestige.online-prestige--full {
+                display: inline-block !important;
+                vertical-align: top !important;
+                margin: 10px !important;
+                position: relative !important;
+                height: auto !important;
+                border-radius: 12px !important;
+                overflow: hidden !important;
+                background-color: #1a1a1a !important;
+                box-sizing: border-box !important;
+                transition: transform 0.2s ease, box-shadow 0.2s ease !important;
+                border: none !important;
+                outline: none !important;
+                box-shadow: 0 0 0 2px transparent !important;
+                width: calc(50% - 20px) !important; 
+                width: calc(var(--ydesign-series-width, 50%) - 20px) !important;
+            }
+
+            .ydesign-series-active .online-prestige.online-prestige--full::before {
+                content: "";
+                display: block !important;
+                padding-top: 56.25% !important; 
+            }
+
+            .ydesign-series-active .online-prestige.online-prestige--full.focus {
+                transform: scale(1.03) !important;
+                box-shadow: 0 0 0 3px #fff, 0 10px 25px rgba(0,0,0,0.8) !important;
+                border: none !important;
+                outline: none !important;
+                z-index: 10 !important;
+            }
+
+            .ydesign-series-active .online-prestige.online-prestige--full .online-prestige__img {
+                position: absolute !important;
+                top: 0 !important; left: 0 !important;
+                width: 100% !important; height: 100% !important;
+                z-index: 1 !important; border-radius: 0 !important;
+            }
+            .ydesign-series-active .online-prestige.online-prestige--full .online-prestige__img img {
+                width: 100% !important; height: 100% !important; object-fit: cover !important;
+            }
+
+            .ydesign-series-active .online-prestige.online-prestige--full .online-prestige__body {
+                position: absolute !important; top: 0 !important; bottom: 0 !important; left: 0 !important; right: 0 !important;
+                z-index: 3 !important; display: flex !important; flex-direction: column !important;
+                justify-content: flex-end !important; background: transparent !important;
+                padding-bottom: calc(1em + 5px) !important;
+            }
+
+            .ydesign-series-active .online-prestige.online-prestige--full .online-prestige__head,
+            .ydesign-series-active .online-prestige.online-prestige--full .online-prestige__footer {
+                padding: 0 15px !important; position: relative !important; z-index: 4 !important;
+            }
+            
+            .ydesign-series-active .online-prestige.online-prestige--full .online-prestige__head {
+                order: 2 !important; 
+                padding-right: 55px !important; 
+                margin-bottom: 0 !important;
+            }
+            .ydesign-series-active .online-prestige.online-prestige--full .online-prestige__footer {
+                order: 1 !important;
+                margin-bottom: 4px !important;
+            }
+
+            .ydesign-series-active .online-prestige.online-prestige--full .online-prestige__title {
+                font-size: 1.05em !important; line-height: 1.2 !important;
+                white-space: normal !important; display: -webkit-box !important;
+                -webkit-line-clamp: 2 !important; -webkit-box-orient: vertical !important;
+                overflow: hidden !important; text-overflow: ellipsis !important;
+                margin-bottom: 0 !important; text-shadow: 1px 1px 3px #000 !important;
+            }
+
+            .ydesign-series-active .online-prestige .online-prestige__info {
+                display: flex !important; flex-direction: column !important;
+                align-items: flex-start !important; gap: 4px !important;
+            }
+            .ydesign-series-active .online-prestige .online-prestige__info > span {
+                display: block !important; margin: 0 0 4px 0 !important;
+                font-size: 0.9em !important; line-height: 1.1 !important;
+                color: #ddd !important; text-shadow: 1px 1px 2px #000 !important;
+            }
+            .ydesign-series-active .online-prestige .online-prestige__info > span:last-child {
+                margin-bottom: 0 !important;
+            }
+
+            .ydesign-series-active .online-prestige .right-top-badges {
+                position: absolute !important; top: 10px !important; right: 15px !important;
+                z-index: 15 !important; display: flex !important; flex-direction: column !important;
+                align-items: flex-end !important; gap: 6px !important;
+            }
+
+            .ydesign-series-active .online-prestige .right-top-badges > span,
+            .ydesign-series-active .online-prestige .right-top-badges .online-prestige__quality {
+                background: transparent !important; padding: 0 !important;
+                border-radius: 0 !important; box-shadow: none !important; border: none !important;
+                font-size: 0.85em !important; 
+                font-weight: 500 !important; 
+                color: #fff !important; margin: 0 0 6px 0 !important;
+                display: flex !important; align-items: center !important; gap: 5px !important;
+                text-shadow: 1px 1px 2px rgba(0,0,0,0.9), 0 0 5px rgba(0,0,0,0.6) !important; 
+                line-height: 1 !important;
+            }
+            .ydesign-series-active .online-prestige .right-top-badges > *:last-child {
+                margin-bottom: 0 !important;
+            }
+            .ydesign-series-active .online-prestige .right-top-badges svg {
+                display: none !important;
+            }
+
+            .ydesign-series-active .online-prestige.online-prestige--full > .online-prestige__time {
+                position: absolute !important; right: 15px !important;
+                bottom: calc(1em + 5px) !important; 
+                z-index: 10 !important;
+                font-size: 0.85em !important; 
+                font-weight: 500 !important;
+                background: transparent !important; padding: 0 !important;
+                border-radius: 0 !important; margin: 0 !important; box-shadow: none !important; border: none !important;
+                color: #fff !important;
+                text-shadow: 1px 1px 2px rgba(0,0,0,0.9), 0 0 5px rgba(0,0,0,0.6) !important;
+            }
+
+            .ydesign-series-active .online-prestige.online-prestige--full .online-prestige__timeline {
+                position: absolute !important; bottom: 0 !important; left: 0 !important; right: 0 !important;
+                width: 100% !important; height: 1em !important; margin: 0 !important;
+                z-index: 5 !important; background: rgba(255,255,255,0.2) !important; border-radius: 0 !important;
+            }
+
+            .ydesign-series-active .online-prestige.online-prestige--full .online-prestige__timeline::after {
+                content: attr(data-percent); 
+                position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+                display: flex; align-items: center; justify-content: center;
+                font-size: 0.85em; font-weight: 500; color: rgba(0, 0, 0, 0.6); 
+                z-index: 10; pointer-events: none;
+            }
+            .ydesign-series-active .online-prestige.online-prestige--full .online-prestige__timeline .time-line {
+                width: 100% !important; height: 100% !important; background: transparent !important; margin: 0 !important; border-radius: 0 !important;
+            }
+            .ydesign-series-active .online-prestige.online-prestige--full .online-prestige__timeline .time-line > div {
+                height: 100% !important; border-radius: 0 !important; background-color: #ffffff !important; transition: width 0.3s ease !important;
+            }
         `;
         document.head.appendChild(style);
     }
@@ -699,18 +1257,41 @@
 
     function applyDynamicCSS() {
         document.body.classList.add('ydesign-active');
+        document.body.classList.toggle('ydesign-series-active', getSet('ydesign_series_redesign'));
+        document.body.classList.toggle('ydesign-uniform-badges', getSet('ydesign_uniform_badges'));
+        document.body.classList.toggle('ydesign-uniform-v-gaps-v', getSet('ydesign_uniform_v_gaps_vert'));
+        document.body.classList.toggle('ydesign-uniform-v-gaps-h', getSet('ydesign_uniform_v_gaps_horz'));
+
+        var seriesCards = parseInt(getSet('ydesign_series_cards')) || 2;
+        var seriesWidth = (100 / seriesCards) + '%';
+        document.documentElement.style.setProperty('--ydesign-series-width', seriesWidth);
+
+        document.documentElement.style.setProperty('--ydesign-grid-items-v', getSet('ydesign_grid_items_v'));
+        document.documentElement.style.setProperty('--ydesign-grid-items-h', getSet('ydesign_grid_items_h'));
+
         document.documentElement.style.setProperty('--ydesign-logo-h', getSet('ydesign_logo_max_h') + '%');
         document.documentElement.style.setProperty('--ydesign-logo-w', getSet('ydesign_logo_max_w') + '%');
-        document.documentElement.style.setProperty('--ydesign-title-size', getSet('ydesign_text_title_size') + 'em');
-        document.documentElement.style.setProperty('--ydesign-slogan-size', getSet('ydesign_text_slogan_size') + 'em');
-        document.documentElement.style.setProperty('--ydesign-badge-size', getSet('ydesign_text_badge_size') + 'em');
-        document.documentElement.style.setProperty('--ydesign-rating-size', getSet('ydesign_text_rating_size') + 'em');
-        document.documentElement.style.setProperty('--ydesign-desc-size', getSet('ydesign_desc_size') + 'em');
+        
+        document.documentElement.style.setProperty('--ydesign-title-size-val', getSet('ydesign_text_title_size'));
+        document.documentElement.style.setProperty('--ydesign-add-title-size-val', getSet('ydesign_text_add_title_size'));
+        document.documentElement.style.setProperty('--ydesign-slogan-size-val', getSet('ydesign_text_slogan_size'));
+        document.documentElement.style.setProperty('--ydesign-badge-size-val', getSet('ydesign_text_badge_size'));
+        document.documentElement.style.setProperty('--ydesign-genres-size-val', getSet('ydesign_text_genres_size'));
+        document.documentElement.style.setProperty('--ydesign-rating-size-val', getSet('ydesign_text_rating_size'));
+        document.documentElement.style.setProperty('--ydesign-desc-size-val', getSet('ydesign_desc_size'));
+        
+        document.documentElement.style.setProperty('--ydesign-uniform-v-gap-v', getSet('ydesign_uniform_v_gap_val_vert') + 'em');
+        document.documentElement.style.setProperty('--ydesign-uniform-v-gap-h', getSet('ydesign_uniform_v_gap_val_horz') + 'em');
         document.documentElement.style.setProperty('--ydesign-card-gap', getSet('ydesign_card_gap') + 'em');
         document.documentElement.style.setProperty('--ydesign-badge-rows-gap', getSet('ydesign_badge_rows_gap') + 'em');
+        document.documentElement.style.setProperty('--ydesign-badges-gap-v', getSet('ydesign_badges_gap_vert') + 'em'); 
+        document.documentElement.style.setProperty('--ydesign-badges-gap-h', getSet('ydesign_badges_gap_horz') + 'em'); 
+        document.documentElement.style.setProperty('--ydesign-genres-gap', getSet('ydesign_genres_gap') + 'em');
+        
         document.documentElement.style.setProperty('--ydesign-content-pb', getSet('ydesign_content_pb') + 'em');
         document.documentElement.style.setProperty('--ydesign-slogan-padding', getSet('ydesign_slogan_padding') + 'em');
         document.documentElement.style.setProperty('--ydesign-logo-mb', getSet('ydesign_logo_mb') + 'em');
+        document.documentElement.style.setProperty('--ydesign-add-title-mb', getSet('ydesign_add_title_mb') + 'em');
         document.documentElement.style.setProperty('--ydesign-ratings-saturate', getSet('ydesign_ratings_saturate') + '%');
 
         var alignLogo = getSet('ydesign_align_logo');
@@ -730,6 +1311,9 @@
         document.body.classList.toggle('ydesign-hide-age', !getSet('ydesign_show_age'));
         document.body.classList.toggle('ydesign-hide-slogan', !getSet('ydesign_show_slogan'));
         document.body.classList.toggle('ydesign-badges-one-row', getSet('ydesign_badges_one_row'));
+        
+        document.body.classList.toggle('ydesign-border-ratings', getSet('ydesign_border_ratings'));
+        document.body.classList.toggle('ydesign-no-border-badges', !getSet('ydesign_border_badges'));
     }
 
     function createSettings() {
@@ -741,18 +1325,41 @@
             icon: `<svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="4" ry="4"></rect><path d="M8 8l4 4 4-4"></path><path d="M12 12v4"></path></svg>`
         });
 
+        var qualities = { 'w92':'w92', 'w154':'w154', 'w200':'w300', 'w300':'w300', 'w500':'w500', 'w780':'w780', 'original':'Оригінал' };
+        
+        var textSizesExt = {}; 
+        for(let i=5; i<=40; i+=1) { let v = (i/10).toFixed(1); textSizesExt[v] = v; }
+        
+        var gaps = {}; 
+        for(let i=-20; i<=40; i+=1) { let v = (i/10).toFixed(1); gaps[v] = v + ' em'; }
+        
+        var tinyGaps = {}; 
+        for (let i=-20; i <= 40; i+=1) { let v = (i * 0.05).toFixed(2); tinyGaps[v] = v + ' em'; }
+
+        var microGaps = {};
+        for(let i=-100; i<=200; i+=1) { 
+            let v = (i/100).toFixed(2); 
+            microGaps[v] = v + ' em'; 
+        }
+
+        var logoSizes = {};
+        for(let i=1; i<=34; i+=3) { logoSizes[i] = i + '%'; }
+        logoSizes[35] = '35%';
+        [40, 50, 60, 70, 80, 90, 100].forEach(v => logoSizes[v] = v + '%');
+
+        var saturates = { '0': '0% (Чорно-білі)', '25': '25%', '75': '75%', '100': '100% (Кольорові)' };
+        var aligns = { 'left': 'Ліворуч', 'center': 'По центру', 'right': 'Праворуч' };
+
+        // 1. БАЗОВІ НАЛАШТУВАННЯ ТА КЕШ
         Lampa.SettingsApi.addParam({
             component: 'ydesign',
             param: { name: 'ydesign_donate_qr', type: 'button' },
             field: { 
                 name: 'Підтримати розробника', 
-                description: '<div style="margin-top:0.5em;"><img src="https://yarikrazor-star.github.io/lmp/qrcode_363105091_155ded7f29c877cf7f4655b331578815.png" style="width:230px; border-radius:10px; box-shadow: 0 4px 10px rgba(0,0,0,0.5);"></div><div style="margin-top:0.5em; opacity:0.8;">Натисніть для переходу на ymods.donatik.ua</div>' 
+                description: '<div style="margin-top:0.5em;"><img src="https://raw.githubusercontent.com/yarikrazor-star/lmp/refs/heads/main/qrcode_363224392_90d1274dab2843222e1b2172e2fe0026.png" style="width:230px; border-radius:10px; box-shadow: 0 4px 10px rgba(0,0,0,0.5);"></div><div style="margin-top:0.5em; opacity:0.8;">Натисніть для переходу на ymods.donatik.ua</div>' 
             },
-            onChange: function() {
-                window.open('https://ymods.donatik.ua/', '_blank');
-            }
+            onChange: function() { window.open('https://ymods.donatik.ua/', '_blank'); }
         });
-
         Lampa.SettingsApi.addParam({
             component: 'ydesign',
             param: { name: 'ydesign_clear_cache', type: 'button' },
@@ -767,73 +1374,6 @@
                 Lampa.Noty.show('Кеш плагіну успішно очищено (' + keysToRemove.length + ' записів)');
             }
         });
-
-        var qualities = { 'w92':'w92', 'w154':'w154', 'w200':'w200', 'w300':'w300', 'w500':'w500', 'w780':'w780', 'original':'Оригінал' };
-        
-        var textSizesExt = {};
-        for(let i=5; i<=30; i+=1) { let v = (i/10).toFixed(1); textSizesExt[v] = v; }
-        
-        var gaps = {};
-        for(let i=0; i<=15; i++) { gaps[(i/10).toFixed(1)] = (i/10).toFixed(1) + ' em'; }
-
-        var logoSizes = {};
-        for(let i=1; i<=34; i+=3) { logoSizes[i] = i + '%'; }
-        logoSizes[35] = '35%';
-        [40, 50, 60, 70, 80, 90, 100].forEach(v => logoSizes[v] = v + '%');
-
-        var logoMbGaps = {};
-        for (var i = -10; i <= 50; i += 5) {
-            var v = (i / 10).toFixed(1);
-            logoMbGaps[v] = v + ' em';
-        }
-
-        var saturates = { '0': '0% (Чорно-білі)', '25': '25%', '75': '75%', '100': '100% (Кольорові)' };
-
-        var aligns = { 'left': 'Ліворуч', 'center': 'По центру', 'right': 'Праворуч' };
-
-        Lampa.SettingsApi.addParam({ component: 'ydesign', param: { name: 'ydesign_lazy_load', type: 'trigger', default: DefaultSettings.ydesign_lazy_load }, field: { name: 'Ліниве завантаження', description: 'Завантажувати додаткові дані (лого, рейтинги) тільки при появі картки на екрані' } });
-        
-        Lampa.SettingsApi.addParam({ component: 'ydesign', param: { name: 'ydesign_card_type_main', type: 'select', values: { 'vertical':'Вертикальні (9:16)', 'horizontal':'Горизонтальні (16:11)' }, default: DefaultSettings.ydesign_card_type_main }, field: { name: 'Тип карток (Головна)' } });
-        Lampa.SettingsApi.addParam({ component: 'ydesign', param: { name: 'ydesign_card_type_other', type: 'select', values: { 'vertical':'Вертикальні (9:16)', 'horizontal':'Горизонтальні (16:11)' }, default: DefaultSettings.ydesign_card_type_other }, field: { name: 'Тип карток (Інші сторінки)' } });
-        Lampa.SettingsApi.addParam({ component: 'ydesign', param: { name: 'ydesign_badges_one_row', type: 'trigger', default: DefaultSettings.ydesign_badges_one_row }, field: { name: 'Усі бейджі в 1 ряд (Вертикальні)', description: 'Рейтинги та бейджі будуть розташовані в один суцільний ряд' } });
-        
-        Lampa.SettingsApi.addParam({ component: 'ydesign', param: { name: 'ydesign_show_desc_horz', type: 'trigger', default: DefaultSettings.ydesign_show_desc_horz }, field: { name: 'Опис під карткою (Горизонтальні)' } });
-        Lampa.SettingsApi.addParam({ component: 'ydesign', param: { name: 'ydesign_desc_size', type: 'select', values: textSizesExt, default: DefaultSettings.ydesign_desc_size }, field: { name: 'Розмір тексту опису' } });
-
-        Lampa.SettingsApi.addParam({ component: 'ydesign', param: { name: 'ydesign_card_gap', type: 'select', values: gaps, default: DefaultSettings.ydesign_card_gap }, field: { name: 'Відстань між картками' } });
-        Lampa.SettingsApi.addParam({ component: 'ydesign', param: { name: 'ydesign_badge_rows_gap', type: 'select', values: gaps, default: DefaultSettings.ydesign_badge_rows_gap }, field: { name: 'Відступ між рядками бейджів/рейтингів', description: 'По вертикалі' } });
-        Lampa.SettingsApi.addParam({ component: 'ydesign', param: { name: 'ydesign_content_pb', type: 'select', values: gaps, default: DefaultSettings.ydesign_content_pb }, field: { name: 'Відступ контенту знизу', description: 'Опускає слоган та бейджі нижче (padding-bottom)' } });
-        Lampa.SettingsApi.addParam({ component: 'ydesign', param: { name: 'ydesign_slogan_padding', type: 'select', values: gaps, default: DefaultSettings.ydesign_slogan_padding }, field: { name: 'Відступ слогану зверху', description: 'Опустити слоган нижче' } });
-        Lampa.SettingsApi.addParam({ component: 'ydesign', param: { name: 'ydesign_logo_mb', type: 'select', values: logoMbGaps, default: DefaultSettings.ydesign_logo_mb }, field: { name: 'Відступ назви/лого від бейджів', description: 'Регулює відстань по вертикалі між логотипом та бейджами' } });
-        Lampa.SettingsApi.addParam({ component: 'ydesign', param: { name: 'ydesign_ratings_saturate', type: 'select', values: saturates, default: DefaultSettings.ydesign_ratings_saturate }, field: { name: 'Насиченість іконок рейтингів', description: 'Керує колірною гамою логотипів рейтингів' } });
-
-        Lampa.SettingsApi.addParam({ component: 'ydesign', param: { name: 'ydesign_align_logo', type: 'select', values: aligns, default: DefaultSettings.ydesign_align_logo }, field: { name: 'Центрування: Логотип/Назва' } });
-        Lampa.SettingsApi.addParam({ component: 'ydesign', param: { name: 'ydesign_align_badges', type: 'select', values: aligns, default: DefaultSettings.ydesign_align_badges }, field: { name: 'Центрування: Бейджі/Рейтинги' } });
-        Lampa.SettingsApi.addParam({ component: 'ydesign', param: { name: 'ydesign_align_slogan', type: 'select', values: aligns, default: DefaultSettings.ydesign_align_slogan }, field: { name: 'Центрування: Слоган' } });
-
-        Lampa.SettingsApi.addParam({ component: 'ydesign', param: { name: 'ydesign_logo_type', type: 'select', values: { 'logo':'Логотип (зображення)', 'text':'Текст' }, default: DefaultSettings.ydesign_logo_type }, field: { name: 'Відображення назви' } });
-        Lampa.SettingsApi.addParam({ component: 'ydesign', param: { name: 'ydesign_lang', type: 'select', values: { 'uk':'Тільки Українська', 'uk_en':'Укр -> Англ -> Ориг', 'en_orig':'Англ -> Ориг' }, default: DefaultSettings.ydesign_lang }, field: { name: 'Мова логотипу/назви' } });
-        Lampa.SettingsApi.addParam({ component: 'ydesign', param: { name: 'ydesign_slogan_lang', type: 'select', values: { 'uk':'Тільки Українська', 'uk_en':'Укр (Англ. якщо немає)', 'en':'Тільки Англійська' }, default: DefaultSettings.ydesign_slogan_lang }, field: { name: 'Мова слогану' } });
-        Lampa.SettingsApi.addParam({ component: 'ydesign', param: { name: 'ydesign_desc_lang', type: 'select', values: { 'uk':'Тільки Українська', 'uk_en':'Укр (Англ. якщо немає)', 'en':'Тільки Англійська' }, default: DefaultSettings.ydesign_desc_lang }, field: { name: 'Мова опису під карткою' } });
-
-        Lampa.SettingsApi.addParam({ component: 'ydesign', param: { name: 'ydesign_poster_quality', type: 'select', values: qualities, default: DefaultSettings.ydesign_poster_quality }, field: { name: 'Якість постерів' } });
-        Lampa.SettingsApi.addParam({ component: 'ydesign', param: { name: 'ydesign_backdrop_quality', type: 'select', values: qualities, default: DefaultSettings.ydesign_backdrop_quality }, field: { name: 'Якість бекдропів' } });
-        Lampa.SettingsApi.addParam({ component: 'ydesign', param: { name: 'ydesign_logo_quality', type: 'select', values: qualities, default: DefaultSettings.ydesign_logo_quality }, field: { name: 'Якість логотипів' } });
-
-        Lampa.SettingsApi.addParam({ component: 'ydesign', param: { name: 'ydesign_logo_max_h', type: 'select', values: logoSizes, default: DefaultSettings.ydesign_logo_max_h }, field: { name: 'Макс. висота логотипу/тексту' } });
-        Lampa.SettingsApi.addParam({ component: 'ydesign', param: { name: 'ydesign_logo_max_w', type: 'select', values: logoSizes, default: DefaultSettings.ydesign_logo_max_w }, field: { name: 'Макс. ширина логотипу/тексту' } });
-        
-        Lampa.SettingsApi.addParam({ component: 'ydesign', param: { name: 'ydesign_text_title_size', type: 'select', values: textSizesExt, default: DefaultSettings.ydesign_text_title_size }, field: { name: 'Розмір тексту назви' } });
-        Lampa.SettingsApi.addParam({ component: 'ydesign', param: { name: 'ydesign_text_slogan_size', type: 'select', values: textSizesExt, default: DefaultSettings.ydesign_text_slogan_size }, field: { name: 'Розмір тексту слогану' } });
-        Lampa.SettingsApi.addParam({ component: 'ydesign', param: { name: 'ydesign_text_badge_size', type: 'select', values: textSizesExt, default: DefaultSettings.ydesign_text_badge_size }, field: { name: 'Розмір тексту бейджів' } });
-        Lampa.SettingsApi.addParam({ component: 'ydesign', param: { name: 'ydesign_text_rating_size', type: 'select', values: textSizesExt, default: DefaultSettings.ydesign_text_rating_size }, field: { name: 'Розмір тексту рейтингів' } });
-
-        Lampa.SettingsApi.addParam({ component: 'ydesign', param: { name: 'ydesign_show_year', type: 'trigger', default: DefaultSettings.ydesign_show_year }, field: { name: 'Показувати Рік' } });
-        Lampa.SettingsApi.addParam({ component: 'ydesign', param: { name: 'ydesign_show_seasons', type: 'trigger', default: DefaultSettings.ydesign_show_seasons }, field: { name: 'Показувати Сезони/Серії' } });
-        Lampa.SettingsApi.addParam({ component: 'ydesign', param: { name: 'ydesign_show_ua', type: 'trigger', default: DefaultSettings.ydesign_show_ua }, field: { name: 'Показувати плашку UA (через API)' } });
-        Lampa.SettingsApi.addParam({ component: 'ydesign', param: { name: 'ydesign_show_age', type: 'trigger', default: DefaultSettings.ydesign_show_age }, field: { name: 'Показувати віковий рейтинг' } });
-        Lampa.SettingsApi.addParam({ component: 'ydesign', param: { name: 'ydesign_show_slogan', type: 'trigger', default: DefaultSettings.ydesign_show_slogan }, field: { name: 'Показувати слоган' } });
-
         Lampa.SettingsApi.addParam({
             component: 'ydesign',
             param: { name: 'ydesign_omdb_key_btn', type: 'button' },
@@ -844,7 +1384,6 @@
                 });
             }
         });
-
         Lampa.SettingsApi.addParam({
             component: 'ydesign',
             param: { name: 'ydesign_mdblist_key_btn', type: 'button' },
@@ -856,6 +1395,42 @@
             }
         });
 
+        // 2. СІТКА ТА ТИПИ КАРТОК
+        Lampa.SettingsApi.addParam({ component: 'ydesign', param: { name: 'ydesign_lazy_load', type: 'trigger', default: DefaultSettings.ydesign_lazy_load }, field: { name: 'Ліниве завантаження', description: 'Завантажувати додаткові дані (лого, рейтинги) тільки при появі картки на екрані' } });
+        Lampa.SettingsApi.addParam({ component: 'ydesign', param: { name: 'ydesign_card_type_main', type: 'select', values: { 'vertical':'Вертикальні (9:16)', 'horizontal':'Горизонтальні (16:11)' }, default: DefaultSettings.ydesign_card_type_main }, field: { name: 'Тип карток (Головна)' } });
+        Lampa.SettingsApi.addParam({ component: 'ydesign', param: { name: 'ydesign_card_type_other', type: 'select', values: { 'vertical':'Вертикальні (9:16)', 'horizontal':'Горизонтальні (16:11)' }, default: DefaultSettings.ydesign_card_type_other }, field: { name: 'Тип карток (Інші сторінки)' } });
+        Lampa.SettingsApi.addParam({ component: 'ydesign', param: { name: 'ydesign_grid_items_v', type: 'select', values: {'4':'4', '5':'5', '6':'6', '7':'7', '8':'8'}, default: DefaultSettings.ydesign_grid_items_v }, field: { name: 'Кількість карток у сітці (Вертикальні)', description: 'Вирішує проблему пустого відступу зправа. Картки будуть розтягуватись щоб зайняти весь простір.' } });
+        Lampa.SettingsApi.addParam({ component: 'ydesign', param: { name: 'ydesign_grid_items_h', type: 'select', values: {'2':'2', '3':'3', '4':'4', '5':'5'}, default: DefaultSettings.ydesign_grid_items_h }, field: { name: 'Кількість карток у сітці (Горизонтальні)' } });
+        Lampa.SettingsApi.addParam({ component: 'ydesign', param: { name: 'ydesign_series_redesign', type: 'trigger', default: DefaultSettings.ydesign_series_redesign }, field: { name: 'Змінити вигляд серій', description: 'Активувати новий вигляд карток всередині серій' } });
+        Lampa.SettingsApi.addParam({ component: 'ydesign', param: { name: 'ydesign_series_cards', type: 'select', values: { '1':'1', '2':'2', '3':'3', '4':'4' }, default: DefaultSettings.ydesign_series_cards }, field: { name: 'Кількість карток серій', description: 'Скільки карток показувати в один ряд (для нового вигляду серій)' } });
+
+        // 3. ВІДОБРАЖЕННЯ ЕЛЕМЕНТІВ
+        Lampa.SettingsApi.addParam({ component: 'ydesign', param: { name: 'ydesign_show_year', type: 'trigger', default: DefaultSettings.ydesign_show_year }, field: { name: 'Показувати Рік' } });
+        Lampa.SettingsApi.addParam({ component: 'ydesign', param: { name: 'ydesign_show_seasons', type: 'trigger', default: DefaultSettings.ydesign_show_seasons }, field: { name: 'Показувати Сезони/Серії' } });
+        Lampa.SettingsApi.addParam({ component: 'ydesign', param: { name: 'ydesign_show_age', type: 'trigger', default: DefaultSettings.ydesign_show_age }, field: { name: 'Показувати віковий рейтинг' } });
+        Lampa.SettingsApi.addParam({ component: 'ydesign', param: { name: 'ydesign_show_ua', type: 'trigger', default: DefaultSettings.ydesign_show_ua }, field: { name: 'Показувати плашку UA (через API)' } });
+        Lampa.SettingsApi.addParam({ component: 'ydesign', param: { name: 'ydesign_show_genres', type: 'trigger', default: DefaultSettings.ydesign_show_genres }, field: { name: 'Показувати Жанри' } });
+        Lampa.SettingsApi.addParam({ component: 'ydesign', param: { name: 'ydesign_show_slogan', type: 'trigger', default: DefaultSettings.ydesign_show_slogan }, field: { name: 'Показувати слоган' } });
+        Lampa.SettingsApi.addParam({ component: 'ydesign', param: { name: 'ydesign_show_desc_horz', type: 'trigger', default: DefaultSettings.ydesign_show_desc_horz }, field: { name: 'Опис під карткою (Горизонтальні)' } });
+        Lampa.SettingsApi.addParam({ component: 'ydesign', param: { name: 'ydesign_show_add_title', type: 'trigger', default: DefaultSettings.ydesign_show_add_title }, field: { name: 'Показувати додаткову назву', description: 'Українська назва над бейджами, якщо логотип англійський' } });
+        Lampa.SettingsApi.addParam({ component: 'ydesign', param: { name: 'ydesign_add_title_lang', type: 'select', values: { 'uk':'Завжди Українська', 'en':'Завжди Англійська', 'auto':'Залежить від логотипу' }, default: DefaultSettings.ydesign_add_title_lang }, field: { name: 'Мова додаткової назви' } });
+
+        // 4. МОВИ ТА ЯКІСТЬ
+        Lampa.SettingsApi.addParam({ component: 'ydesign', param: { name: 'ydesign_logo_type', type: 'select', values: { 'logo':'Логотип (зображення)', 'text':'Текст' }, default: DefaultSettings.ydesign_logo_type }, field: { name: 'Відображення назви' } });
+        Lampa.SettingsApi.addParam({ component: 'ydesign', param: { name: 'ydesign_lang', type: 'select', values: { 'uk':'Тільки Українська', 'uk_en':'Укр -> Англ -> Ориг', 'en_orig':'Англ -> Ориг' }, default: DefaultSettings.ydesign_lang }, field: { name: 'Мова логотипу/назви' } });
+        Lampa.SettingsApi.addParam({ component: 'ydesign', param: { name: 'ydesign_slogan_lang', type: 'select', values: { 'uk':'Тільки Українська', 'uk_en':'Укр (Англ. якщо немає)', 'en':'Тільки Англійська' }, default: DefaultSettings.ydesign_slogan_lang }, field: { name: 'Мова слогану' } });
+        Lampa.SettingsApi.addParam({ component: 'ydesign', param: { name: 'ydesign_desc_lang', type: 'select', values: { 'uk':'Тільки Українська', 'uk_en':'Укр (Англ. якщо немає)', 'en':'Тільки Англійська' }, default: DefaultSettings.ydesign_desc_lang }, field: { name: 'Мова опису під карткою' } });
+        Lampa.SettingsApi.addParam({ component: 'ydesign', param: { name: 'ydesign_poster_quality', type: 'select', values: qualities, default: DefaultSettings.ydesign_poster_quality }, field: { name: 'Якість постерів' } });
+        Lampa.SettingsApi.addParam({ component: 'ydesign', param: { name: 'ydesign_backdrop_quality', type: 'select', values: qualities, default: DefaultSettings.ydesign_backdrop_quality }, field: { name: 'Якість бекдропів' } });
+        Lampa.SettingsApi.addParam({ component: 'ydesign', param: { name: 'ydesign_logo_quality', type: 'select', values: qualities, default: DefaultSettings.ydesign_logo_quality }, field: { name: 'Якість логотипів' } });
+
+        // 5. СТИЛІЗАЦІЯ БЕЙДЖІВ ТА РЕЙТИНГІВ
+        Lampa.SettingsApi.addParam({ component: 'ydesign', param: { name: 'ydesign_uniform_badges', type: 'trigger', default: DefaultSettings.ydesign_uniform_badges }, field: { name: 'Усі бейджі одного розміру', description: 'Рейтинги та жанри матимуть такий самий розмір та висоту, як і бейдж року/віку' } });
+        Lampa.SettingsApi.addParam({ component: 'ydesign', param: { name: 'ydesign_badges_one_row', type: 'trigger', default: DefaultSettings.ydesign_badges_one_row }, field: { name: 'Усі бейджі в 1 ряд (Вертикальні)', description: 'Рейтинги та бейджі будуть розташовані в один суцільний ряд' } });
+        Lampa.SettingsApi.addParam({ component: 'ydesign', param: { name: 'ydesign_horz_ratings_row', type: 'trigger', default: DefaultSettings.ydesign_horz_ratings_row }, field: { name: 'Рейтинги з нового рядка (Горизонтальні)', description: 'Переносить блок рейтингів під бейджі року/віку' } });
+        Lampa.SettingsApi.addParam({ component: 'ydesign', param: { name: 'ydesign_border_ratings', type: 'trigger', default: DefaultSettings.ydesign_border_ratings }, field: { name: 'Показувати рамку для рейтингів' } });
+        Lampa.SettingsApi.addParam({ component: 'ydesign', param: { name: 'ydesign_border_badges', type: 'trigger', default: DefaultSettings.ydesign_border_badges }, field: { name: 'Показувати рамку для бейджів та жанрів' } });
+        Lampa.SettingsApi.addParam({ component: 'ydesign', param: { name: 'ydesign_ratings_saturate', type: 'select', values: saturates, default: DefaultSettings.ydesign_ratings_saturate }, field: { name: 'Насиченість іконок рейтингів', description: 'Керує колірною гамою логотипів рейтингів' } });
         Lampa.SettingsApi.addParam({
             component: 'ydesign',
             param: { name: 'ydesign_ratings_order_btn', type: 'button' },
@@ -866,18 +1441,64 @@
                     value: getSet('ydesign_ratings_order'),
                     free: true, nosave: true
                 }, function (new_val) {
-                    if (new_val !== undefined) {
-                        Lampa.Storage.set('ydesign_ratings_order', new_val.trim().toLowerCase());
-                        Lampa.Settings.update();
-                    }
+                    if (new_val !== undefined) { Lampa.Storage.set('ydesign_ratings_order', new_val.trim().toLowerCase()); Lampa.Settings.update(); }
                 });
             }
         });
 
+        // 6. ВИРІВНЮВАННЯ
+        Lampa.SettingsApi.addParam({ component: 'ydesign', param: { name: 'ydesign_align_logo', type: 'select', values: aligns, default: DefaultSettings.ydesign_align_logo }, field: { name: 'Центрування: Логотип/Назва' } });
+        Lampa.SettingsApi.addParam({ component: 'ydesign', param: { name: 'ydesign_align_badges', type: 'select', values: aligns, default: DefaultSettings.ydesign_align_badges }, field: { name: 'Центрування: Бейджі/Рейтинги' } });
+        Lampa.SettingsApi.addParam({ component: 'ydesign', param: { name: 'ydesign_align_slogan', type: 'select', values: aligns, default: DefaultSettings.ydesign_align_slogan }, field: { name: 'Центрування: Слоган' } });
+
+        // 7. РОЗМІРИ ТЕКСТІВ ТА ЛОГО
+        Lampa.SettingsApi.addParam({ component: 'ydesign', param: { name: 'ydesign_logo_max_h', type: 'select', values: logoSizes, default: DefaultSettings.ydesign_logo_max_h }, field: { name: 'Макс. висота логотипу/тексту' } });
+        Lampa.SettingsApi.addParam({ component: 'ydesign', param: { name: 'ydesign_logo_max_w', type: 'select', values: logoSizes, default: DefaultSettings.ydesign_logo_max_w }, field: { name: 'Макс. ширина логотипу/тексту' } });
+        Lampa.SettingsApi.addParam({ component: 'ydesign', param: { name: 'ydesign_text_title_size', type: 'select', values: textSizesExt, default: DefaultSettings.ydesign_text_title_size }, field: { name: 'Розмір тексту основної назви' } });
+        Lampa.SettingsApi.addParam({ component: 'ydesign', param: { name: 'ydesign_text_add_title_size', type: 'select', values: textSizesExt, default: DefaultSettings.ydesign_text_add_title_size }, field: { name: 'Розмір шрифту додаткової назви' } });
+        Lampa.SettingsApi.addParam({ component: 'ydesign', param: { name: 'ydesign_text_slogan_size', type: 'select', values: textSizesExt, default: DefaultSettings.ydesign_text_slogan_size }, field: { name: 'Розмір тексту слогану' } });
+        Lampa.SettingsApi.addParam({ component: 'ydesign', param: { name: 'ydesign_text_badge_size', type: 'select', values: textSizesExt, default: DefaultSettings.ydesign_text_badge_size }, field: { name: 'Розмір тексту бейджів' } });
+        Lampa.SettingsApi.addParam({ component: 'ydesign', param: { name: 'ydesign_text_genres_size', type: 'select', values: textSizesExt, default: DefaultSettings.ydesign_text_genres_size }, field: { name: 'Розмір шрифту Жанрів' } });
+        Lampa.SettingsApi.addParam({ component: 'ydesign', param: { name: 'ydesign_text_rating_size', type: 'select', values: textSizesExt, default: DefaultSettings.ydesign_text_rating_size }, field: { name: 'Розмір тексту рейтингів' } });
+        Lampa.SettingsApi.addParam({ component: 'ydesign', param: { name: 'ydesign_desc_size', type: 'select', values: textSizesExt, default: DefaultSettings.ydesign_desc_size }, field: { name: 'Розмір тексту опису' } });
+
+        // 8. ВІДСТУПИ
+        Lampa.SettingsApi.addParam({ component: 'ydesign', param: { name: 'ydesign_uniform_v_gaps_vert', type: 'trigger', default: DefaultSettings.ydesign_uniform_v_gaps_vert }, field: { name: 'Вертикальні відступи однакові (Вертикальні картки)', description: 'Відстань між додатковою назвою, роком, рейтингами, жанрами та слоганом стане єдиною' } });
+        Lampa.SettingsApi.addParam({ component: 'ydesign', param: { name: 'ydesign_uniform_v_gap_val_vert', type: 'select', values: microGaps, default: DefaultSettings.ydesign_uniform_v_gap_val_vert }, field: { name: 'Вертикальний відступ (Вертикальні картки)' } });
+        Lampa.SettingsApi.addParam({ component: 'ydesign', param: { name: 'ydesign_uniform_v_gaps_horz', type: 'trigger', default: DefaultSettings.ydesign_uniform_v_gaps_horz }, field: { name: 'Вертикальні відступи однакові (Горизонтальні картки)', description: 'Відстань між додатковою назвою, роком, рейтингами, жанрами та слоганом стане єдиною' } });
+        Lampa.SettingsApi.addParam({ component: 'ydesign', param: { name: 'ydesign_uniform_v_gap_val_horz', type: 'select', values: microGaps, default: DefaultSettings.ydesign_uniform_v_gap_val_horz }, field: { name: 'Вертикальний відступ (Горизонтальні картки)' } });
+        
+        Lampa.SettingsApi.addParam({ component: 'ydesign', param: { name: 'ydesign_badges_gap_vert', type: 'select', values: tinyGaps, default: DefaultSettings.ydesign_badges_gap_vert }, field: { name: 'Відстань між бейджами по горизонталі (Вертикальні картки)' } });
+        Lampa.SettingsApi.addParam({ component: 'ydesign', param: { name: 'ydesign_badges_gap_horz', type: 'select', values: tinyGaps, default: DefaultSettings.ydesign_badges_gap_horz }, field: { name: 'Відстань між бейджами по горизонталі (Горизонтальні картки)' } });
+        
+        Lampa.SettingsApi.addParam({ component: 'ydesign', param: { name: 'ydesign_card_gap', type: 'select', values: gaps, default: DefaultSettings.ydesign_card_gap }, field: { name: 'Відстань між картками' } });
+        Lampa.SettingsApi.addParam({ component: 'ydesign', param: { name: 'ydesign_badge_rows_gap', type: 'select', values: gaps, default: DefaultSettings.ydesign_badge_rows_gap }, field: { name: 'Відступ між рядками бейджів/рейтингів', description: 'По verticalі' } });
+        Lampa.SettingsApi.addParam({ component: 'ydesign', param: { name: 'ydesign_genres_gap', type: 'select', values: tinyGaps, default: DefaultSettings.ydesign_genres_gap }, field: { name: 'Відступ для блоку Жанрів', description: 'Зверху та знизу жанрів' } });
+        Lampa.SettingsApi.addParam({ component: 'ydesign', param: { name: 'ydesign_content_pb', type: 'select', values: gaps, default: DefaultSettings.ydesign_content_pb }, field: { name: 'Відступ контенту знизу' } });
+        Lampa.SettingsApi.addParam({ component: 'ydesign', param: { name: 'ydesign_slogan_padding', type: 'select', values: gaps, default: DefaultSettings.ydesign_slogan_padding }, field: { name: 'Відступ слогану зверху' } });
+        Lampa.SettingsApi.addParam({ component: 'ydesign', param: { name: 'ydesign_logo_mb', type: 'select', values: gaps, default: DefaultSettings.ydesign_logo_mb }, field: { name: 'Відступ назви/лого від бейджів' } });
+        Lampa.SettingsApi.addParam({ component: 'ydesign', param: { name: 'ydesign_add_title_mb', type: 'select', values: gaps, default: DefaultSettings.ydesign_add_title_mb }, field: { name: 'Відступ додаткової назви від бейджів' } });
+
         Lampa.Settings.listener.follow('change', function(e) {
             if(e.name.indexOf('ydesign_') !== -1) {
                 applyDynamicCSS(); 
-                if (['ydesign_lang', 'ydesign_slogan_lang', 'ydesign_desc_lang', 'ydesign_logo_type', 'ydesign_card_type_main', 'ydesign_card_type_other', 'ydesign_show_desc_horz'].includes(e.name)) {
+                
+                var cssOnlyParams = [
+                    'ydesign_lazy_load', 'ydesign_grid_items_v', 'ydesign_grid_items_h',
+                    'ydesign_logo_max_h', 'ydesign_logo_max_w', 'ydesign_text_title_size',
+                    'ydesign_text_add_title_size', 'ydesign_text_slogan_size', 'ydesign_text_badge_size',
+                    'ydesign_text_genres_size', 'ydesign_text_rating_size', 'ydesign_desc_size',
+                    'ydesign_uniform_v_gap_val_vert', 'ydesign_uniform_v_gap_val_horz', 'ydesign_card_gap',
+                    'ydesign_badge_rows_gap', 'ydesign_badges_gap_vert', 'ydesign_badges_gap_horz',
+                    'ydesign_genres_gap', 'ydesign_content_pb', 'ydesign_slogan_padding', 'ydesign_logo_mb',
+                    'ydesign_add_title_mb', 'ydesign_ratings_saturate', 'ydesign_align_logo', 'ydesign_align_badges',
+                    'ydesign_align_slogan', 'ydesign_series_cards', 'ydesign_uniform_v_gaps_vert', 'ydesign_uniform_v_gaps_horz',
+                    'ydesign_uniform_badges', 'ydesign_series_redesign', 'ydesign_border_ratings', 'ydesign_border_badges',
+                    'ydesign_badges_one_row', 'ydesign_show_year', 'ydesign_show_seasons', 'ydesign_show_ua', 
+                    'ydesign_show_age', 'ydesign_show_slogan', 'ydesign_logo_type'
+                ];
+
+                if (!cssOnlyParams.includes(e.name)) {
                     document.querySelectorAll('.ydesign-card').forEach(function(c) {
                         if (c._ydesign_data) buildCardCustomDOM(c, c._ydesign_data);
                     });
@@ -891,32 +1512,174 @@
         var originalOnVisible = CardMaker.Card.onVisible;
 
         CardMaker.Card.onVisible = function () {
-            // КРЮЧОК: Забороняємо стандартному коду Lampa вантажити картинку
             this.image_loaded = true;
-
-            // Викликаємо оригінальний метод, щоб відпрацювали інші стани (фокус, класи тощо)
             originalOnVisible.apply(this, arguments);
 
             if (this.data && this.data.id && (this.data.media_type === 'movie' || this.data.media_type === 'tv' || this.data.name || this.data.title)) {
                 var el = this.html[0] || this.html;
-                
-                // Перевіряємо, щоб не створювати DOM повторно при багаторазових викликах
                 if (!el._ydesign_built) {
                     el._ydesign_built = true;
                     el._ydesign_data = this.data;
+                    
+                    var activeComp = Lampa.Activity.active() ? Lampa.Activity.active().component : 'main';
+                    el._ydesign_isMain = (activeComp === 'main');
+
                     buildCardCustomDOM(el, this.data);
                 }
             }
         };
     }
 
+    // =======================================================
+    // ЛОГІКА ДЛЯ РЕДИЗАЙНУ СЕРІЙ
+    // =======================================================
+    function formatPrestigeCard(card) {
+        if (!getSet('ydesign_series_redesign')) return false;
+
+        if (card.dataset.fixedLayout === "true") return false;
+        card.dataset.fixedLayout = "true";
+
+        if (card.classList.contains('online-prestige-watched')) {
+            card.style.opacity = '0.5'; 
+        }
+
+        var splits = card.querySelectorAll('.online-prestige-split');
+        splits.forEach(function(s) { s.remove(); });
+
+        var rightTopBlock = card.querySelector('.right-top-badges');
+        if (!rightTopBlock) {
+            rightTopBlock = document.createElement('div');
+            rightTopBlock.className = 'right-top-badges';
+            card.appendChild(rightTopBlock);
+        }
+
+        var infoBlock = card.querySelector('.online-prestige__info');
+        if (infoBlock && infoBlock.firstElementChild) {
+            var firstSpan = infoBlock.firstElementChild;
+            if (firstSpan.innerHTML.indexOf('<svg') !== -1 || firstSpan.textContent.indexOf('★') !== -1 || !isNaN(parseFloat(firstSpan.textContent))) {
+                var svg = firstSpan.querySelector('svg');
+                if (svg) svg.remove();
+                firstSpan.innerHTML = firstSpan.innerHTML.replace(/★/g, '').trim();
+                rightTopBlock.appendChild(firstSpan);
+            }
+        }
+
+        var quality = card.querySelector('.online-prestige__quality');
+        if (quality) rightTopBlock.appendChild(quality);
+
+        var time = card.querySelector('.online-prestige__time');
+        if (time) card.appendChild(time);
+
+        return false;
+    }
+
+    function initSeriesLogic() {
+        var observer = new MutationObserver(function(mutations) {
+            if (!getSet('ydesign_series_redesign')) return;
+
+            var focusLost = false;
+            mutations.forEach(function(mutation) {
+                mutation.addedNodes.forEach(function(node) {
+                    if (node.nodeType === 1) {
+                        if (node.classList && node.classList.contains('online-prestige')) {
+                            if (formatPrestigeCard(node)) focusLost = true;
+                        }
+                        if (node.querySelectorAll) {
+                            var cards = node.querySelectorAll('.online-prestige');
+                            cards.forEach(function(c) {
+                                if (formatPrestigeCard(c)) focusLost = true;
+                            });
+                        }
+                    }
+                });
+            });
+
+            if (focusLost) {
+                setTimeout(function() {
+                    var active = document.querySelector('.activity--active');
+                    if (active) {
+                        var nextValid = active.querySelector('.online-prestige.online-prestige--full.selector');
+                        if (nextValid && window.Lampa && window.Lampa.Controller) {
+                            window.Lampa.Controller.collectionFocus(nextValid, active);
+                        }
+                    }
+                }, 20);
+            }
+        });
+        observer.observe(document.body, { childList: true, subtree: true });
+
+        setInterval(function() {
+            if (!getSet('ydesign_series_redesign')) return;
+
+            var activeCards = document.querySelectorAll('.online-prestige:not(.online-prestige-watched)');
+            activeCards.forEach(function(card) {
+                var line = card.querySelector('.time-line > div');
+                if (line && line.style.width) {
+                    var timeline = card.querySelector('.online-prestige__timeline');
+                    if (timeline) {
+                        var intVal = parseInt(line.style.width, 10);
+                        if (!isNaN(intVal) && intVal >= 1) {
+                            timeline.setAttribute('data-percent', intVal + '%');
+                        } else {
+                            timeline.removeAttribute('data-percent');
+                        }
+                    }
+                }
+            });
+        }, 800);
+
+        var pageJustLoaded = false;
+        Lampa.Listener.follow('activity', function (e) {
+            if (e.type === 'start' || e.type === 'build') {
+                pageJustLoaded = true; 
+            }
+        });
+
+        setInterval(function() {
+            if (!getSet('ydesign_series_redesign') || !pageJustLoaded) return;
+
+            var active = document.querySelector('.activity--active');
+            if (!active) return;
+
+            var currentFocus = active.querySelector('.focus');
+            
+            if (!currentFocus || currentFocus.closest('.torrent-filter') || currentFocus.classList.contains('explorer-card__head-img')) {
+                var firstCard = active.querySelector('.online-prestige.online-prestige--full.selector');
+                
+                if (firstCard) {
+                    if (window.Lampa && window.Lampa.Controller) {
+                        window.Lampa.Controller.collectionFocus(firstCard, active);
+                    } else {
+                        if (currentFocus) currentFocus.classList.remove('focus');
+                        firstCard.classList.add('focus');
+                    }
+                    pageJustLoaded = false; 
+                }
+            } 
+            else if (currentFocus && currentFocus.classList.contains('online-prestige--full')) {
+                pageJustLoaded = false;
+            }
+        }, 150);
+    }
+
     function init() {
+        createSettings();
+
+        // Перевірка джерела
+        var currentSource = Lampa.Storage.get('source') || 'tmdb';
+        if (currentSource !== 'tmdb' && currentSource !== 'cub') {
+            setTimeout(function() {
+                Lampa.Noty.show('Для роботи YDesign потрібно обрати джерелом TMDB або CUB (Поточне: ' + currentSource + ')');
+            }, 3000);
+            console.log('YDesign disabled: Lampa source is not TMDB or CUB.');
+            return; // Перериваємо модифікацію карток
+        }
+
         injectCSS();
         applyDynamicCSS();
-        createSettings();
         overrideCards();
+        initSeriesLogic();
 
-        // Примусове застосування, якщо плагін завантажено із запізненням (після рендерингу карток)
         if (window.appready && Lampa.Activity && Lampa.Activity.active()) {
             setTimeout(function() {
                 var act = Lampa.Activity.active();
@@ -925,6 +1688,8 @@
                 }
             }, 100);
         }
+        
+        console.log('Lampa Plugin: YDesign successfully loaded.');
     }
 
     if (window.appready) init();
