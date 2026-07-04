@@ -50,15 +50,15 @@
         {
             url: function(text) { return 'https://translate.plausibility.cloud/api/v1/auto/uk/' + encodeURIComponent(text); },
             parse: function(res) { return res && res.translation ? res.translation : ''; }
-        }
+        },
         {
             url: function(text) { return 'https://lingva.garudalinux.org/api/v1/auto/uk/' + encodeURIComponent(text); },
             parse: function(res) { return res && res.translation ? res.translation : ''; }
-        }
+        },
         {
             url: function(text) { return 'https://translate.projectsegfau.lt/api/v1/auto/uk/' + encodeURIComponent(text); },
             parse: function(res) { return res && res.translation ? res.translation : ''; }
-        }
+        },
     ];
 
     function getSet(key) {
