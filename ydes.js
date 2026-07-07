@@ -72,6 +72,7 @@
         ydesign_mdblist_key: '',
         ydesign_series_redesign: true,
         ydesign_series_cards: '2',
+        ydesign_hide_left_column: true, // НОВЕ НАЛАШТУВАННЯ
         ydesign_horz_ratings_row: false,
         ydesign_border_ratings: true, 
         ydesign_border_badges: true, 
@@ -1245,6 +1246,19 @@
             .ydesign-series-active .online-prestige.online-prestige--full .online-prestige__timeline .time-line > div {
                 height: 100% !important; border-radius: 0 !important; background-color: #ffffff !important; transition: width 0.3s ease !important;
             }
+
+            /* ========================================================
+               ПРИХОВУВАННЯ ЛІВОЇ КОЛОНКИ
+               ======================================================== */
+            body.ydesign-hide-left-column .explorer.ydesign-has-series .explorer__left {
+                display: none !important;
+            }
+            body.ydesign-hide-left-column .explorer.ydesign-has-series .explorer__files {
+                width: 100% !important;
+                flex: 1 1 100% !important;
+                max-width: 100% !important;
+                padding-left: 0 !important;
+            }
         `;
         document.head.appendChild(style);
     }
@@ -1261,6 +1275,7 @@
         document.body.classList.toggle('ydesign-uniform-badges', getSet('ydesign_uniform_badges'));
         document.body.classList.toggle('ydesign-uniform-v-gaps-v', getSet('ydesign_uniform_v_gaps_vert'));
         document.body.classList.toggle('ydesign-uniform-v-gaps-h', getSet('ydesign_uniform_v_gaps_horz'));
+        document.body.classList.toggle('ydesign-hide-left-column', getSet('ydesign_hide_left_column')); 
 
         var seriesCards = parseInt(getSet('ydesign_series_cards')) || 2;
         var seriesWidth = (100 / seriesCards) + '%';
@@ -1403,6 +1418,7 @@
         Lampa.SettingsApi.addParam({ component: 'ydesign', param: { name: 'ydesign_grid_items_h', type: 'select', values: {'2':'2', '3':'3', '4':'4', '5':'5'}, default: DefaultSettings.ydesign_grid_items_h }, field: { name: 'Кількість карток у сітці (Горизонтальні)' } });
         Lampa.SettingsApi.addParam({ component: 'ydesign', param: { name: 'ydesign_series_redesign', type: 'trigger', default: DefaultSettings.ydesign_series_redesign }, field: { name: 'Змінити вигляд серій', description: 'Активувати новий вигляд карток всередині серій' } });
         Lampa.SettingsApi.addParam({ component: 'ydesign', param: { name: 'ydesign_series_cards', type: 'select', values: { '1':'1', '2':'2', '3':'3', '4':'4' }, default: DefaultSettings.ydesign_series_cards }, field: { name: 'Кількість карток серій', description: 'Скільки карток показувати в один ряд (для нового вигляду серій)' } });
+        Lampa.SettingsApi.addParam({ component: 'ydesign', param: { name: 'ydesign_hide_left_column', type: 'trigger', default: DefaultSettings.ydesign_hide_left_column }, field: { name: 'Прибрати ліву колонку (Серії)', description: 'Приховує опис та розтягує картки серій на весь екран' } });
 
         // 3. ВІДОБРАЖЕННЯ ЕЛЕМЕНТІВ
         Lampa.SettingsApi.addParam({ component: 'ydesign', param: { name: 'ydesign_show_year', type: 'trigger', default: DefaultSettings.ydesign_show_year }, field: { name: 'Показувати Рік' } });
@@ -1495,7 +1511,7 @@
                     'ydesign_align_slogan', 'ydesign_series_cards', 'ydesign_uniform_v_gaps_vert', 'ydesign_uniform_v_gaps_horz',
                     'ydesign_uniform_badges', 'ydesign_series_redesign', 'ydesign_border_ratings', 'ydesign_border_badges',
                     'ydesign_badges_one_row', 'ydesign_show_year', 'ydesign_show_seasons', 'ydesign_show_ua', 
-                    'ydesign_show_age', 'ydesign_show_slogan', 'ydesign_logo_type'
+                    'ydesign_show_age', 'ydesign_show_slogan', 'ydesign_logo_type', 'ydesign_hide_left_column'
                 ];
 
                 if (!cssOnlyParams.includes(e.name)) {
@@ -1538,6 +1554,11 @@
 
         if (card.dataset.fixedLayout === "true") return false;
         card.dataset.fixedLayout = "true";
+
+        var explorer = card.closest('.explorer');
+        if (explorer && !explorer.classList.contains('ydesign-has-series')) {
+            explorer.classList.add('ydesign-has-series');
+        }
 
         if (card.classList.contains('online-prestige-watched')) {
             card.style.opacity = '0.5'; 
