@@ -104,18 +104,34 @@
                     if (type === 'group') {
                         Lampa.Activity.push({ url: '', title: 'Група: ' + rawId, component: 'cache_editor_grid', level: 'keys', prefix: rawId });
                     } else if (type === 'key') {
-                        // Керування контролерами передано виключно ядру Lampa
+                        var oldVal = localStorage.getItem(rawId) || '';
+                        
                         Lampa.Input.edit({ 
                             title: 'Редагування: ' + rawId, 
-                            value: localStorage.getItem(rawId) || '', 
+                            value: oldVal, 
                             free: true, 
                             nosave: true 
                         }, function(nv) {
-                            if (nv !== undefined && nv !== null) {
+                            // Очищуємо від пробілів для надійної перевірки
+                            var checkVal = (nv === undefined || nv === null) ? '' : String(nv).trim();
+
+                            // Якщо значення пусте (користувач нажав скасувати або стер) АБО воно ідентичне старому — виходимо без змін!
+                            if (checkVal === '' || nv === oldVal) {
+                                Lampa.Noty.show('Скасовано (без змін)');
+                            } else {
+                                // Зберігаємо тільки якщо є реальний новий текст
                                 localStorage.setItem(rawId, nv);
                                 dDiv.text(nv.length > 90 ? nv.substring(0, 90) + '...' : nv);
                                 Lampa.Noty.show('Збережено');
                             }
+
+                            // Примусово повертаємо фокус на ПОТОЧНУ картку, щоб не викидало з групи
+                            setTimeout(function() {
+                                Lampa.Controller.toggle('content');
+                                if (card && card.length) {
+                                    Lampa.Controller.collectionFocus(card[0], scroll.render());
+                                }
+                            }, 200);
                         });
                     }
                 });
@@ -158,11 +174,15 @@
                                     Lampa.Activity.backward(); 
                                 }
                             } else {
+                                // Скасування видалення - повертаємо фокус на картку
                                 Lampa.Controller.toggle('content');
+                                if (card && card.length) Lampa.Controller.collectionFocus(card[0], scroll.render());
                             }
                         },
                         onBack: function() { 
+                            // Крок назад - повертаємо фокус на картку
                             Lampa.Controller.toggle('content');
+                            if (card && card.length) Lampa.Controller.collectionFocus(card[0], scroll.render());
                         }
                     });
                 });
