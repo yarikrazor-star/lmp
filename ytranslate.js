@@ -8,6 +8,7 @@
         ytranslate_title: true,
         ytranslate_slogan: true,
         ytranslate_desc: true,
+        ytranslate_ydes_title: true, // Вмикає переклад додаткових назв YDesign за замовчуванням
         ytranslate_proxies: '' // Базово пусто
     };
 
@@ -25,6 +26,9 @@
         desc: [
             '.full-descr__text', '.info__desc', '.ydesign-desc-under',
             '.full-start__desc', '.full-start-new__desc', '.full-start__text'
+        ],
+        ydes_title: [
+            '.ydesign-add-title' // Селектор для додаткових назв від YDesign
         ]
     };
 
@@ -151,6 +155,12 @@
     }
 
     function processElement($el, type) {
+        // БЛОКУВАННЯ ВІД ПЛАГІНУ VINYL
+        // Якщо елемент знаходиться всередині структури/карток Vinyl — не перекладаємо його взагалі
+        if ($el.closest('.card--vinyl, .vinyl-main, .vinyl-full, .vinyl-start, .vinyl-descr, .vinyl-line, .vinyl-all-grid, .vinyl-search-line, .vinyl-track').length > 0) {
+            return;
+        }
+
         if (!$el.length || $el.data('ytranslate-loading')) return;
         
         var isEnabled = getSet('ytranslate_' + type);
@@ -199,6 +209,12 @@
         selectors.desc.forEach(function(sel) {
             context.find(sel).each(function() { processElement($(this), 'desc'); });
         });
+        // Скануємо і перекладаємо додаткові назви, згенеровані YDesign
+        if (selectors.ydes_title) {
+            selectors.ydes_title.forEach(function(sel) {
+                context.find(sel).each(function() { processElement($(this), 'ydes_title'); });
+            });
+        }
     }
 
     function injectCSS() {
@@ -226,6 +242,13 @@
             component: 'ytranslate',
             param: { name: 'ytranslate_title', type: 'trigger', default: DefaultSettings.ytranslate_title },
             field: { name: 'Перекладати Назву', description: 'Переклад назв на картках та всередині сторінки' }
+        });
+
+        // НОВИЙ ПАРАМЕТР
+        Lampa.SettingsApi.addParam({
+            component: 'ytranslate',
+            param: { name: 'ytranslate_ydes_title', type: 'trigger', default: DefaultSettings.ytranslate_ydes_title },
+            field: { name: 'Перекладати додаткові назви YDes', description: 'Переклад додаткових назв під логотипами, що формує YDesign' }
         });
 
         Lampa.SettingsApi.addParam({
