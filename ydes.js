@@ -630,18 +630,18 @@
     function injectCSS() {
         var style = document.createElement('style');
         style.innerHTML = `
-            .ydesign-active .card .card__title,
-            .ydesign-active .card .card__age,
-            .ydesign-active .card .card__vote { display: none !important; }
+            .ydesign-active .card:not(.card--vinyl) .card__title,
+            .ydesign-active .card:not(.card--vinyl) .card__age,
+            .ydesign-active .card:not(.card--vinyl) .card__vote { display: none !important; }
 
-            .ydesign-active .items-line .items-cards,
-            .ydesign-active .items-line .scroll__body {
+            .ydesign-active .items-line:not(.vinyl-line) .items-cards,
+            .ydesign-active .items-line:not(.vinyl-line) .scroll__body {
                 display: flex; flex-wrap: nowrap; 
                 gap: var(--ydesign-card-gap, 0.8em); 
                 padding-bottom: 1.5em; 
             }
 
-            .ydesign-active .card {
+            .ydesign-active .card:not(.card--vinyl) {
                 position: relative; overflow: visible;
                 background-color: transparent !important;
                 border: none !important; 
@@ -649,16 +649,16 @@
                 flex: 0 0 auto; cursor: pointer;
             }
 
-            .ydesign-active .card.focus {
+            .ydesign-active .card:not(.card--vinyl).focus {
                 transform: scale(1.05); 
                 z-index: 10;
             }
 
-            .ydesign-active .card.focus .card__view {
+            .ydesign-active .card:not(.card--vinyl).focus .card__view {
                 box-shadow: 0 0 0 4px #fff, 0 12px 30px rgba(0,0,0,0.9) !important;
             }
 
-            .ydesign-active .card .card__view {
+            .ydesign-active .card:not(.card--vinyl) .card__view {
                 position: relative; top: 0; left: 0; right: 0; bottom: 0;
                 width: 100%; height: 0 !important;
                 border-radius: 0.8em !important;
@@ -667,21 +667,21 @@
                 transition: background-color 0.5s ease, box-shadow 0.2s ease;
             }
 
-            .ydesign-active .card.ydesign-vertical .card__view { padding-bottom: 177.77% !important; } 
-            .ydesign-active .card.ydesign-horizontal .card__view { padding-bottom: 68.75% !important; } 
+            .ydesign-active .card:not(.card--vinyl).ydesign-vertical .card__view { padding-bottom: 177.77% !important; } 
+            .ydesign-active .card:not(.card--vinyl).ydesign-horizontal .card__view { padding-bottom: 68.75% !important; } 
 
             @media (min-width: 769px) {
                 .ydesign-active .card.ydesign-vertical { width: calc(100% / var(--ydesign-grid-items-v, 5)); height: auto !important; }   
                 .ydesign-active .card.ydesign-horizontal { width: calc(100% / var(--ydesign-grid-items-h, 3)); height: auto !important; } 
-                .ydesign-active .items-line .card.ydesign-vertical { width: 18.5vw; }   
-                .ydesign-active .items-line .card.ydesign-horizontal { width: 31.5vw; } 
+                .ydesign-active .items-line:not(.vinyl-line) .card.ydesign-vertical { width: 18.5vw; }   
+                .ydesign-active .items-line:not(.vinyl-line) .card.ydesign-horizontal { width: 31.5vw; } 
             }
 
             @media (max-width: 768px) {
                 .ydesign-active .card.ydesign-vertical { width: calc(100% / 2); height: auto !important; }    
                 .ydesign-active .card.ydesign-horizontal { width: calc(100% / 2); height: auto !important; }  
-                .ydesign-active .items-line .card.ydesign-vertical { width: 46vw; }    
-                .ydesign-active .items-line .card.ydesign-horizontal { width: 94vw; }  
+                .ydesign-active .items-line:not(.vinyl-line) .card.ydesign-vertical { width: 46vw; }    
+                .ydesign-active .items-line:not(.vinyl-line) .card.ydesign-horizontal { width: 94vw; }  
             }
 
             .ydesign-img-layer {
@@ -1530,6 +1530,21 @@
         CardMaker.Card.onVisible = function () {
             this.image_loaded = true;
             originalOnVisible.apply(this, arguments);
+
+            // ---> ВИКЛЮЧЕННЯ ДЛЯ ПЛАГІНУ VINYL <---
+            var isVinyl = false;
+            if (this.data) {
+                if (this.data.vinyl || this.data.vinyl_type) isVinyl = true;
+                if (['playlist', 'album', 'artist', 'radio', 'song', 'genre', 'section'].indexOf(this.data.media) !== -1) isVinyl = true;
+                if (['playlist', 'album', 'artist', 'radio', 'song', 'genre', 'section'].indexOf(this.data.type) !== -1) isVinyl = true;
+            }
+            if (!isVinyl && this.html) {
+                var el = this.html[0] || this.html;
+                if (el && el.classList && (el.classList.contains('card--vinyl') || el.classList.contains('card-more'))) isVinyl = true;
+            }
+
+            if (isVinyl) return; // Ігноруємо картки Vinyl (не застосовуємо до них YDesign)
+            // ----------------------------------------
 
             if (this.data && this.data.id && (this.data.media_type === 'movie' || this.data.media_type === 'tv' || this.data.name || this.data.title)) {
                 var el = this.html[0] || this.html;
