@@ -6,10 +6,10 @@
 
     var CONFIG = {
         cacheTime: 7 * 24 * 60 * 60 * 1000, // 7 днів
-        tmdbKey: function() { return (Lampa.TMDB && Lampa.TMDB.key) ? Lampa.TMDB.key() : '4ef0d7355d9ffb5151e987764708ce96'; }
+        tmdbKey: function () { return (Lampa.TMDB && Lampa.TMDB.key) ? Lampa.TMDB.key() : '4ef0d7355d9ffb5151e987764708ce96'; }
     };
 
-     var rateIcons = {
+    var rateIcons = {
         imdb: 'https://upload.wikimedia.org/wikipedia/commons/5/53/IMDB_-_SuperTinyIcons.svg',
         rt: 'https://upload.wikimedia.org/wikipedia/commons/5/5b/Rotten_Tomatoes.svg',
         mc: 'https://yarikrazor-star.github.io/lmp/mc.svg',
@@ -26,7 +26,7 @@
         ydesign_backdrop_quality: 'w500',
         ydesign_lang: 'uk_en',
         ydesign_slogan_lang: 'uk_en',
-        ydesign_desc_lang: 'uk_en', 
+        ydesign_desc_lang: 'uk_en',
         ydesign_logo_type: 'logo',
         ydesign_logo_max_h: '35',
         ydesign_logo_max_w: '80',
@@ -36,48 +36,48 @@
         ydesign_text_rating_size: '0.9',
         ydesign_desc_size: '1.0',
         ydesign_text_add_title_size: '0.9',
-        ydesign_text_genres_size: '0.9', 
-        ydesign_card_type_main: 'horizontal', 
+        ydesign_text_genres_size: '0.9',
+        ydesign_card_type_main: 'horizontal',
         ydesign_card_type_other: 'vertical',
-        ydesign_badges_one_row: false, 
-        ydesign_show_desc_horz: true, 
+        ydesign_badges_one_row: false,
+        ydesign_show_desc_horz: true,
         ydesign_show_year: true,
         ydesign_show_seasons: true,
         ydesign_show_ua: true,
         ydesign_show_age: true,
         ydesign_show_slogan: true,
-        ydesign_show_add_title: true, 
+        ydesign_show_add_title: true,
         ydesign_add_title_lang: 'auto',
-        ydesign_show_genres: true, 
+        ydesign_show_genres: true,
         ydesign_lazy_load: false,
         ydesign_card_gap: '0.1',
         ydesign_badge_rows_gap: '0.3',
-        ydesign_badges_gap_vert: '0.15', 
-        ydesign_badges_gap_horz: '0.15', 
+        ydesign_badges_gap_vert: '0.15',
+        ydesign_badges_gap_horz: '0.15',
         ydesign_genres_gap: '0.0',
         ydesign_content_pb: '0.3',
         ydesign_slogan_padding: '0.3',
-        ydesign_logo_mb: '1.2', 
-        ydesign_add_title_mb: '0.3', 
-        ydesign_uniform_v_gaps_vert: true, 
-        ydesign_uniform_v_gap_val_vert: '0.05', 
-        ydesign_uniform_v_gaps_horz: true, 
-        ydesign_uniform_v_gap_val_horz: '0.05', 
-        ydesign_ratings_saturate: '100', 
+        ydesign_logo_mb: '1.2',
+        ydesign_add_title_mb: '0.3',
+        ydesign_uniform_v_gaps_vert: true,
+        ydesign_uniform_v_gap_val_vert: '0.05',
+        ydesign_uniform_v_gaps_horz: true,
+        ydesign_uniform_v_gap_val_horz: '0.05',
+        ydesign_ratings_saturate: '100',
         ydesign_align_logo: 'center',
-        ydesign_align_add_title: 'left', 
+        ydesign_align_add_title: 'left',
         ydesign_align_badges: 'left',
         ydesign_align_slogan: 'left',
-        ydesign_ratings_order: 'tmdb, imdb, rt, popcorn', 
+        ydesign_ratings_order: 'tmdb, imdb, rt, popcorn',
         ydesign_omdb_key: '',
         ydesign_mdblist_key: '',
         ydesign_series_redesign: true,
         ydesign_series_cards: '4',
         ydesign_hide_left_column: true,
         ydesign_horz_ratings_row: false,
-        ydesign_border_ratings: true, 
-        ydesign_border_info: true, 
-        ydesign_border_genres: true, 
+        ydesign_border_ratings: true,
+        ydesign_border_info: true,
+        ydesign_border_genres: true,
         ydesign_uniform_badges: true,
         ydesign_grid_items_v: '5',
         ydesign_grid_items_h: '3'
@@ -90,33 +90,33 @@
     }
 
     var ApiCache = {
-        get: function(key) {
+        get: function (key) {
             var data = Lampa.Storage.get('ydesign_cache_' + key);
             if (data && (Date.now() - data.time < CONFIG.cacheTime)) return data.val;
             return null;
         },
-        set: function(key, val) {
+        set: function (key, val) {
             Lampa.Storage.set('ydesign_cache_' + key, { val: val, time: Date.now() });
         }
     };
 
     var IconCache = {};
     function preloadIcon(key, url) {
-        return new Promise(function(resolve) {
+        return new Promise(function (resolve) {
             if (IconCache[key] || url.startsWith('data:')) {
                 IconCache[key] = true;
                 return resolve();
             }
             var img = new Image();
-            img.onload = function() { IconCache[key] = true; resolve(); };
-            img.onerror = function() { IconCache[key] = true; resolve(); }; 
+            img.onload = function () { IconCache[key] = true; resolve(); };
+            img.onerror = function () { IconCache[key] = true; resolve(); };
             img.src = url;
         });
     }
 
     var LazyLoader = {
         observer: null,
-        init: function() {
+        init: function () {
             if (this.observer) return;
             this.observer = new IntersectionObserver((entries, observer) => {
                 entries.forEach(entry => {
@@ -131,7 +131,7 @@
                 });
             }, { rootMargin: '150px' });
         },
-        add: function(el, fn) {
+        add: function (el, fn) {
             this.init();
             el._lazyQueue = [fn];
             this.observer.observe(el);
@@ -144,15 +144,15 @@
     function getProminentColorAsync(path) {
         // Щоб не робити подвійний запит на великий постер, ми завантажуємо для кольору саму малу копію - w92
         var url = 'https://image.tmdb.org/t/p/w92' + path;
-        
+
         if (ProminentColorStore[url]) {
             return ProminentColorStore[url];
         }
 
-        ProminentColorStore[url] = new Promise(function(resolve) {
+        ProminentColorStore[url] = new Promise(function (resolve) {
             var img = new Image();
             img.crossOrigin = "Anonymous";
-            img.onload = function() {
+            img.onload = function () {
                 var canvas = document.createElement('canvas');
                 var ctx = canvas.getContext('2d', { willReadFrequently: true });
                 canvas.width = 1; canvas.height = 1;
@@ -161,20 +161,20 @@
                     ctx.drawImage(img, sx, sy, sw, sh, 0, 0, 1, 1);
                     var data = ctx.getImageData(0, 0, 1, 1).data;
                     var r = data[0], g = data[1], b = data[2];
-                    
+
                     var luma = 0.2126 * r + 0.7152 * g + 0.0722 * b;
-                    if (luma > 140) { 
-                        var factor = 110 / luma; 
+                    if (luma > 140) {
+                        var factor = 110 / luma;
                         r = Math.floor(r * factor); g = Math.floor(g * factor); b = Math.floor(b * factor);
                     } else if (luma < 30) {
                         r = 50; g = 50; b = 50;
                     }
                     resolve('rgb(' + r + ',' + g + ',' + b + ')');
-                } catch(e) {
-                    resolve('rgb(50, 50, 50)'); 
+                } catch (e) {
+                    resolve('rgb(50, 50, 50)');
                 }
             };
-            img.onerror = function() {
+            img.onerror = function () {
                 resolve('rgb(50, 50, 50)');
             };
             img.src = url;
@@ -192,29 +192,29 @@
         if (s === 'PG-13') return '13+';
         if (s === 'TV-14') return '14+';
         if (s === 'R' || s === 'NC-17' || s === 'TV-MA') return '18+';
-        
+
         var digitsOnly = s.replace(/\D/g, '');
         if (digitsOnly.length > 0 && digitsOnly.length <= 2) return digitsOnly + '+';
-        return '16+'; 
+        return '16+';
     }
 
     function checkUaVoiceover(tmdbId, type) {
-        return new Promise(function(resolve) {
+        return new Promise(function (resolve) {
             var cacheKey = 'ua_api_' + tmdbId;
             var cached = ApiCache.get(cacheKey);
             if (cached !== null) return resolve(cached);
 
             var isSerial = (type === 'tv' || type === 'tv_series') ? 1 : 0;
             var url = 'https://wh.lme.isroot.in/?tmdb_id=' + encodeURIComponent(tmdbId) + '&serial=' + isSerial + '&silent=true';
-            
+
             $.ajax({
                 url: url, timeout: 4000,
-                success: function(r) {
+                success: function (r) {
                     var hasUa = (r === true || r.success === true || r.status === 'success' || r.ok === true || (typeof r === 'object' && Object.keys(r).length > 0 && !r.error));
                     ApiCache.set(cacheKey, hasUa);
                     resolve(hasUa);
                 },
-                error: function() { resolve(false); }
+                error: function () { resolve(false); }
             });
         });
     }
@@ -226,7 +226,7 @@
 
         var results = {};
         try {
-            var extRes = await $.get('https://api.themoviedb.org/3/'+type+'/'+tmdbId+'/external_ids?api_key='+CONFIG.tmdbKey());
+            var extRes = await $.get('https://api.themoviedb.org/3/' + type + '/' + tmdbId + '/external_ids?api_key=' + CONFIG.tmdbKey());
             var imdbId = extRes.imdb_id;
             if (!imdbId) return results;
 
@@ -242,7 +242,7 @@
                         let rt = (omdbData.Ratings || []).find(r => r.Source === 'Rotten Tomatoes');
                         if (rt) results.rt = rt.Value.replace('%', '');
                     }
-                } catch(e){}
+                } catch (e) { }
             }
 
             if (mdblistKey) {
@@ -259,32 +259,32 @@
                             if (r.source === 'imdb' && !results.imdb) results.imdb = r.value;
                         });
                     }
-                } catch(e){}
+                } catch (e) { }
             }
 
             ApiCache.set(cacheKey, results);
-        } catch(e){}
+        } catch (e) { }
         return results;
     }
 
     function fetchExtendedData(id, type) {
-        return new Promise(async function(resolve) {
+        return new Promise(async function (resolve) {
             var langPref = getSet('ydesign_lang');
             var sloganLang = getSet('ydesign_slogan_lang');
             var descLang = getSet('ydesign_desc_lang');
-            
+
             var cacheKey = type + '_' + id + '_' + langPref + '_' + sloganLang + '_' + descLang + '_v3';
             var cached = ApiCache.get(cacheKey);
             if (cached) return resolve(cached);
 
             try {
                 var langQuery = (sloganLang === 'uk' || sloganLang === 'uk_en' || descLang === 'uk' || descLang === 'uk_en' || langPref === 'uk' || langPref === 'uk_en') ? 'uk-UA' : 'en-US';
-                var url = 'https://api.themoviedb.org/3/' + type + '/' + id + 
-                          '?api_key=' + CONFIG.tmdbKey() + 
-                          '&language=' + langQuery +
-                          '&append_to_response=images,release_dates,content_ratings' + 
-                          '&include_image_language=uk,ru,en,null';
-                
+                var url = 'https://api.themoviedb.org/3/' + type + '/' + id +
+                    '?api_key=' + CONFIG.tmdbKey() +
+                    '&language=' + langQuery +
+                    '&append_to_response=images,release_dates,content_ratings' +
+                    '&include_image_language=uk,ru,en,null';
+
                 var data = await $.get(url);
                 var enData = null;
 
@@ -296,18 +296,18 @@
                 if (needEn) {
                     try {
                         enData = await $.get('https://api.themoviedb.org/3/' + type + '/' + id + '?api_key=' + CONFIG.tmdbKey() + '&language=en-US');
-                    } catch(e) {}
+                    } catch (e) { }
                 }
 
                 var finalTagline = '';
                 if (sloganLang === 'uk') finalTagline = data.tagline || '';
                 else if (sloganLang === 'en') finalTagline = enData ? enData.tagline : '';
-                else finalTagline = data.tagline || (enData ? enData.tagline : ''); 
+                else finalTagline = data.tagline || (enData ? enData.tagline : '');
 
                 var finalOverview = '';
                 if (descLang === 'uk') finalOverview = data.overview || '';
                 else if (descLang === 'en') finalOverview = enData ? enData.overview : '';
-                else finalOverview = data.overview || (enData ? enData.overview : ''); 
+                else finalOverview = data.overview || (enData ? enData.overview : '');
 
                 var se_str = '';
                 if (type === 'tv') {
@@ -343,11 +343,11 @@
 
                 if (data.images) {
                     var cp = data.images.posters.find(p => p.iso_639_1 === null);
-                    if(cp) result.clean_poster = cp.file_path;
+                    if (cp) result.clean_poster = cp.file_path;
                     else if (data.images.posters.length) result.clean_poster = data.images.posters[0].file_path;
 
                     var cb = data.images.backdrops.find(p => p.iso_639_1 === null);
-                    if(cb) result.clean_backdrop = cb.file_path;
+                    if (cb) result.clean_backdrop = cb.file_path;
                     else if (data.images.backdrops.length) result.clean_backdrop = data.images.backdrops[0].file_path;
 
                     var logo = null;
@@ -355,10 +355,10 @@
                         logo = data.images.logos.find(l => l.iso_639_1 === 'uk');
                     } else if (langPref === 'uk_en') {
                         logo = data.images.logos.find(l => l.iso_639_1 === 'uk') || data.images.logos.find(l => l.iso_639_1 === 'en');
-                        if(!logo && data.images.logos.length) logo = data.images.logos[0];
+                        if (!logo && data.images.logos.length) logo = data.images.logos[0];
                     } else {
                         logo = data.images.logos.find(l => l.iso_639_1 === 'en');
-                        if(!logo && data.images.logos.length) logo = data.images.logos[0];
+                        if (!logo && data.images.logos.length) logo = data.images.logos[0];
                     }
                     if (logo) {
                         result.logo = logo.file_path;
@@ -378,7 +378,7 @@
 
                 ApiCache.set(cacheKey, result);
                 resolve(result);
-            } catch(e) {
+            } catch (e) {
                 resolve(null);
             }
         });
@@ -386,11 +386,11 @@
 
     async function renderRatingsAsync(container, baseData, tmdbData, extRatings) {
         var orderStr = String(getSet('ydesign_ratings_order') || 'tmdb,imdb,kp,rt,popcorn');
-        var order = orderStr.split(',').map(function(s) { return s.trim().toLowerCase(); });
+        var order = orderStr.split(',').map(function (s) { return s.trim().toLowerCase(); });
 
-        var formatR = function(v, is100) {
+        var formatR = function (v, is100) {
             if (v === null || v === undefined || v === '' || v === 'N/A') return null;
-            var n = parseFloat(String(v).replace('%',''));
+            var n = parseFloat(String(v).replace('%', ''));
             if (isNaN(n)) return null;
             if (is100 || n > 10) n = n / 10;
             return n.toFixed(1);
@@ -409,7 +409,7 @@
         };
 
         var iconsToLoad = [];
-        order.forEach(function(key) {
+        order.forEach(function (key) {
             if (available[key] && key !== 'kp' && rateIcons[key]) {
                 iconsToLoad.push(preloadIcon(key, rateIcons[key]));
             }
@@ -417,7 +417,7 @@
         await Promise.all(iconsToLoad);
 
         container.innerHTML = '';
-        order.forEach(function(key) {
+        order.forEach(function (key) {
             if (available[key]) {
                 if (key === 'kp') {
                     container.innerHTML += '<span class="ydesign-rating"><b style="color:#f60; font-weight:800; font-size:1.1em; line-height:1; display:flex; align-items:center;">Kp</b> ' + available[key] + '</span>';
@@ -433,7 +433,7 @@
         var el = cardHtml[0] || cardHtml;
         var isMain = el._ydesign_isMain !== undefined ? el._ydesign_isMain : (Lampa.Activity.active() ? Lampa.Activity.active().component === 'main' : true);
         var isHorz = isMain ? getSet('ydesign_card_type_main') === 'horizontal' : getSet('ydesign_card_type_other') === 'horizontal';
-        
+
         el.classList.add('ydesign-card');
         el.classList.remove('ydesign-vertical', 'ydesign-horizontal');
         el.classList.add(isHorz ? 'ydesign-horizontal' : 'ydesign-vertical');
@@ -441,7 +441,7 @@
         var type = data.media_type || (data.name ? 'tv' : 'movie');
         if (!data.id) return;
 
-        var buildExtendedCard = function() {
+        var buildExtendedCard = function () {
             var view = el.querySelector('.card__view');
             if (!view) return;
             view.innerHTML = '';
@@ -456,25 +456,25 @@
 
             var bgQuality = isHorz ? getSet('ydesign_backdrop_quality') : getSet('ydesign_poster_quality');
             var initialBg = isHorz ? (data.backdrop_path || data.poster_path) : (data.poster_path || data.backdrop_path);
-            
-            var applyBg = function(path) {
+
+            var applyBg = function (path) {
                 if (!path) return;
                 var fullUrl = 'https://image.tmdb.org/t/p/' + bgQuality + path;
-                
+
                 if (el._ydesign_bg_applied === fullUrl) return;
                 el._ydesign_bg_applied = fullUrl;
 
                 // 1. Спочатку чекаємо на розрахунок кольору для градієнту (завантажиться дуже швидко)
-                getProminentColorAsync(path).then(function(color) {
+                getProminentColorAsync(path).then(function (color) {
                     if (color) {
                         view.style.backgroundColor = color;
                         gradientLayer.style.background = 'linear-gradient(to top, ' + color + ' 0%, ' + color.replace('rgb', 'rgba').replace(')', ', 0.95)') + ' 40%, transparent 100%)';
                         contentLayer.style.background = 'linear-gradient(to top, ' + color + ' 10%, transparent 100%)';
                     }
-                    
+
                     // 2. Лише після застосування градієнту починаємо завантажувати і проявляти основну картинку
                     var img = new Image();
-                    img.onload = function() {
+                    img.onload = function () {
                         imgLayer.style.setProperty('--loaded-bg', 'url(' + fullUrl + ')');
                         imgLayer.classList.add('loaded');
                     };
@@ -482,8 +482,8 @@
                 });
             };
 
-            fetchExtendedData(data.id, type).then(function(extData) {
-                var bgToLoad = initialBg; 
+            fetchExtendedData(data.id, type).then(function (extData) {
+                var bgToLoad = initialBg;
 
                 if (extData) {
                     var cleanBg = isHorz ? extData.clean_backdrop : extData.clean_poster;
@@ -491,14 +491,14 @@
                 }
 
                 if (bgToLoad) applyBg(bgToLoad);
-                if (!extData) return; 
+                if (!extData) return;
 
                 var logoContainer = document.createElement('div');
                 logoContainer.className = 'ydesign-logo-container';
-                
+
                 var titleText = document.createElement('div');
                 titleText.className = 'ydesign-text-title ydesign-fallback-text';
-                
+
                 var mainTitle = data.title || data.name || data.original_title || data.original_name || '';
                 titleText.innerText = mainTitle;
 
@@ -508,7 +508,7 @@
                     logoImg.src = 'https://image.tmdb.org/t/p/' + getSet('ydesign_logo_quality') + extData.logo;
                     logoContainer.appendChild(logoImg);
                 } else {
-                    titleText.classList.remove('ydesign-fallback-text'); 
+                    titleText.classList.remove('ydesign-fallback-text');
                 }
                 logoContainer.appendChild(titleText);
                 contentLayer.appendChild(logoContainer);
@@ -520,7 +520,7 @@
                     contentLayer.appendChild(addTitleWrap);
                 }
 
-                var updateAddTitleWrap = function() {
+                var updateAddTitleWrap = function () {
                     if (!addTitleWrap) return;
                     if (!extData.logo) { addTitleWrap.innerText = ' '; return; }
                     var uTitle = '';
@@ -543,7 +543,7 @@
                         if (fTitle.length > 30) fTitle = fTitle.substring(0, 30) + '...';
                         addTitleWrap.innerText = fTitle;
                     } else {
-                        addTitleWrap.innerText = ' '; 
+                        addTitleWrap.innerText = ' ';
                     }
                 };
 
@@ -554,12 +554,12 @@
 
                 var badgesWrap = document.createElement('div');
                 badgesWrap.className = 'ydesign-badges';
-                
+
                 if (data.release_date || data.first_air_date) {
                     var year = String(data.release_date || data.first_air_date).substring(0, 4);
-                    if(year && year !== 'unde') badgesWrap.innerHTML += '<span class="ydesign-badge ydesign-badge-year">' + year + '</span>';
+                    if (year && year !== 'unde') badgesWrap.innerHTML += '<span class="ydesign-badge ydesign-badge-year">' + year + '</span>';
                 }
-                
+
                 if (type === 'tv' && extData.se_str) {
                     badgesWrap.innerHTML += '<span class="ydesign-badge ydesign-badge-seasons">' + extData.se_str + '</span>';
                 } else if (type === 'tv' && extData.seasons) {
@@ -568,10 +568,10 @@
                 }
 
                 if (extData.age) badgesWrap.innerHTML += '<span class="ydesign-badge ydesign-badge-age">' + extData.age + '</span>';
-                
+
                 if (badgesWrap.innerHTML !== '') infoWrap.appendChild(badgesWrap);
 
-                checkUaVoiceover(data.id, type).then(function(hasUa) {
+                checkUaVoiceover(data.id, type).then(function (hasUa) {
                     if (hasUa) {
                         var uaBadge = document.createElement('span');
                         uaBadge.className = 'ydesign-badge ydesign-badge-ua';
@@ -599,9 +599,9 @@
 
                 var ratingsWrap = document.createElement('div');
                 ratingsWrap.className = 'ydesign-ratings';
-                
-                renderRatingsAsync(ratingsWrap, data, extData, null); 
-                fetchExternalRatings(data.id, type).then(function(extRatings) {
+
+                renderRatingsAsync(ratingsWrap, data, extData, null);
+                fetchExternalRatings(data.id, type).then(function (extRatings) {
                     if (extRatings && Object.keys(extRatings).length > 0) {
                         renderRatingsAsync(ratingsWrap, data, extData, extRatings);
                     }
@@ -621,7 +621,7 @@
                         if (genresWrap) contentLayer.appendChild(genresWrap);
                     }
                 } else {
-                    if (genresWrap) infoWrap.appendChild(genresWrap); 
+                    if (genresWrap) infoWrap.appendChild(genresWrap);
                     infoWrap.appendChild(ratingsWrap);
                     contentLayer.appendChild(infoWrap);
                 }
@@ -647,7 +647,7 @@
                 if (isHorz && getSet('ydesign_show_desc_horz')) {
                     desc = document.createElement('div');
                     desc.className = 'ydesign-desc-under';
-                    desc.innerText = extData.overview ? extData.overview : ' '; 
+                    desc.innerText = extData.overview ? extData.overview : ' ';
                     el.appendChild(desc);
                 }
             });
@@ -663,18 +663,18 @@
     function injectCSS() {
         var style = document.createElement('style');
         style.innerHTML = `
-            .ydesign-active .card:not(.card--vinyl) .card__title,
-            .ydesign-active .card:not(.card--vinyl) .card__age,
-            .ydesign-active .card:not(.card--vinyl) .card__vote { display: none !important; }
+            .ydesign-active .ydesign-card .card__title,
+            .ydesign-active .ydesign-card .card__age,
+            .ydesign-active .ydesign-card .card__vote { display: none !important; }
 
             .ydesign-active .items-line:not(.vinyl-line) .items-cards,
             .ydesign-active .items-line:not(.vinyl-line) .scroll__body {
                 display: flex; flex-wrap: nowrap; 
                 gap: var(--ydesign-card-gap, 0.8em); 
-                padding-bottom: 1.5em; 
+                padding-bottom: 0; 
             }
 
-            .ydesign-active .card:not(.card--vinyl) {
+            .ydesign-active .ydesign-card {
                 position: relative; overflow: visible;
                 background-color: transparent !important;
                 border: none !important; 
@@ -682,16 +682,16 @@
                 flex: 0 0 auto; cursor: pointer;
             }
 
-            .ydesign-active .card:not(.card--vinyl).focus {
+            .ydesign-active .ydesign-card.focus {
                 transform: scale(1.05); 
                 z-index: 10;
             }
 
-            .ydesign-active .card:not(.card--vinyl).focus .card__view {
+            .ydesign-active .ydesign-card.focus .card__view {
                 box-shadow: 0 0 0 4px #fff, 0 12px 30px rgba(0,0,0,0.9) !important;
             }
 
-            .ydesign-active .card:not(.card--vinyl) .card__view {
+            .ydesign-active .ydesign-card .card__view {
                 position: relative; top: 0; left: 0; right: 0; bottom: 0;
                 width: 100%; height: 0 !important;
                 border-radius: 0.8em !important;
@@ -700,8 +700,8 @@
                 transition: background-color 0.5s ease, box-shadow 0.2s ease;
             }
 
-            .ydesign-active .card:not(.card--vinyl).ydesign-vertical .card__view { padding-bottom: 177.77% !important; } 
-            .ydesign-active .card:not(.card--vinyl).ydesign-horizontal .card__view { padding-bottom: 68.75% !important; } 
+            .ydesign-active .ydesign-card.ydesign-vertical .card__view { padding-bottom: 177.77% !important; } 
+            .ydesign-active .ydesign-card.ydesign-horizontal .card__view { padding-bottom: 68.75% !important; } 
 
             @media (min-width: 769px) {
                 .ydesign-active .card.ydesign-vertical { width: calc(100% / var(--ydesign-grid-items-v, 5)); height: auto !important; }   
@@ -1301,8 +1301,8 @@
         document.body.classList.toggle('ydesign-uniform-badges', getSet('ydesign_uniform_badges'));
         document.body.classList.toggle('ydesign-uniform-v-gaps-v', getSet('ydesign_uniform_v_gaps_vert'));
         document.body.classList.toggle('ydesign-uniform-v-gaps-h', getSet('ydesign_uniform_v_gaps_horz'));
-        document.body.classList.toggle('ydesign-hide-left-column', getSet('ydesign_hide_left_column')); 
-        
+        document.body.classList.toggle('ydesign-hide-left-column', getSet('ydesign_hide_left_column'));
+
         // Керування рамками через класи на body
         document.body.classList.toggle('ydesign-border-info', getSet('ydesign_border_info'));
         document.body.classList.toggle('ydesign-border-genres', getSet('ydesign_border_genres'));
@@ -1317,7 +1317,7 @@
 
         document.documentElement.style.setProperty('--ydesign-logo-h', getSet('ydesign_logo_max_h') + '%');
         document.documentElement.style.setProperty('--ydesign-logo-w', getSet('ydesign_logo_max_w') + '%');
-        
+
         document.documentElement.style.setProperty('--ydesign-title-size-val', getSet('ydesign_text_title_size'));
         document.documentElement.style.setProperty('--ydesign-add-title-size-val', getSet('ydesign_text_add_title_size'));
         document.documentElement.style.setProperty('--ydesign-slogan-size-val', getSet('ydesign_text_slogan_size'));
@@ -1325,15 +1325,15 @@
         document.documentElement.style.setProperty('--ydesign-genres-size-val', getSet('ydesign_text_genres_size'));
         document.documentElement.style.setProperty('--ydesign-rating-size-val', getSet('ydesign_text_rating_size'));
         document.documentElement.style.setProperty('--ydesign-desc-size-val', getSet('ydesign_desc_size'));
-        
+
         document.documentElement.style.setProperty('--ydesign-uniform-v-gap-v', getSet('ydesign_uniform_v_gap_val_vert') + 'em');
         document.documentElement.style.setProperty('--ydesign-uniform-v-gap-h', getSet('ydesign_uniform_v_gap_val_horz') + 'em');
         document.documentElement.style.setProperty('--ydesign-card-gap', getSet('ydesign_card_gap') + 'em');
         document.documentElement.style.setProperty('--ydesign-badge-rows-gap', getSet('ydesign_badge_rows_gap') + 'em');
-        document.documentElement.style.setProperty('--ydesign-badges-gap-v', getSet('ydesign_badges_gap_vert') + 'em'); 
-        document.documentElement.style.setProperty('--ydesign-badges-gap-h', getSet('ydesign_badges_gap_horz') + 'em'); 
+        document.documentElement.style.setProperty('--ydesign-badges-gap-v', getSet('ydesign_badges_gap_vert') + 'em');
+        document.documentElement.style.setProperty('--ydesign-badges-gap-h', getSet('ydesign_badges_gap_horz') + 'em');
         document.documentElement.style.setProperty('--ydesign-genres-gap', getSet('ydesign_genres_gap') + 'em');
-        
+
         document.documentElement.style.setProperty('--ydesign-content-pb', getSet('ydesign_content_pb') + 'em');
         document.documentElement.style.setProperty('--ydesign-slogan-padding', getSet('ydesign_slogan_padding') + 'em');
         document.documentElement.style.setProperty('--ydesign-logo-mb', getSet('ydesign_logo_mb') + 'em');
@@ -1343,7 +1343,7 @@
         var alignLogo = getSet('ydesign_align_logo');
         document.documentElement.style.setProperty('--ydesign-align-logo', getFlexAlign(alignLogo));
         document.documentElement.style.setProperty('--ydesign-text-logo', alignLogo);
-        
+
         // Вирівнювання додаткової назви
         var alignAddTitle = getSet('ydesign_align_add_title');
         document.documentElement.style.setProperty('--ydesign-text-add-title', alignAddTitle);
@@ -1372,25 +1372,25 @@
             icon: `<svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="4" ry="4"></rect><path d="M8 8l4 4 4-4"></path><path d="M12 12v4"></path></svg>`
         });
 
-        var qualities = { 'w92':'w92', 'w154':'w154', 'w200':'w200', 'w300':'w300', 'w500':'w500', 'w780':'w780', 'original':'Оригінал' };
-        
-        var textSizesExt = {}; 
-        for(let i=5; i<=40; i+=1) { let v = (i/10).toFixed(1); textSizesExt[v] = v; }
-        
-        var gaps = {}; 
-        for(let i=-20; i<=40; i+=1) { let v = (i/10).toFixed(1); gaps[v] = v + ' em'; }
-        
-        var tinyGaps = {}; 
-        for (let i=-20; i <= 40; i+=1) { let v = (i * 0.05).toFixed(2); tinyGaps[v] = v + ' em'; }
+        var qualities = { 'w92': 'w92', 'w154': 'w154', 'w200': 'w200', 'w300': 'w300', 'w500': 'w500', 'w780': 'w780', 'original': 'Оригінал' };
+
+        var textSizesExt = {};
+        for (let i = 5; i <= 40; i += 1) { let v = (i / 10).toFixed(1); textSizesExt[v] = v; }
+
+        var gaps = {};
+        for (let i = -20; i <= 40; i += 1) { let v = (i / 10).toFixed(1); gaps[v] = v + ' em'; }
+
+        var tinyGaps = {};
+        for (let i = -20; i <= 40; i += 1) { let v = (i * 0.05).toFixed(2); tinyGaps[v] = v + ' em'; }
 
         var microGaps = {};
-        for(let i=-100; i<=200; i+=1) { 
-            let v = (i/100).toFixed(2); 
-            microGaps[v] = v + ' em'; 
+        for (let i = -100; i <= 200; i += 1) {
+            let v = (i / 100).toFixed(2);
+            microGaps[v] = v + ' em';
         }
 
         var logoSizes = {};
-        for(let i=1; i<=34; i+=3) { logoSizes[i] = i + '%'; }
+        for (let i = 1; i <= 34; i += 3) { logoSizes[i] = i + '%'; }
         logoSizes[35] = '35%';
         [40, 50, 60, 70, 80, 90, 100].forEach(v => logoSizes[v] = v + '%');
 
@@ -1401,23 +1401,23 @@
         Lampa.SettingsApi.addParam({
             component: 'ydesign',
             param: { name: 'ydesign_donate_qr', type: 'button' },
-            field: { 
-                name: 'Підтримати розробника', 
-                description: '<div style="margin-top:0.5em;"><img src="https://raw.githubusercontent.com/yarikrazor-star/lmp/refs/heads/main/qrcode_363224392_90d1274dab2843222e1b2172e2fe0026.png" style="width:230px; border-radius:10px; box-shadow: 0 4px 10px rgba(0,0,0,0.5);"></div><div style="margin-top:0.5em; opacity:0.8;">Натисніть для переходу на ymods.donatik.ua</div>' 
+            field: {
+                name: 'Підтримати розробника',
+                description: '<div style="margin-top:0.5em;"><img src="https://raw.githubusercontent.com/yarikrazor-star/lmp/refs/heads/main/qrcode_363224392_90d1274dab2843222e1b2172e2fe0026.png" style="width:230px; border-radius:10px; box-shadow: 0 4px 10px rgba(0,0,0,0.5);"></div><div style="margin-top:0.5em; opacity:0.8;">Натисніть для переходу на ymods.donatik.ua</div>'
             },
-            onChange: function() { window.open('https://ymods.donatik.ua/', '_blank'); }
+            onChange: function () { window.open('https://ymods.donatik.ua/', '_blank'); }
         });
         Lampa.SettingsApi.addParam({
             component: 'ydesign',
             param: { name: 'ydesign_clear_cache', type: 'button' },
             field: { name: 'Очистити кеш плагіну', description: 'Видаляє кеш зображень, рейтингів та перевірок озвучки' },
-            onChange: function() {
+            onChange: function () {
                 var keysToRemove = [];
                 for (var i = 0; i < localStorage.length; i++) {
                     var key = localStorage.key(i);
                     if (key && key.startsWith('ydesign_cache_')) keysToRemove.push(key);
                 }
-                keysToRemove.forEach(function(k) { localStorage.removeItem(k); });
+                keysToRemove.forEach(function (k) { localStorage.removeItem(k); });
                 Lampa.Noty.show('Кеш плагіну успішно очищено (' + keysToRemove.length + ' записів)');
             }
         });
@@ -1425,7 +1425,7 @@
             component: 'ydesign',
             param: { name: 'ydesign_omdb_key_btn', type: 'button' },
             field: { name: 'OMDB API Key', description: getSet('ydesign_omdb_key') ? 'Встановлено' : 'Не встановлено' },
-            onChange: function() {
+            onChange: function () {
                 Lampa.Input.edit({ title: 'OMDB API Key', value: getSet('ydesign_omdb_key'), free: true, nosave: true }, function (new_val) {
                     if (new_val !== undefined) { Lampa.Storage.set('ydesign_omdb_key', new_val.trim()); Lampa.Settings.update(); }
                 });
@@ -1435,7 +1435,7 @@
             component: 'ydesign',
             param: { name: 'ydesign_mdblist_key_btn', type: 'button' },
             field: { name: 'MDBList API Key', description: getSet('ydesign_mdblist_key') ? 'Встановлено' : 'Не встановлено' },
-            onChange: function() {
+            onChange: function () {
                 Lampa.Input.edit({ title: 'MDBList API Key', value: getSet('ydesign_mdblist_key'), free: true, nosave: true }, function (new_val) {
                     if (new_val !== undefined) { Lampa.Storage.set('ydesign_mdblist_key', new_val.trim()); Lampa.Settings.update(); }
                 });
@@ -1444,12 +1444,12 @@
 
         // 2. СІТКА ТА ТИПИ КАРТОК
         Lampa.SettingsApi.addParam({ component: 'ydesign', param: { name: 'ydesign_lazy_load', type: 'trigger', default: DefaultSettings.ydesign_lazy_load }, field: { name: 'Ліниве завантаження', description: 'Завантажувати додаткові дані (лого, рейтинги) тільки при появі картки на екрані' } });
-        Lampa.SettingsApi.addParam({ component: 'ydesign', param: { name: 'ydesign_card_type_main', type: 'select', values: { 'vertical':'Вертикальні (9:16)', 'horizontal':'Горизонтальні (16:11)' }, default: DefaultSettings.ydesign_card_type_main }, field: { name: 'Тип карток (Головна)' } });
-        Lampa.SettingsApi.addParam({ component: 'ydesign', param: { name: 'ydesign_card_type_other', type: 'select', values: { 'vertical':'Вертикальні (9:16)', 'horizontal':'Горизонтальні (16:11)' }, default: DefaultSettings.ydesign_card_type_other }, field: { name: 'Тип карток (Інші сторінки)' } });
-        Lampa.SettingsApi.addParam({ component: 'ydesign', param: { name: 'ydesign_grid_items_v', type: 'select', values: {'4':'4', '5':'5', '6':'6', '7':'7', '8':'8'}, default: DefaultSettings.ydesign_grid_items_v }, field: { name: 'Кількість карток у сітці (Вертикальні)', description: 'Вирішує проблему пустого відступу зправа. Картки будуть розтягуватись щоб зайняти весь простір.' } });
-        Lampa.SettingsApi.addParam({ component: 'ydesign', param: { name: 'ydesign_grid_items_h', type: 'select', values: {'2':'2', '3':'3', '4':'4', '5':'5'}, default: DefaultSettings.ydesign_grid_items_h }, field: { name: 'Кількість карток у сітці (Горизонтальні)' } });
+        Lampa.SettingsApi.addParam({ component: 'ydesign', param: { name: 'ydesign_card_type_main', type: 'select', values: { 'vertical': 'Вертикальні (9:16)', 'horizontal': 'Горизонтальні (16:11)' }, default: DefaultSettings.ydesign_card_type_main }, field: { name: 'Тип карток (Головна)' } });
+        Lampa.SettingsApi.addParam({ component: 'ydesign', param: { name: 'ydesign_card_type_other', type: 'select', values: { 'vertical': 'Вертикальні (9:16)', 'horizontal': 'Горизонтальні (16:11)' }, default: DefaultSettings.ydesign_card_type_other }, field: { name: 'Тип карток (Інші сторінки)' } });
+        Lampa.SettingsApi.addParam({ component: 'ydesign', param: { name: 'ydesign_grid_items_v', type: 'select', values: { '4': '4', '5': '5', '6': '6', '7': '7', '8': '8' }, default: DefaultSettings.ydesign_grid_items_v }, field: { name: 'Кількість карток у сітці (Вертикальні)', description: 'Вирішує проблему пустого відступу зправа. Картки будуть розтягуватись щоб зайняти весь простір.' } });
+        Lampa.SettingsApi.addParam({ component: 'ydesign', param: { name: 'ydesign_grid_items_h', type: 'select', values: { '2': '2', '3': '3', '4': '4', '5': '5' }, default: DefaultSettings.ydesign_grid_items_h }, field: { name: 'Кількість карток у сітці (Горизонтальні)' } });
         Lampa.SettingsApi.addParam({ component: 'ydesign', param: { name: 'ydesign_series_redesign', type: 'trigger', default: DefaultSettings.ydesign_series_redesign }, field: { name: 'Змінити вигляд серій', description: 'Активувати новий вигляд карток всередині серій' } });
-        Lampa.SettingsApi.addParam({ component: 'ydesign', param: { name: 'ydesign_series_cards', type: 'select', values: { '1':'1', '2':'2', '3':'3', '4':'4' }, default: DefaultSettings.ydesign_series_cards }, field: { name: 'Кількість карток серій', description: 'Скільки карток показувати в один ряд (для нового вигляду серій)' } });
+        Lampa.SettingsApi.addParam({ component: 'ydesign', param: { name: 'ydesign_series_cards', type: 'select', values: { '1': '1', '2': '2', '3': '3', '4': '4' }, default: DefaultSettings.ydesign_series_cards }, field: { name: 'Кількість карток серій', description: 'Скільки карток показувати в один ряд (для нового вигляду серій)' } });
         Lampa.SettingsApi.addParam({ component: 'ydesign', param: { name: 'ydesign_hide_left_column', type: 'trigger', default: DefaultSettings.ydesign_hide_left_column }, field: { name: 'Прибрати ліву колонку (Серії)', description: 'Приховує опис та розтягує картки серій на весь екран' } });
 
         // 3. ВІДОБРАЖЕННЯ ЕЛЕМЕНТІВ
@@ -1461,13 +1461,13 @@
         Lampa.SettingsApi.addParam({ component: 'ydesign', param: { name: 'ydesign_show_slogan', type: 'trigger', default: DefaultSettings.ydesign_show_slogan }, field: { name: 'Показувати слоган' } });
         Lampa.SettingsApi.addParam({ component: 'ydesign', param: { name: 'ydesign_show_desc_horz', type: 'trigger', default: DefaultSettings.ydesign_show_desc_horz }, field: { name: 'Опис під карткою (Горизонтальні)' } });
         Lampa.SettingsApi.addParam({ component: 'ydesign', param: { name: 'ydesign_show_add_title', type: 'trigger', default: DefaultSettings.ydesign_show_add_title }, field: { name: 'Показувати додаткову назву', description: 'Українська назва над бейджами, якщо логотип англійський' } });
-        Lampa.SettingsApi.addParam({ component: 'ydesign', param: { name: 'ydesign_add_title_lang', type: 'select', values: { 'uk':'Завжди Українська', 'en':'Завжди Англійська', 'auto':'Залежить від логотипу' }, default: DefaultSettings.ydesign_add_title_lang }, field: { name: 'Мова додаткової назви' } });
+        Lampa.SettingsApi.addParam({ component: 'ydesign', param: { name: 'ydesign_add_title_lang', type: 'select', values: { 'uk': 'Завжди Українська', 'en': 'Завжди Англійська', 'auto': 'Залежить від логотипу' }, default: DefaultSettings.ydesign_add_title_lang }, field: { name: 'Мова додаткової назви' } });
 
         // 4. МОВИ ТА ЯКІСТЬ
-        Lampa.SettingsApi.addParam({ component: 'ydesign', param: { name: 'ydesign_logo_type', type: 'select', values: { 'logo':'Логотип (зображення)', 'text':'Текст' }, default: DefaultSettings.ydesign_logo_type }, field: { name: 'Відображення назви' } });
-        Lampa.SettingsApi.addParam({ component: 'ydesign', param: { name: 'ydesign_lang', type: 'select', values: { 'uk':'Тільки Українська', 'uk_en':'Укр -> Англ -> Ориг', 'en_orig':'Англ -> Ориг' }, default: DefaultSettings.ydesign_lang }, field: { name: 'Мова логотипу/назви' } });
-        Lampa.SettingsApi.addParam({ component: 'ydesign', param: { name: 'ydesign_slogan_lang', type: 'select', values: { 'uk':'Тільки Українська', 'uk_en':'Укр (Англ. якщо немає)', 'en':'Тільки Англійська' }, default: DefaultSettings.ydesign_slogan_lang }, field: { name: 'Мова слогану' } });
-        Lampa.SettingsApi.addParam({ component: 'ydesign', param: { name: 'ydesign_desc_lang', type: 'select', values: { 'uk':'Тільки Українська', 'uk_en':'Укр (Англ. якщо немає)', 'en':'Тільки Англійська' }, default: DefaultSettings.ydesign_desc_lang }, field: { name: 'Мова опису під карткою' } });
+        Lampa.SettingsApi.addParam({ component: 'ydesign', param: { name: 'ydesign_logo_type', type: 'select', values: { 'logo': 'Логотип (зображення)', 'text': 'Текст' }, default: DefaultSettings.ydesign_logo_type }, field: { name: 'Відображення назви' } });
+        Lampa.SettingsApi.addParam({ component: 'ydesign', param: { name: 'ydesign_lang', type: 'select', values: { 'uk': 'Тільки Українська', 'uk_en': 'Укр -> Англ -> Ориг', 'en_orig': 'Англ -> Ориг' }, default: DefaultSettings.ydesign_lang }, field: { name: 'Мова логотипу/назви' } });
+        Lampa.SettingsApi.addParam({ component: 'ydesign', param: { name: 'ydesign_slogan_lang', type: 'select', values: { 'uk': 'Тільки Українська', 'uk_en': 'Укр (Англ. якщо немає)', 'en': 'Тільки Англійська' }, default: DefaultSettings.ydesign_slogan_lang }, field: { name: 'Мова слогану' } });
+        Lampa.SettingsApi.addParam({ component: 'ydesign', param: { name: 'ydesign_desc_lang', type: 'select', values: { 'uk': 'Тільки Українська', 'uk_en': 'Укр (Англ. якщо немає)', 'en': 'Тільки Англійська' }, default: DefaultSettings.ydesign_desc_lang }, field: { name: 'Мова опису під карткою' } });
         Lampa.SettingsApi.addParam({ component: 'ydesign', param: { name: 'ydesign_poster_quality', type: 'select', values: qualities, default: DefaultSettings.ydesign_poster_quality }, field: { name: 'Якість постерів' } });
         Lampa.SettingsApi.addParam({ component: 'ydesign', param: { name: 'ydesign_backdrop_quality', type: 'select', values: qualities, default: DefaultSettings.ydesign_backdrop_quality }, field: { name: 'Якість бекдропів' } });
         Lampa.SettingsApi.addParam({ component: 'ydesign', param: { name: 'ydesign_logo_quality', type: 'select', values: qualities, default: DefaultSettings.ydesign_logo_quality }, field: { name: 'Якість логотипів' } });
@@ -1476,17 +1476,17 @@
         Lampa.SettingsApi.addParam({ component: 'ydesign', param: { name: 'ydesign_uniform_badges', type: 'trigger', default: DefaultSettings.ydesign_uniform_badges }, field: { name: 'Усі бейджі одного розміру', description: 'Рейтинги та жанри матимуть такий самий розмір та висоту, як і бейдж року/віку' } });
         Lampa.SettingsApi.addParam({ component: 'ydesign', param: { name: 'ydesign_badges_one_row', type: 'trigger', default: DefaultSettings.ydesign_badges_one_row }, field: { name: 'Усі бейджі в 1 ряд (Вертикальні)', description: 'Рейтинги та бейджі будуть розташовані в один суцільний ряд' } });
         Lampa.SettingsApi.addParam({ component: 'ydesign', param: { name: 'ydesign_horz_ratings_row', type: 'trigger', default: DefaultSettings.ydesign_horz_ratings_row }, field: { name: 'Рейтинги з нового рядка (Горизонтальні)', description: 'Переносить блок рейтингів під бейджі року/віку' } });
-        
+
         Lampa.SettingsApi.addParam({ component: 'ydesign', param: { name: 'ydesign_border_info', type: 'trigger', default: DefaultSettings.ydesign_border_info }, field: { name: 'Показувати рамку для року/сезонів/віку' } });
         Lampa.SettingsApi.addParam({ component: 'ydesign', param: { name: 'ydesign_border_genres', type: 'trigger', default: DefaultSettings.ydesign_border_genres }, field: { name: 'Показувати рамку для жанрів' } });
         Lampa.SettingsApi.addParam({ component: 'ydesign', param: { name: 'ydesign_border_ratings', type: 'trigger', default: DefaultSettings.ydesign_border_ratings }, field: { name: 'Показувати рамку для рейтингів' } });
-        
+
         Lampa.SettingsApi.addParam({ component: 'ydesign', param: { name: 'ydesign_ratings_saturate', type: 'select', values: saturates, default: DefaultSettings.ydesign_ratings_saturate }, field: { name: 'Насиченість іконок рейтингів', description: 'Керує колірною гамою логотипів рейтингів' } });
         Lampa.SettingsApi.addParam({
             component: 'ydesign',
             param: { name: 'ydesign_ratings_order_btn', type: 'button' },
             field: { name: 'Порядок та вибір рейтингів', description: getSet('ydesign_ratings_order') },
-            onChange: function() {
+            onChange: function () {
                 Lampa.Input.edit({
                     title: 'Введіть через кому (tmdb, imdb, rt, mc, trakt, mdblist, popcorn, letterboxd, kp)',
                     value: getSet('ydesign_ratings_order'),
@@ -1519,10 +1519,10 @@
         Lampa.SettingsApi.addParam({ component: 'ydesign', param: { name: 'ydesign_uniform_v_gap_val_vert', type: 'select', values: microGaps, default: DefaultSettings.ydesign_uniform_v_gap_val_vert }, field: { name: 'Вертикальний відступ (Вертикальні картки)' } });
         Lampa.SettingsApi.addParam({ component: 'ydesign', param: { name: 'ydesign_uniform_v_gaps_horz', type: 'trigger', default: DefaultSettings.ydesign_uniform_v_gaps_horz }, field: { name: 'Вертикальні відступи однакові (Горизонтальні картки)', description: 'Відстань між додатковою назвою, роком, рейтингами, жанрами та слоганом стане єдиною' } });
         Lampa.SettingsApi.addParam({ component: 'ydesign', param: { name: 'ydesign_uniform_v_gap_val_horz', type: 'select', values: microGaps, default: DefaultSettings.ydesign_uniform_v_gap_val_horz }, field: { name: 'Вертикальний відступ (Горизонтальні картки)' } });
-        
+
         Lampa.SettingsApi.addParam({ component: 'ydesign', param: { name: 'ydesign_badges_gap_vert', type: 'select', values: tinyGaps, default: DefaultSettings.ydesign_badges_gap_vert }, field: { name: 'Відстань між бейджами по горизонталі (Вертикальні картки)' } });
         Lampa.SettingsApi.addParam({ component: 'ydesign', param: { name: 'ydesign_badges_gap_horz', type: 'select', values: tinyGaps, default: DefaultSettings.ydesign_badges_gap_horz }, field: { name: 'Відстань між бейджами по горизонталі (Горизонтальні картки)' } });
-        
+
         Lampa.SettingsApi.addParam({ component: 'ydesign', param: { name: 'ydesign_card_gap', type: 'select', values: gaps, default: DefaultSettings.ydesign_card_gap }, field: { name: 'Відстань між картками' } });
         Lampa.SettingsApi.addParam({ component: 'ydesign', param: { name: 'ydesign_badge_rows_gap', type: 'select', values: gaps, default: DefaultSettings.ydesign_badge_rows_gap }, field: { name: 'Відступ між рядками бейджів/рейтингів', description: 'По verticalі' } });
         Lampa.SettingsApi.addParam({ component: 'ydesign', param: { name: 'ydesign_genres_gap', type: 'select', values: tinyGaps, default: DefaultSettings.ydesign_genres_gap }, field: { name: 'Відступ для блоку Жанрів', description: 'Зверху та знизу жанрів' } });
@@ -1531,10 +1531,10 @@
         Lampa.SettingsApi.addParam({ component: 'ydesign', param: { name: 'ydesign_logo_mb', type: 'select', values: gaps, default: DefaultSettings.ydesign_logo_mb }, field: { name: 'Відступ назви/лого від бейджів' } });
         Lampa.SettingsApi.addParam({ component: 'ydesign', param: { name: 'ydesign_add_title_mb', type: 'select', values: gaps, default: DefaultSettings.ydesign_add_title_mb }, field: { name: 'Відступ додаткової назви від бейджів' } });
 
-        Lampa.Settings.listener.follow('change', function(e) {
-            if(e.name.indexOf('ydesign_') !== -1) {
-                applyDynamicCSS(); 
-                
+        Lampa.Settings.listener.follow('change', function (e) {
+            if (e.name.indexOf('ydesign_') !== -1) {
+                applyDynamicCSS();
+
                 var cssOnlyParams = [
                     'ydesign_lazy_load', 'ydesign_grid_items_v', 'ydesign_grid_items_h',
                     'ydesign_logo_max_h', 'ydesign_logo_max_w', 'ydesign_text_title_size',
@@ -1546,12 +1546,12 @@
                     'ydesign_add_title_mb', 'ydesign_ratings_saturate', 'ydesign_align_logo', 'ydesign_align_badges',
                     'ydesign_align_slogan', 'ydesign_series_cards', 'ydesign_uniform_v_gaps_vert', 'ydesign_uniform_v_gaps_horz',
                     'ydesign_uniform_badges', 'ydesign_series_redesign', 'ydesign_border_ratings', 'ydesign_border_info', 'ydesign_border_genres',
-                    'ydesign_badges_one_row', 'ydesign_show_year', 'ydesign_show_seasons', 'ydesign_show_ua', 
+                    'ydesign_badges_one_row', 'ydesign_show_year', 'ydesign_show_seasons', 'ydesign_show_ua',
                     'ydesign_show_age', 'ydesign_show_slogan', 'ydesign_logo_type', 'ydesign_hide_left_column', 'ydesign_align_add_title'
                 ];
 
                 if (!cssOnlyParams.includes(e.name)) {
-                    document.querySelectorAll('.ydesign-card').forEach(function(c) {
+                    document.querySelectorAll('.ydesign-card').forEach(function (c) {
                         if (c._ydesign_data) buildCardCustomDOM(c, c._ydesign_data);
                     });
                 }
@@ -1575,16 +1575,16 @@
                 if (['playlist', 'album', 'artist', 'radio', 'song', 'genre', 'section'].indexOf(this.data.type) !== -1) isVinyl = true;
             }
 
-            if (!isVinyl && this.data && this.data.id && (this.data.media_type === 'movie' || this.data.media_type === 'tv' || this.data.name || this.data.title)) {
+            if (!isVinyl && this.data && this.data.id && this.data.media_type !== 'person' && this.data.type !== 'person' && typeof this.data.profile_path === 'undefined' && typeof this.data.character === 'undefined' && (this.data.media_type === 'movie' || this.data.media_type === 'tv' || this.data.name || this.data.title)) {
                 if (typeof this.getPosterPath === 'function') {
                     this.nativeGetPosterPath = this.getPosterPath;
-                    this.getPosterPath = function() {
+                    this.getPosterPath = function () {
                         return "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7";
                     };
                 }
                 if (typeof this.getBackgroundPath === 'function') {
                     this.nativeGetBackgroundPath = this.getBackgroundPath;
-                    this.getBackgroundPath = function() {
+                    this.getBackgroundPath = function () {
                         return "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7";
                     };
                 }
@@ -1607,7 +1607,7 @@
                 if (el && el.classList && (el.classList.contains('card--vinyl') || el.classList.contains('card-more'))) isVinyl = true;
             }
 
-            if (!isVinyl && this.data && this.data.id && (this.data.media_type === 'movie' || this.data.media_type === 'tv' || this.data.name || this.data.title)) {
+            if (!isVinyl && this.data && this.data.id && this.data.media_type !== 'person' && this.data.type !== 'person' && typeof this.data.profile_path === 'undefined' && typeof this.data.character === 'undefined' && (this.data.media_type === 'movie' || this.data.media_type === 'tv' || this.data.name || this.data.title)) {
                 this.image_loaded = true;
                 if (this.img && !this.img.src) {
                     this.img.src = "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7";
@@ -1615,22 +1615,20 @@
                 if (this.html) {
                     this.html.removeClass('card--preload').addClass('card--loaded');
                 }
-            } else {
-                this.image_loaded = true;
             }
 
             if (typeof originalOnVisible === 'function') {
                 originalOnVisible.apply(this, arguments);
             }
 
-            if (isVinyl) return; 
+            if (isVinyl) return;
 
-            if (this.data && this.data.id && (this.data.media_type === 'movie' || this.data.media_type === 'tv' || this.data.name || this.data.title)) {
+            if (this.data && this.data.id && this.data.media_type !== 'person' && this.data.type !== 'person' && typeof this.data.profile_path === 'undefined' && typeof this.data.character === 'undefined' && (this.data.media_type === 'movie' || this.data.media_type === 'tv' || this.data.name || this.data.title)) {
                 var el = this.html[0] || this.html;
                 if (!el._ydesign_built) {
                     el._ydesign_built = true;
                     el._ydesign_data = this.data;
-                    
+
                     var activeComp = Lampa.Activity.active() ? Lampa.Activity.active().component : 'main';
                     el._ydesign_isMain = (activeComp === 'main');
 
@@ -1655,11 +1653,11 @@
         }
 
         if (card.classList.contains('online-prestige-watched')) {
-            card.style.opacity = '0.5'; 
+            card.style.opacity = '0.5';
         }
 
         var splits = card.querySelectorAll('.online-prestige-split');
-        splits.forEach(function(s) { s.remove(); });
+        splits.forEach(function (s) { s.remove(); });
 
         var rightTopBlock = card.querySelector('.right-top-badges');
         if (!rightTopBlock) {
@@ -1689,19 +1687,19 @@
     }
 
     function initSeriesLogic() {
-        var observer = new MutationObserver(function(mutations) {
+        var observer = new MutationObserver(function (mutations) {
             if (!getSet('ydesign_series_redesign')) return;
 
             var focusLost = false;
-            mutations.forEach(function(mutation) {
-                mutation.addedNodes.forEach(function(node) {
+            mutations.forEach(function (mutation) {
+                mutation.addedNodes.forEach(function (node) {
                     if (node.nodeType === 1) {
                         if (node.classList && node.classList.contains('online-prestige')) {
                             if (formatPrestigeCard(node)) focusLost = true;
                         }
                         if (node.querySelectorAll) {
                             var cards = node.querySelectorAll('.online-prestige');
-                            cards.forEach(function(c) {
+                            cards.forEach(function (c) {
                                 if (formatPrestigeCard(c)) focusLost = true;
                             });
                         }
@@ -1710,7 +1708,7 @@
             });
 
             if (focusLost) {
-                setTimeout(function() {
+                setTimeout(function () {
                     var active = document.querySelector('.activity--active');
                     if (active) {
                         var nextValid = active.querySelector('.online-prestige.online-prestige--full.selector');
@@ -1723,11 +1721,11 @@
         });
         observer.observe(document.body, { childList: true, subtree: true });
 
-        setInterval(function() {
+        setInterval(function () {
             if (!getSet('ydesign_series_redesign')) return;
 
             var activeCards = document.querySelectorAll('.online-prestige:not(.online-prestige-watched)');
-            activeCards.forEach(function(card) {
+            activeCards.forEach(function (card) {
                 var line = card.querySelector('.time-line > div');
                 if (line && line.style.width) {
                     var timeline = card.querySelector('.online-prestige__timeline');
@@ -1746,21 +1744,21 @@
         var pageJustLoaded = false;
         Lampa.Listener.follow('activity', function (e) {
             if (e.type === 'start' || e.type === 'build') {
-                pageJustLoaded = true; 
+                pageJustLoaded = true;
             }
         });
 
-        setInterval(function() {
+        setInterval(function () {
             if (!getSet('ydesign_series_redesign') || !pageJustLoaded) return;
 
             var active = document.querySelector('.activity--active');
             if (!active) return;
 
             var currentFocus = active.querySelector('.focus');
-            
+
             if (!currentFocus || currentFocus.closest('.torrent-filter') || currentFocus.classList.contains('explorer-card__head-img')) {
                 var firstCard = active.querySelector('.online-prestige.online-prestige--full.selector');
-                
+
                 if (firstCard) {
                     if (window.Lampa && window.Lampa.Controller) {
                         window.Lampa.Controller.collectionFocus(firstCard, active);
@@ -1768,9 +1766,9 @@
                         if (currentFocus) currentFocus.classList.remove('focus');
                         firstCard.classList.add('focus');
                     }
-                    pageJustLoaded = false; 
+                    pageJustLoaded = false;
                 }
-            } 
+            }
             else if (currentFocus && currentFocus.classList.contains('online-prestige--full')) {
                 pageJustLoaded = false;
             }
@@ -1783,7 +1781,7 @@
         // Перевірка джерела
         var currentSource = Lampa.Storage.get('source') || 'tmdb';
         if (currentSource !== 'tmdb' && currentSource !== 'cub') {
-            setTimeout(function() {
+            setTimeout(function () {
                 Lampa.Noty.show('Для роботи YDesign потрібно обрати джерелом TMDB або CUB (Поточне: ' + currentSource + ')');
             }, 3000);
             console.log('YDesign disabled: Lampa source is not TMDB or CUB.');
@@ -1792,22 +1790,29 @@
 
         injectCSS();
         applyDynamicCSS();
+
+        Lampa.Storage.listener.follow('change', function (e) {
+            if (e.name && e.name.indexOf('ydesign_') === 0) {
+                applyDynamicCSS();
+            }
+        });
+
         overrideCards();
         initSeriesLogic();
 
         if (window.appready && Lampa.Activity && Lampa.Activity.active()) {
-            setTimeout(function() {
+            setTimeout(function () {
                 var act = Lampa.Activity.active();
                 if (act && act.activity && act.activity.render) {
                     act.activity.render().find('.card').trigger('visible');
                 }
             }, 100);
         }
-        
+
         console.log('Lampa Plugin: YDesign successfully loaded.');
     }
 
     if (window.appready) init();
-    else Lampa.Listener.follow('app', function(e) { if (e.type === 'ready') init(); });
+    else Lampa.Listener.follow('app', function (e) { if (e.type === 'ready') init(); });
 
 })();
