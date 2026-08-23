@@ -48,94 +48,144 @@
     // 2. ДЕФОЛТНІ НАЛАШТУВАННЯ
     // =========================================================================
     var DefaultSettings = {
-        ydesign_logo_quality: 'w500',
-        ydesign_poster_quality: 'w300',
-        ydesign_backdrop_quality: 'w500',
-        ydesign_lang: 'uk_en',
-        ydesign_slogan_lang: 'uk_en',
-        ydesign_desc_lang: 'uk_en',
-        ydesign_logo_type: 'logo',
-        ydesign_logo_max_h: '35',
-        ydesign_logo_max_w: '80',
-        ydesign_text_title_size: '1.5',
-        ydesign_text_slogan_size: '0.7',
-        ydesign_text_badge_size: '0.8',
-        ydesign_text_year_size: '0.8',
-        ydesign_text_age_size: '0.8',
-        ydesign_text_seasons_size: '0.8',
-        ydesign_text_ua_size: '0.8',
-        ydesign_text_rating_size: '0.8',
-        ydesign_desc_size: '1.0',
-        ydesign_text_add_title_size: '0.9',
-        ydesign_text_genres_size: '0.8',
         ydesign_card_type_main: 'horizontal',
         ydesign_card_type_other: 'vertical',
-        ydesign_badges_one_row: false,
-        ydesign_show_desc_horz: true,
-        ydesign_show_year: true,
-        ydesign_show_seasons: true,
-        ydesign_show_ua: true,
-        ydesign_show_age: true,
-        ydesign_show_slogan: true,
-        ydesign_show_add_title: true,
-        ydesign_add_title_lang: 'auto',
-        ydesign_show_genres: true,
-        ydesign_lazy_load: false,
+        ydesign_grid_items_v: '5',
+        ydesign_grid_items_h: '3',
         ydesign_card_gap: '0.8',
-        ydesign_badge_rows_gap: '0.3',
-        ydesign_badges_gap_vert: '0.15',
-        ydesign_badges_gap_horz: '0.15',
-        ydesign_genres_gap: '0.0',
-        ydesign_content_pb: '0.3',
-        ydesign_slogan_padding: '0.3',
-        ydesign_logo_mb: '1.2',
-        ydesign_add_title_mb: '0.3',
-        ydesign_uniform_v_gaps_vert: true,
-        ydesign_uniform_v_gap_val_vert: '0.25',
-        ydesign_uniform_v_gaps_horz: true,
-        ydesign_uniform_v_gap_val_horz: '0.25',
-        ydesign_ratings_saturate: '100',
-        ydesign_align_logo: 'center',
-        ydesign_align_add_title: 'left',
-        ydesign_align_badges: 'left',
-        ydesign_align_slogan: 'left',
-        ydesign_ratings_order: 'tmdb, imdb, rt, popcorn',
-        ydesign_omdb_key: '',
-        ydesign_mdblist_key: '',
-        ydesign_series_redesign: true,
-        ydesign_series_cards: '4',
-        ydesign_hide_left_column: true,
-        ydesign_series_show_date: true,
-        ydesign_series_show_voice: true,
-        ydesign_series_show_rate: true,
-        ydesign_series_show_time: true,
-        ydesign_series_glass_pill: true,
-        ydesign_series_border_badges: true,
-        ydesign_series_badge_shape: 'pill',
-        ydesign_horz_ratings_row: false,
+        ydesign_lazy_load: false,
+
+        ydesign_badge_shape: 'pill',
+        ydesign_glass_pill_bg: true,
+        ydesign_color_age: true,
+        ydesign_color_ua: true,
         ydesign_border_year: true,
         ydesign_border_age: true,
         ydesign_border_seasons: true,
         ydesign_border_ua: true,
         ydesign_border_genres: true,
         ydesign_border_ratings: true,
-        ydesign_border_info: true,
-        ydesign_uniform_badges: true,
-        ydesign_grid_items_v: '5',
-        ydesign_grid_items_h: '3',
-        ydesign_color_age: true,
-        ydesign_color_ua: true,
-        ydesign_badge_shape: 'pill',
-        ydesign_glass_pill_bg: true
+        ydesign_ratings_order: 'tmdb, imdb, rt, popcorn',
+        ydesign_ratings_saturate: '100',
+
+        ydesign_logo_type: 'logo',
+        ydesign_lang: 'uk_en',
+        ydesign_slogan_lang: 'uk_en',
+        ydesign_desc_lang: 'uk_en',
+        ydesign_add_title_lang: 'auto',
+        ydesign_poster_quality: 'w300',
+        ydesign_backdrop_quality: 'w500',
+        ydesign_logo_quality: 'w500',
+
+        // Вертикальні
+        ydesign_v_logo_max_h: '35',
+        ydesign_v_logo_max_w: '80',
+        ydesign_v_title_size: '1.5',
+        ydesign_v_add_title_size: '0.9',
+        ydesign_v_slogan_size: '0.7',
+        ydesign_v_badge_size: '0.8',
+        ydesign_v_year_size: '0.8',
+        ydesign_v_age_size: '0.8',
+        ydesign_v_seasons_size: '0.8',
+        ydesign_v_ua_size: '0.8',
+        ydesign_v_genres_size: '0.8',
+        ydesign_v_rating_size: '0.8',
+        ydesign_v_uniform_badges: true,
+        ydesign_v_badges_one_row: false,
+        ydesign_v_show_year: true,
+        ydesign_v_show_seasons: true,
+        ydesign_v_show_ua: true,
+        ydesign_v_show_age: true,
+        ydesign_v_show_genres: true,
+        ydesign_v_show_slogan: true,
+        ydesign_v_show_add_title: true,
+        ydesign_v_align_logo: 'center',
+        ydesign_v_align_add_title: 'left',
+        ydesign_v_align_badges: 'left',
+        ydesign_v_align_slogan: 'left',
+        ydesign_v_uniform_v_gaps: true,
+        ydesign_v_uniform_v_gap_val: '0.25',
+        ydesign_v_badges_gap: '0.15',
+        ydesign_v_badge_rows_gap: '0.3',
+        ydesign_v_genres_gap: '0.0',
+        ydesign_v_content_pb: '0.3',
+        ydesign_v_slogan_padding: '0.3',
+        ydesign_v_logo_mb: '1.2',
+        ydesign_v_add_title_mb: '0.3',
+
+        // Горизонтальні
+        ydesign_h_logo_max_h: '35',
+        ydesign_h_logo_max_w: '80',
+        ydesign_h_title_size: '1.5',
+        ydesign_h_add_title_size: '0.9',
+        ydesign_h_slogan_size: '0.7',
+        ydesign_h_desc_size: '1.0',
+        ydesign_h_badge_size: '0.8',
+        ydesign_h_year_size: '0.8',
+        ydesign_h_age_size: '0.8',
+        ydesign_h_seasons_size: '0.8',
+        ydesign_h_ua_size: '0.8',
+        ydesign_h_genres_size: '0.8',
+        ydesign_h_rating_size: '0.8',
+        ydesign_h_uniform_badges: true,
+        ydesign_h_ratings_row: false,
+        ydesign_h_show_desc: true,
+        ydesign_h_show_year: true,
+        ydesign_h_show_seasons: true,
+        ydesign_h_show_ua: true,
+        ydesign_h_show_age: true,
+        ydesign_h_show_genres: true,
+        ydesign_h_show_slogan: true,
+        ydesign_h_show_add_title: true,
+        ydesign_h_align_logo: 'center',
+        ydesign_h_align_add_title: 'left',
+        ydesign_h_align_badges: 'left',
+        ydesign_h_align_slogan: 'left',
+        ydesign_h_uniform_v_gaps: true,
+        ydesign_h_uniform_v_gap_val: '0.25',
+        ydesign_h_badges_gap: '0.15',
+        ydesign_h_badge_rows_gap: '0.3',
+        ydesign_h_genres_gap: '0.0',
+        ydesign_h_content_pb: '0.3',
+        ydesign_h_slogan_padding: '0.3',
+        ydesign_h_logo_mb: '1.2',
+        ydesign_h_add_title_mb: '0.3',
+
+        // Серії
+        ydesign_series_redesign: true,
+        ydesign_series_cards: '4',
+        ydesign_hide_left_column: true,
+        ydesign_series_badge_size: '0.8',
+        ydesign_series_title_size: '0.9',
+        ydesign_series_badge_shape: 'pill',
+        ydesign_series_glass_pill: true,
+        ydesign_series_border_badges: true,
+        ydesign_series_show_date: true,
+        ydesign_series_show_voice: true,
+        ydesign_series_show_rate: true,
+        ydesign_series_show_time: true,
+
+        ydesign_omdb_key: '',
+        ydesign_mdblist_key: ''
     };
 
-    function getSet(key) {
+    function getSet(key, fallbackKey) {
         try {
-            if (!window.Lampa || !Lampa.Storage) return DefaultSettings[key];
+            if (!window.Lampa || !Lampa.Storage) {
+                if (DefaultSettings.hasOwnProperty(key)) return DefaultSettings[key];
+                if (fallbackKey && DefaultSettings.hasOwnProperty(fallbackKey)) return DefaultSettings[fallbackKey];
+                return undefined;
+            }
             var val = Lampa.Storage.get(key);
             if (val !== null && val !== undefined && val !== '') return val;
+            if (fallbackKey) {
+                var fval = Lampa.Storage.get(fallbackKey);
+                if (fval !== null && fval !== undefined && fval !== '') return fval;
+            }
         } catch (e) {}
-        return DefaultSettings[key];
+        if (DefaultSettings.hasOwnProperty(key)) return DefaultSettings[key];
+        if (fallbackKey && DefaultSettings.hasOwnProperty(fallbackKey)) return DefaultSettings[fallbackKey];
+        return undefined;
     }
 
     // =========================================================================
@@ -194,7 +244,7 @@
     }
 
     // =========================================================================
-    // 4. БАГАТОРІВНЕВИЙ КЕШ (ES5 Object Map)
+    // 4. КЕШ (ES5 Object Map)
     // =========================================================================
     var MemoryCache = {
         _data: {},
@@ -255,7 +305,7 @@
     };
 
     // =========================================================================
-    // 5. ВИРАХУНОК ДОМІНАНТНОГО КОЛЬОРУ
+    // 5. ДОМІНАНТНИЙ КОЛІР
     // =========================================================================
     var ProminentColorStore = {};
     var sharedCanvas = null;
@@ -314,7 +364,7 @@
     }
 
     // =========================================================================
-    // 6. ЛІНИВЕ ЗАВАНТАЖЕННЯ (INTERSECTION OBSERVER)
+    // 6. ЛІНИВЕ ЗАВАНТАЖЕННЯ
     // =========================================================================
     var LazyLoader = {
         observer: null,
@@ -352,7 +402,7 @@
     };
 
     // =========================================================================
-    // 7. ПАРСИНГ ДАНИХ ТА API ЗАПИТИ ДЛЯ ГОЛОВНИХ КАРТОК
+    // 7. API ТА ДАНІ TMDB
     // =========================================================================
     function parseAgeRating(ageStr) {
         if (!ageStr) return '16+';
@@ -617,7 +667,7 @@
     }
 
     // =========================================================================
-    // 8. РЕНДЕР БЕЙДЖІВ ТА РЕЙТИНГІВ КАРТОК
+    // 8. РЕНДЕР БЕЙДЖІВ ТА РЕЙТИНГІВ
     // =========================================================================
     function renderRatingsAsync(container, baseData, tmdbData, extRatings) {
         return new Promise(function(resolve) {
@@ -682,6 +732,8 @@
 
         var type = data.media_type || (data.name ? 'tv' : 'movie');
         if (!data.id) return;
+
+        var prefix = isHorz ? 'ydesign_h_' : 'ydesign_v_';
 
         var buildExtendedCard = function () {
             var view = el.querySelector('.card__view');
@@ -754,7 +806,7 @@
                 contentLayer.appendChild(logoContainer);
 
                 var addTitleWrap = null;
-                if (getSet('ydesign_show_add_title')) {
+                if (getSet(prefix + 'show_add_title', 'ydesign_show_add_title')) {
                     addTitleWrap = document.createElement('div');
                     addTitleWrap.className = 'ydesign-add-title';
                     contentLayer.appendChild(addTitleWrap);
@@ -823,7 +875,7 @@
                 });
 
                 var genresWrap = null;
-                if (getSet('ydesign_show_genres')) {
+                if (getSet(prefix + 'show_genres', 'ydesign_show_genres')) {
                     genresWrap = document.createElement('div');
                     genresWrap.className = 'ydesign-genres';
                     if (extData.genres && extData.genres.length) {
@@ -850,7 +902,7 @@
                 });
 
                 if (isHorz) {
-                    if (getSet('ydesign_horz_ratings_row')) {
+                    if (getSet('ydesign_h_ratings_row', 'ydesign_horz_ratings_row')) {
                         contentLayer.appendChild(infoWrap);
                         var infoWrap2 = document.createElement('div');
                         infoWrap2.className = 'ydesign-info-wrap ydesign-info-wrap-2';
@@ -873,7 +925,7 @@
                 var oldDesc = el.querySelector('.ydesign-desc-under');
                 if (oldDesc) oldDesc.remove();
 
-                if (getSet('ydesign_show_slogan')) {
+                if (getSet(prefix + 'show_slogan', 'ydesign_show_slogan')) {
                     var slogan = document.createElement('div');
                     slogan.className = 'ydesign-slogan ydesign-slogan-text';
                     var sText = extData.tagline || ' ';
@@ -884,7 +936,7 @@
                     contentLayer.appendChild(slogan);
                 }
 
-                if (isHorz && getSet('ydesign_show_desc_horz')) {
+                if (isHorz && getSet('ydesign_h_show_desc', 'ydesign_show_desc_horz')) {
                     var desc = document.createElement('div');
                     desc.className = 'ydesign-desc-under';
                     desc.innerText = extData.overview ? extData.overview : ' ';
@@ -931,15 +983,18 @@
             "    flex: 0 0 auto; cursor: pointer;",
             "    transform: translateZ(0);",
             "    backface-visibility: hidden;",
+            "    box-shadow: none !important;",
             "}",
             "",
+            "/* ВИДІЛЕННЯ КАРТКИ БЕЗ ЧОРНОЇ ТІНІ */",
             ".ydesign-active .ydesign-card.focus {",
             "    transform: scale(1.045) translateZ(0); ",
             "    z-index: 20;",
+            "    box-shadow: none !important;",
             "}",
             "",
             ".ydesign-active .ydesign-card.focus .card__view {",
-            "    box-shadow: 0 0 0 4px #ffffff, 0 16px 36px rgba(0,0,0,0.9) !important;",
+            "    box-shadow: 0 0 0 4px #ffffff !important;",
             "}",
             "",
             ".ydesign-active .ydesign-card .card__view {",
@@ -969,248 +1024,143 @@
             "    .ydesign-active .items-line:not(.vinyl-line) .card.ydesign-horizontal { width: 94vw; }  ",
             "}",
             "",
-            "/* --- ЧИСТИЙ КРОСФЕЙД ЗОБРАЖЕНЬ --- */",
+            "/* ЗОБРАЖЕННЯ КАРТОК */",
             ".ydesign-img-layer {",
             "    position: absolute; top: 0; left: 0; width: 100%; height: 100%;",
             "    background-color: #1a1a1a;",
             "    background-image: url('./img/img_load.svg');",
-            "    background-size: cover !important; ",
-            "    background-repeat: no-repeat; ",
-            "    background-position: center center !important;",
+            "    background-size: cover !important; background-repeat: no-repeat; background-position: center center !important;",
             "}",
             ".ydesign-img-layer::after {",
-            "    content: '';",
-            "    position: absolute; top: 0; left: 0; width: 100%; height: 100%;",
+            "    content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 100%;",
             "    background-image: var(--loaded-bg, none);",
-            "    background-size: cover !important;",
-            "    background-repeat: no-repeat;",
-            "    background-position: center center !important;",
-            "    opacity: 0;",
-            "    transition: opacity 0.25s ease-in-out;",
-            "    z-index: 1;",
+            "    background-size: cover !important; background-repeat: no-repeat; background-position: center center !important;",
+            "    opacity: 0; transition: opacity 0.25s ease-in-out; z-index: 1;",
             "}",
-            ".ydesign-img-layer.loaded::after {",
-            "    opacity: 1;",
-            "}",
+            ".ydesign-img-layer.loaded::after { opacity: 1; }",
             "",
             ".ydesign-gradient-layer {",
             "    position: absolute; bottom: 0; left: 0; width: 100%; height: 60%;",
-            "    pointer-events: none;",
-            "    z-index: 2;",
+            "    pointer-events: none; z-index: 2;",
             "}",
             "",
             ".ydesign-content-layer {",
             "    position: absolute; bottom: 0; left: 0; width: 100%; height: 100%;",
             "    display: flex; flex-direction: column; justify-content: flex-end; align-items: stretch;",
             "    padding: 1.2em 0.8em var(--ydesign-content-pb, 0.3em) 0.8em;",
-            "    box-sizing: border-box;",
-            "    z-index: 3; pointer-events: none;",
+            "    box-sizing: border-box; z-index: 3; pointer-events: none;",
             "}",
             "",
             ".ydesign-logo-container {",
             "    display: flex; align-items: flex-end;",
-            "    margin-bottom: var(--ydesign-logo-mb, 1.2em); ",
-            "    width: 100%; ",
-            "    height: var(--ydesign-logo-h, 35%);",
-            "    max-height: var(--ydesign-logo-h, 35%); ",
-            "    flex-shrink: 0; ",
-            "    justify-content: var(--ydesign-align-logo, center);",
-            "    position: relative;",
-            "    z-index: 10;",
+            "    margin-bottom: var(--ydesign-logo-mb, 1.2em) !important; ",
+            "    width: 100%; height: var(--ydesign-logo-h, 35%); max-height: var(--ydesign-logo-h, 35%); ",
+            "    flex-shrink: 0; justify-content: var(--ydesign-align-logo, center);",
+            "    position: relative; z-index: 10;",
             "}",
             ".ydesign-logo-container img {",
-            "    max-width: var(--ydesign-logo-w, 80%);",
-            "    max-height: 100%;",
-            "    height: auto; width: auto;",
+            "    max-width: var(--ydesign-logo-w, 80%); max-height: 100%; height: auto; width: auto;",
             "    object-fit: contain; object-position: bottom var(--ydesign-text-logo, center);",
             "    filter: drop-shadow(0 2px 6px rgba(0,0,0,0.85));",
             "}",
             ".ydesign-text-title {",
-            "    width: var(--ydesign-logo-w, 100%);",
-            "    max-height: 100%;",
+            "    width: var(--ydesign-logo-w, 100%); max-height: 100%;",
             "    display: flex; align-items: flex-end; justify-content: var(--ydesign-align-logo, center);",
             "    font-size: calc(var(--ydesign-title-size-val, 1.2) * 1em) !important; font-weight: 800; color: #fff; ",
-            "    text-align: var(--ydesign-text-logo, center); ",
-            "    text-shadow: 0 2px 4px rgba(0,0,0,0.95);",
-            "    line-height: 1.25; ",
-            "    padding-bottom: 0.15em; ",
+            "    text-align: var(--ydesign-text-logo, center); text-shadow: 0 2px 4px rgba(0,0,0,0.95);",
+            "    line-height: 1.25; padding-bottom: 0.15em; ",
             "}",
             "",
-            "/* --- СТРОГА СІТКА ДЛЯ ДОДАТКОВОЇ НАЗВИ ТА СЛОГАНУ --- */",
             ".ydesign-add-title {",
             "    width: 100%;",
-            "    --ydesign-add-title-size-eff: var(--ydesign-add-title-size-val, 0.9);",
-            "    font-size: calc(var(--ydesign-add-title-size-eff) * 1em) !important;",
-            "    color: rgba(255, 255, 255, 0.9);",
-            "    font-weight: 600; font-style: italic;",
-            "    text-align: var(--ydesign-text-add-title, center);",
-            "    white-space: nowrap;",
-            "    overflow: hidden;",
-            "    text-overflow: ellipsis;",
-            "    line-height: 1.35 !important;",
-            "    padding: 0.1em 0 0.25em 0 !important;",
-            "    margin-left: 0 !important;",
-            "    box-sizing: border-box !important;",
-            "    min-height: calc(var(--ydesign-add-title-size-eff) * 1.55em);",
-            "    margin-top: 0 !important;",
-            "    margin-bottom: var(--ydesign-add-title-mb, 0.3em) !important;",
-            "    text-shadow: none !important;",
+            "    font-size: calc(var(--ydesign-add-title-size-eff, 0.9) * 1em) !important;",
+            "    color: rgba(255, 255, 255, 0.9); font-weight: 600; font-style: italic;",
+            "    text-align: var(--ydesign-text-add-title, center); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;",
+            "    line-height: 1.35 !important; padding: 0.1em 0 0.25em 0 !important; margin-left: 0 !important; box-sizing: border-box !important;",
+            "    min-height: calc(var(--ydesign-add-title-size-eff, 0.9) * 1.55em); margin-top: 0 !important;",
+            "    margin-bottom: var(--ydesign-add-title-mb, 0.3em) !important; text-shadow: none !important;",
             "}",
             "",
-            "/* СЛОГАН З НЕВЕЛИКИМ ВІДСТУПОМ ВІД КРАЮ КАРТКИ */",
             ".ydesign-slogan {",
             "    width: 100%;",
-            "    --ydesign-slogan-size-eff: var(--ydesign-text-slogan-size-val, 0.85);",
-            "    font-size: calc(var(--ydesign-slogan-size-eff) * 1em) !important; color: #fff;",
+            "    font-size: calc(var(--ydesign-slogan-size-eff, 0.85) * 1em) !important; color: #fff;",
             "    text-align: var(--ydesign-text-slogan, center); ",
             "    margin: var(--ydesign-slogan-padding, 0.3em) 0 0 0 !important;",
-            "    padding: 0.1em 0.35em !important;",
-            "    box-sizing: border-box !important;",
-            "    line-height: 1.35 !important; ",
-            "    font-weight: 500;",
-            "    text-shadow: none !important;",
-            "    display: block; ",
-            "    white-space: nowrap;",
-            "    overflow: hidden;",
-            "    text-overflow: ellipsis;",
-            "    min-height: calc(var(--ydesign-slogan-size-eff) * 1.45em);",
+            "    padding: 0.1em 0.35em !important; box-sizing: border-box !important; line-height: 1.35 !important; font-weight: 500;",
+            "    text-shadow: none !important; display: block; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;",
+            "    min-height: calc(var(--ydesign-slogan-size-eff, 0.85) * 1.45em);",
             "}",
             "",
             ".ydesign-info-wrap {",
-            "    display: flex;",
-            "    width: 100%; ",
-            "    overflow: hidden;",
-            "    padding: 0 !important; margin: 0 !important;",
+            "    display: flex; width: 100%; overflow: visible !important; padding: 0 !important; margin: 0 !important;",
             "}",
             "",
-            "/* --- ГОРИЗОНТАЛЬНІ КАРТКИ ТА РЯДКИ БЕЙДЖІВ (СТРОГО 1 РЯД) --- */",
+            "/* КОНТЕЙНЕРИ БЕЙДЖІВ */",
             ".ydesign-horizontal .ydesign-info-wrap,",
             ".ydesign-horizontal .ydesign-info-wrap-2,",
-            "body.ydesign-badges-one-row .ydesign-vertical .ydesign-info-wrap {",
+            "body.ydesign-v-badges-one-row .ydesign-vertical .ydesign-info-wrap {",
             "    display: flex; flex-direction: row; flex-wrap: wrap !important;",
-            "    align-content: flex-start !important;",
-            "    align-items: center !important;",
+            "    align-content: flex-start !important; align-items: center !important;",
             "    justify-content: var(--ydesign-align-badges, center);",
-            "    column-gap: var(--ydesign-badges-gap-h, 0.15em) !important;",
-            "    row-gap: 50em !important;",
-            "    height: 1.70em !important;",
-            "    max-height: 1.70em !important;",
-            "    min-height: 1.70em !important;",
-            "    line-height: 1.70em !important;",
-            "    padding: 0 !important;",
-            "    margin: 0 !important;",
-            "    overflow: hidden !important;",
-            "    clip-path: none !important;",
-            "    transform: translateZ(0);",
+            "    column-gap: var(--ydesign-badges-gap, 0.15em) !important; row-gap: 50em !important;",
+            "    height: 2.15em !important; max-height: 2.15em !important; min-height: 2.15em !important; line-height: 2.15em !important;",
+            "    padding: 2px 0 !important; box-sizing: border-box !important; margin: 0 !important; overflow: hidden !important; clip-path: none !important;",
             "}",
-            ".ydesign-horizontal .ydesign-info-wrap-2 {",
-            "    margin-top: var(--ydesign-badge-rows-gap, 0.3em) !important;",
-            "}",
+            ".ydesign-horizontal .ydesign-info-wrap-2 { margin-top: var(--ydesign-badge-rows-gap, 0.3em) !important; }",
             "",
             ".ydesign-vertical .ydesign-info-wrap {",
-            "    flex-direction: column;",
-            "    align-items: var(--ydesign-align-badges, center) !important;",
-            "    height: auto !important; ",
-            "    max-height: none !important;",
-            "    overflow: visible !important;",
-            "    gap: var(--ydesign-badge-rows-gap, 0.3em);",
-            "    padding: 0 !important;",
-            "    margin: 0 !important;",
+            "    flex-direction: column; align-items: var(--ydesign-align-badges, center) !important;",
+            "    height: auto !important; max-height: none !important; overflow: visible !important;",
+            "    gap: var(--ydesign-badge-rows-gap, 0.3em) !important; padding: 0 !important; margin: 0 !important;",
             "}",
             "",
-            "/* УСІ РЯДКИ (БЕЙДЖІ, РЕЙТИНГИ, ЖАНРИ) - СТРОГО 1 РЯД, ЦІЛІСНІ ПІГУЛКИ БЕЗ ЗРІЗАННЯ КРАЇВ */",
             ".ydesign-vertical .ydesign-badges, ",
             ".ydesign-vertical .ydesign-ratings,",
             ".ydesign-vertical .ydesign-genres {",
-            "    display: flex !important; ",
-            "    flex-wrap: wrap !important; ",
-            "    align-content: flex-start !important;",
-            "    align-items: center !important;",
-            "    column-gap: var(--ydesign-badges-gap-v, 0.15em) !important; ",
-            "    row-gap: 50em !important;",
-            "    justify-content: var(--ydesign-align-badges, center) !important;",
-            "    width: 100% !important; ",
-            "    height: 1.70em !important;",
-            "    max-height: 1.70em !important;",
-            "    min-height: 1.70em !important;",
-            "    line-height: 1.70em !important;",
-            "    padding: 0 !important;",
-            "    margin: 0 !important;",
-            "    overflow: hidden !important; ",
-            "    clip-path: none !important;",
-            "    transform: translateZ(0);",
+            "    display: flex !important; flex-wrap: wrap !important; align-content: flex-start !important; align-items: center !important;",
+            "    column-gap: var(--ydesign-badges-gap, 0.15em) !important; row-gap: 50em !important;",
+            "    justify-content: var(--ydesign-align-badges, center) !important; width: 100% !important; ",
+            "    height: 2.15em !important; max-height: 2.15em !important; min-height: 2.15em !important; line-height: 2.15em !important;",
+            "    padding: 2px 0 !important; box-sizing: border-box !important; margin: 0 !important; overflow: hidden !important; clip-path: none !important;",
             "}",
             "",
-            "body.ydesign-badges-one-row .ydesign-vertical .ydesign-genres,",
-            "body.ydesign-badges-one-row .ydesign-vertical .ydesign-ratings,",
+            "/* ВІДСТУПИ ЖАНРІВ (РУЧНИЙ РЕЖИМ) */",
+            ".ydesign-vertical .ydesign-genres,",
+            ".ydesign-horizontal .ydesign-genres {",
+            "    margin-top: var(--ydesign-genres-gap, 0em) !important;",
+            "    margin-bottom: var(--ydesign-genres-gap, 0em) !important;",
+            "}",
+            "",
+            "body.ydesign-v-badges-one-row .ydesign-vertical .ydesign-genres,",
+            "body.ydesign-v-badges-one-row .ydesign-vertical .ydesign-ratings,",
             ".ydesign-horizontal .ydesign-badges,",
             ".ydesign-horizontal .ydesign-ratings { ",
-            "    display: flex !important;",
-            "    flex-wrap: wrap !important; ",
-            "    align-content: flex-start !important;",
-            "    width: auto !important; ",
-            "    height: 1.70em !important;",
-            "    max-height: 1.70em !important;",
-            "    min-height: 1.70em !important;",
-            "    line-height: 1.70em !important;",
-            "    margin: 0 !important; padding: 0 !important; flex-shrink: 0 !important; ",
-            "    column-gap: var(--ydesign-badges-gap-h, 0.15em) !important; ",
-            "    row-gap: 50em !important;",
-            "    overflow: hidden !important;",
+            "    display: flex !important; flex-wrap: wrap !important; align-content: flex-start !important;",
+            "    width: auto !important; height: 2.15em !important; max-height: 2.15em !important; min-height: 2.15em !important; line-height: 2.15em !important;",
+            "    margin: 0 !important; padding: 2px 0 !important; box-sizing: border-box !important; flex-shrink: 0 !important; ",
+            "    column-gap: var(--ydesign-badges-gap, 0.15em) !important; row-gap: 50em !important; overflow: hidden !important;",
             "}",
             "",
             ".ydesign-horizontal .ydesign-genres {",
-            "    display: flex !important; ",
-            "    flex-wrap: wrap !important; ",
-            "    align-content: flex-start !important;",
-            "    align-items: center !important;",
-            "    column-gap: var(--ydesign-badges-gap-h, 0.15em) !important; ",
-            "    row-gap: 50em !important;",
-            "    width: 100% !important; ",
-            "    justify-content: var(--ydesign-align-badges, center) !important;",
-            "    height: 1.70em !important;",
-            "    max-height: 1.70em !important;",
-            "    min-height: 1.70em !important;",
-            "    line-height: 1.70em !important;",
-            "    padding: 0 !important;",
-            "    margin: 0 !important;",
-            "    overflow: hidden !important; ",
-            "    clip-path: none !important;",
-            "    transform: translateZ(0);",
+            "    display: flex !important; flex-wrap: wrap !important; align-content: flex-start !important; align-items: center !important;",
+            "    column-gap: var(--ydesign-badges-gap, 0.15em) !important; row-gap: 50em !important; width: 100% !important; ",
+            "    justify-content: var(--ydesign-align-badges, center) !important; height: 2.15em !important; max-height: 2.15em !important; min-height: 2.15em !important;",
+            "    line-height: 2.15em !important; padding: 2px 0 !important; box-sizing: border-box !important; overflow: hidden !important; clip-path: none !important;",
             "}",
             "",
-            ".ydesign-badges, .ydesign-ratings, .ydesign-genres {",
-            "    font-size: 1em !important;",
-            "}",
+            ".ydesign-badges, .ydesign-ratings, .ydesign-genres { font-size: 1em !important; }",
             "",
-            "/* =========================================================================",
-            "   ЧИСТА ГЕОМЕТРІЯ ПІГУЛОК: ОПТИМАЛЬНИЙ ЕЛЕГАНТНИЙ РОЗМІР",
-            "   ========================================================================= */",
+            "/* ГЕОМЕТРІЯ ПІГУЛОК */",
             ".ydesign-badge, .ydesign-genre-badge, .ydesign-rating {",
-            "    display: inline-flex !important; ",
-            "    align-items: center !important; ",
-            "    justify-content: center !important;",
-            "    box-sizing: border-box !important; ",
-            "    height: 1.70em !important; ",
-            "    min-height: 1.70em !important; ",
-            "    max-height: 1.70em !important; ",
-            "    line-height: 1.70em !important; ",
-            "    border: 1px solid transparent !important;",
-            "    background: transparent !important; ",
-            "    padding: 0 0.50em !important; ",
-            "    text-shadow: none !important; ",
-            "    box-shadow: none !important; ",
-            "    white-space: nowrap !important;",
-            "    flex-shrink: 0 !important; ",
-            "    text-align: center !important;",
-            "    vertical-align: middle !important;",
-            "    border-radius: var(--ydesign-badge-radius, 50px) !important; ",
-            "    max-width: 100% !important;",
-            "    overflow: hidden !important;",
-            "    text-overflow: ellipsis !important;",
+            "    display: inline-flex !important; align-items: center !important; justify-content: center !important;",
+            "    box-sizing: border-box !important; height: 1.85em !important; min-height: 1.85em !important; max-height: 1.85em !important; line-height: 1.1 !important; ",
+            "    border: 1px solid transparent !important; background: transparent !important; padding: 0 0.50em !important; ",
+            "    text-shadow: none !important; box-shadow: none !important; white-space: nowrap !important; flex-shrink: 0 !important; ",
+            "    text-align: center !important; vertical-align: middle !important; border-radius: var(--ydesign-badge-radius, 50px) !important; ",
+            "    max-width: 100% !important; overflow: visible !important;",
             "}",
             "",
-            "/* Індивідуальні розміри (коли однаковий розмір ВИМКНЕНО) */",
+            "/* РОЗМІРИ ШРИФТІВ У БЕЙДЖАХ */",
             ".ydesign-badge-year { font-size: calc(var(--ydesign-year-size-val, 0.8) * 1em) !important; font-weight: 700 !important; color: #fff !important; }",
             ".ydesign-badge-age { font-size: calc(var(--ydesign-age-size-val, 0.8) * 1em) !important; font-weight: 700 !important; color: #fff !important; }",
             ".ydesign-badge-seasons { font-size: calc(var(--ydesign-seasons-size-val, 0.8) * 1em) !important; font-weight: 700 !important; color: #fff !important; }",
@@ -1218,274 +1168,268 @@
             ".ydesign-genre-badge { font-size: calc(var(--ydesign-genres-size-val, 0.8) * 1em) !important; font-weight: 600 !important; color: rgba(255,255,255,0.95) !important; }",
             ".ydesign-rating { font-size: calc(var(--ydesign-rating-size-val, 0.8) * 1em) !important; font-weight: 700 !important; color: #fff !important; gap: 0.25em !important; }",
             "",
-            "/* Коли УВІМКНЕНО 'Усі бейджі одного розміру' - СТРОГО ОДНАКОВИЙ РОЗМІР І ВИСОТА ДЛЯ ВСІХ */",
-            "body.ydesign-uniform-badges .ydesign-badge-year,",
-            "body.ydesign-uniform-badges .ydesign-badge-age,",
-            "body.ydesign-uniform-badges .ydesign-badge-seasons,",
-            "body.ydesign-uniform-badges .ydesign-badge-ua,",
-            "body.ydesign-uniform-badges .ydesign-badge,",
-            "body.ydesign-uniform-badges .ydesign-genre-badge,",
-            "body.ydesign-uniform-badges .ydesign-rating {",
+            "/* ОДНАКОВИЙ РОЗМІР БЕЙДЖІВ */",
+            "body.ydesign-v-uniform-badges .ydesign-vertical .ydesign-badge,",
+            "body.ydesign-v-uniform-badges .ydesign-vertical .ydesign-genre-badge,",
+            "body.ydesign-v-uniform-badges .ydesign-vertical .ydesign-rating {",
             "    font-size: calc(var(--ydesign-badge-size-val, 0.8) * 1em) !important;",
-            "    height: 1.70em !important;",
-            "    min-height: 1.70em !important;",
-            "    max-height: 1.70em !important;",
-            "    line-height: 1.70em !important;",
+            "}",
+            "body.ydesign-h-uniform-badges .ydesign-horizontal .ydesign-badge,",
+            "body.ydesign-h-uniform-badges .ydesign-horizontal .ydesign-genre-badge,",
+            "body.ydesign-h-uniform-badges .ydesign-horizontal .ydesign-rating {",
+            "    font-size: calc(var(--ydesign-badge-size-val, 0.8) * 1em) !important;",
             "}",
             "",
             "body.ydesign-shape-pill { --ydesign-badge-radius: 50px; }",
             "body.ydesign-shape-rounded { --ydesign-badge-radius: 0.35em; }",
             "body.ydesign-shape-square { --ydesign-badge-radius: 0.15em; }",
             "",
-            "/* ПІДЛОЖКА БЕЙДЖІВ БЕЗ ТІНІ ЗНИЗУ */",
             "body.ydesign-glass-pill .ydesign-badge,",
             "body.ydesign-glass-pill .ydesign-genre-badge,",
             "body.ydesign-glass-pill .ydesign-rating {",
             "    background: rgba(255, 255, 255, 0.1) !important;",
-            "    backdrop-filter: blur(6px) !important;",
-            "    -webkit-backdrop-filter: blur(6px) !important;",
-            "    box-shadow: none !important;",
+            "    backdrop-filter: blur(6px) !important; -webkit-backdrop-filter: blur(6px) !important; box-shadow: none !important;",
             "}",
             "",
             ".ydesign-rating img {",
-            "    width: 1.15em !important; ",
-            "    height: 1.15em !important; ",
-            "    object-fit: contain !important; ",
-            "    display: block !important; ",
+            "    width: 1.15em !important; height: 1.15em !important; object-fit: contain !important; display: block !important; ",
             "    filter: saturate(var(--ydesign-ratings-saturate, 100%)) !important; ",
             "}",
             "",
-            "/* --- КОЛЬОРИ ТЕКСТУ ВІКУ ТА UA --- */",
             "body.ydesign-color-age .ydesign-age-18 { color: #ff5252 !important; }",
             "body.ydesign-color-age .ydesign-age-16 { color: #ffab40 !important; }",
-            "body.ydesign-color-age .ydesign-age-14, ",
-            "body.ydesign-color-age .ydesign-age-13 { color: #ffd740 !important; }",
-            "body.ydesign-color-age .ydesign-age-6,",
-            "body.ydesign-color-age .ydesign-age-0 { color: #69f0ae !important; }",
+            "body.ydesign-color-age .ydesign-age-14, body.ydesign-color-age .ydesign-age-13 { color: #ffd740 !important; }",
+            "body.ydesign-color-age .ydesign-age-6, body.ydesign-color-age .ydesign-age-0 { color: #69f0ae !important; }",
             "",
             "body.ydesign-color-ua .ydesign-badge-ua {",
             "    background: linear-gradient(135deg, rgba(0, 87, 183, 0.9) 0%, rgba(255, 215, 0, 0.85) 100%) !important;",
-            "    color: #ffffff !important;",
-            "    font-weight: 800 !important;",
-            "    box-shadow: none !important;",
+            "    color: #ffffff !important; font-weight: 800 !important; box-shadow: none !important;",
             "}",
             "",
-            "/* --- ТОЧНІ ОКРЕМІ РАМКИ ДЛЯ КОЖНОГО БЕЙДЖУ --- */",
+            "/* РАМКИ БЕЙДЖІВ */",
             "body.ydesign-border-year .ydesign-badge-year { border-color: rgba(255,255,255,0.6) !important; }",
             "body.ydesign-border-seasons .ydesign-badge-seasons { border-color: rgba(255,255,255,0.6) !important; }",
             "body.ydesign-border-ua .ydesign-badge-ua { border-color: rgba(255,255,255,0.6) !important; }",
             "body.ydesign-border-genres .ydesign-genre-badge { border-color: rgba(255,255,255,0.4) !important; }",
             "body.ydesign-border-ratings .ydesign-rating { border-color: rgba(255,255,255,0.6) !important; }",
-            "",
             "body.ydesign-border-age .ydesign-badge-age { border-color: rgba(255,255,255,0.6) !important; }",
             "body.ydesign-border-age.ydesign-color-age .ydesign-age-18 { border-color: rgba(244, 67, 54, 0.85) !important; }",
             "body.ydesign-border-age.ydesign-color-age .ydesign-age-16 { border-color: rgba(255, 152, 0, 0.85) !important; }",
-            "body.ydesign-border-age.ydesign-color-age .ydesign-age-14,",
-            "body.ydesign-border-age.ydesign-color-age .ydesign-age-13 { border-color: rgba(255, 215, 64, 0.85) !important; }",
-            "body.ydesign-border-age.ydesign-color-age .ydesign-age-6,",
-            "body.ydesign-border-age.ydesign-color-age .ydesign-age-0 { border-color: rgba(105, 240, 174, 0.85) !important; }",
+            "body.ydesign-border-age.ydesign-color-age .ydesign-age-14, body.ydesign-border-age.ydesign-color-age .ydesign-age-13 { border-color: rgba(255, 215, 64, 0.85) !important; }",
+            "body.ydesign-border-age.ydesign-color-age .ydesign-age-6, body.ydesign-border-age.ydesign-color-age .ydesign-age-0 { border-color: rgba(105, 240, 174, 0.85) !important; }",
             "",
-            "/* Ручні відступи жанрів (коли однаковий відступ ВИМКНЕНО) */",
-            "body:not(.ydesign-uniform-v-gaps-v) .ydesign-vertical .ydesign-genres {",
-            "    margin-top: calc(var(--ydesign-genres-gap, 0em) / var(--ydesign-genres-size-val, 0.8)) !important;",
-            "    margin-bottom: calc(var(--ydesign-genres-gap, 0em) / var(--ydesign-genres-size-val, 0.8)) !important;",
-            "}",
-            "body:not(.ydesign-uniform-v-gaps-h) .ydesign-horizontal .ydesign-genres {",
-            "    margin-top: calc(var(--ydesign-genres-gap, 0em) / var(--ydesign-genres-size-val, 0.8)) !important;",
-            "    margin-bottom: calc(var(--ydesign-genres-gap, 0em) / var(--ydesign-genres-size-val, 0.8)) !important;",
-            "}",
-            "",
-            "/* --- СТРОГІ ОДНАКОВІ ВЕРТИКАЛЬНІ ВІДСТУПИ ВІД КРАЇВ ПІГУЛОК ТА ТЕКСТІВ --- */",
-            "body.ydesign-uniform-v-gaps-v .ydesign-vertical .ydesign-add-title,",
-            "body.ydesign-uniform-v-gaps-v .ydesign-vertical .ydesign-info-wrap,",
-            "body.ydesign-uniform-v-gaps-v .ydesign-vertical .ydesign-genres,",
-            "body.ydesign-uniform-v-gaps-v .ydesign-vertical .ydesign-slogan,",
-            "body.ydesign-uniform-v-gaps-v .ydesign-vertical .ydesign-ratings {",
-            "    margin-top: 0 !important;",
-            "    margin-bottom: 0 !important;",
-            "}",
-            "body.ydesign-uniform-v-gaps-v:not(.ydesign-badges-one-row) .ydesign-vertical .ydesign-info-wrap {",
-            "    gap: 0 !important;",
-            "    row-gap: 0 !important;",
-            "}",
-            "            ",
-            "body.ydesign-uniform-v-gaps-h .ydesign-horizontal .ydesign-add-title,",
-            "body.ydesign-uniform-v-gaps-h .ydesign-horizontal .ydesign-info-wrap,",
-            "body.ydesign-uniform-v-gaps-h .ydesign-horizontal .ydesign-info-wrap-2,",
-            "body.ydesign-uniform-v-gaps-h .ydesign-horizontal .ydesign-genres,",
-            "body.ydesign-uniform-v-gaps-h .ydesign-horizontal .ydesign-slogan {",
-            "    margin-top: 0 !important;",
-            "    margin-bottom: 0 !important;",
+            "/* ВЕРТИКАЛЬНІ КАРТКИ CSS ЗМІННІ */",
+            ".ydesign-active .ydesign-card.ydesign-vertical {",
+            "    --ydesign-logo-h: calc(var(--ydesign-v-logo-max-h, 35) * 1%);",
+            "    --ydesign-logo-w: calc(var(--ydesign-v-logo-max-w, 80) * 1%);",
+            "    --ydesign-title-size-val: var(--ydesign-v-title-size, 1.5);",
+            "    --ydesign-add-title-size-eff: var(--ydesign-v-add-title-size, 0.9);",
+            "    --ydesign-slogan-size-eff: var(--ydesign-v-slogan-size, 0.7);",
+            "    --ydesign-badge-size-val: var(--ydesign-v-badge-size, 0.8);",
+            "    --ydesign-year-size-val: var(--ydesign-v-year-size, 0.8);",
+            "    --ydesign-age-size-val: var(--ydesign-v-age-size, 0.8);",
+            "    --ydesign-seasons-size-val: var(--ydesign-v-seasons-size, 0.8);",
+            "    --ydesign-ua-size-val: var(--ydesign-v-ua-size, 0.8);",
+            "    --ydesign-genres-size-val: var(--ydesign-v-genres-size, 0.8);",
+            "    --ydesign-rating-size-val: var(--ydesign-v-rating-size, 0.8);",
+            "    --ydesign-logo-mb: var(--ydesign-v-logo-mb, 1.2em);",
+            "    --ydesign-add-title-mb: var(--ydesign-v-add-title-mb, 0.3em);",
+            "    --ydesign-badge-rows-gap: var(--ydesign-v-badge-rows-gap, 0.3em);",
+            "    --ydesign-badges-gap: var(--ydesign-v-badges-gap, 0.15em);",
+            "    --ydesign-genres-gap: var(--ydesign-v-genres-gap, 0em);",
+            "    --ydesign-content-pb: var(--ydesign-v-content-pb, 0.3em);",
+            "    --ydesign-slogan-padding: var(--ydesign-v-slogan-padding, 0.3em);",
+            "    --ydesign-uniform-v-gap: var(--ydesign-v-uniform-v-gap-val, 0.25em);",
+            "    --ydesign-align-logo: var(--ydesign-v-align-logo-flex, center);",
+            "    --ydesign-text-logo: var(--ydesign-v-align-logo, center);",
+            "    --ydesign-text-add-title: var(--ydesign-v-align-add-title, left);",
+            "    --ydesign-align-badges: var(--ydesign-v-align-badges-flex, flex-start);",
+            "    --ydesign-align-slogan: var(--ydesign-v-align-slogan-flex, flex-start);",
+            "    --ydesign-text-slogan: var(--ydesign-v-align-slogan, left);",
             "}",
             "",
-            "body.ydesign-uniform-v-gaps-v .ydesign-vertical .ydesign-add-title {",
-            "    margin-top: calc(var(--ydesign-uniform-v-gap-v) / var(--ydesign-add-title-size-eff, 0.9)) !important;",
-            "    margin-bottom: 0 !important;",
-            "}",
-            "body.ydesign-uniform-v-gaps-v .ydesign-vertical .ydesign-info-wrap {",
-            "    margin-top: var(--ydesign-uniform-v-gap-v) !important;",
-            "    margin-bottom: 0 !important;",
-            "}",
-            "body.ydesign-uniform-v-gaps-v .ydesign-vertical .ydesign-slogan {",
-            "    margin-top: calc(var(--ydesign-uniform-v-gap-v) / var(--ydesign-slogan-size-eff, 0.85)) !important;",
-            "    margin-bottom: 0 !important;",
-            "}",
-            "body.ydesign-uniform-v-gaps-v:not(.ydesign-badges-one-row) .ydesign-vertical .ydesign-info-wrap > * {",
-            "    margin-top: 0 !important;",
-            "    margin-bottom: 0 !important;",
-            "}",
-            "body.ydesign-uniform-v-gaps-v:not(.ydesign-badges-one-row) .ydesign-vertical .ydesign-info-wrap > * + * {",
-            "    margin-top: var(--ydesign-uniform-v-gap-v) !important;",
-            "    margin-bottom: 0 !important;",
-            "}",
-            "",
-            "body.ydesign-uniform-v-gaps-h .ydesign-horizontal .ydesign-add-title {",
-            "    margin-top: calc(var(--ydesign-uniform-v-gap-h) / var(--ydesign-add-title-size-eff, 0.9)) !important;",
-            "    margin-bottom: 0 !important;",
-            "}",
-            "body.ydesign-uniform-v-gaps-h .ydesign-horizontal .ydesign-info-wrap,",
-            "body.ydesign-uniform-v-gaps-h .ydesign-horizontal .ydesign-info-wrap-2 {",
-            "    margin-top: var(--ydesign-uniform-v-gap-h) !important;",
-            "    margin-bottom: 0 !important;",
-            "}",
-            "body.ydesign-uniform-v-gaps-h .ydesign-horizontal .ydesign-genres {",
-            "    margin-top: var(--ydesign-uniform-v-gap-h) !important;",
-            "    margin-bottom: 0 !important;",
-            "}",
-            "body.ydesign-uniform-v-gaps-h .ydesign-horizontal .ydesign-slogan {",
-            "    margin-top: calc(var(--ydesign-uniform-v-gap-h) / var(--ydesign-slogan-size-eff, 0.85)) !important;",
-            "    margin-bottom: 0 !important;",
+            "/* ГОРИЗОНТАЛЬНІ КАРТКИ CSS ЗМІННІ */",
+            ".ydesign-active .ydesign-card.ydesign-horizontal {",
+            "    --ydesign-logo-h: calc(var(--ydesign-h-logo-max-h, 35) * 1%);",
+            "    --ydesign-logo-w: calc(var(--ydesign-h-logo-max-w, 80) * 1%);",
+            "    --ydesign-title-size-val: var(--ydesign-h-title-size, 1.5);",
+            "    --ydesign-add-title-size-eff: var(--ydesign-h-add-title-size, 0.9);",
+            "    --ydesign-slogan-size-eff: var(--ydesign-h-slogan-size, 0.7);",
+            "    --ydesign-desc-size-val: var(--ydesign-h-desc-size, 1.0);",
+            "    --ydesign-badge-size-val: var(--ydesign-h-badge-size, 0.8);",
+            "    --ydesign-year-size-val: var(--ydesign-h-year-size, 0.8);",
+            "    --ydesign-age-size-val: var(--ydesign-h-age-size, 0.8);",
+            "    --ydesign-seasons-size-val: var(--ydesign-h-seasons-size, 0.8);",
+            "    --ydesign-ua-size-val: var(--ydesign-h-ua-size, 0.8);",
+            "    --ydesign-genres-size-val: var(--ydesign-h-genres-size, 0.8);",
+            "    --ydesign-rating-size-val: var(--ydesign-h-rating-size, 0.8);",
+            "    --ydesign-logo-mb: var(--ydesign-h-logo-mb, 1.2em);",
+            "    --ydesign-add-title-mb: var(--ydesign-h-add-title-mb, 0.3em);",
+            "    --ydesign-badge-rows-gap: var(--ydesign-h-badge-rows-gap, 0.3em);",
+            "    --ydesign-badges-gap: var(--ydesign-h-badges-gap, 0.15em);",
+            "    --ydesign-genres-gap: var(--ydesign-h-genres-gap, 0em);",
+            "    --ydesign-content-pb: var(--ydesign-h-content-pb, 0.3em);",
+            "    --ydesign-slogan-padding: var(--ydesign-h-slogan-padding, 0.3em);",
+            "    --ydesign-uniform-v-gap: var(--ydesign-h-uniform-v-gap-val, 0.25em);",
+            "    --ydesign-align-logo: var(--ydesign-h-align-logo-flex, center);",
+            "    --ydesign-text-logo: var(--ydesign-h-align-logo, center);",
+            "    --ydesign-text-add-title: var(--ydesign-h-align-add-title, left);",
+            "    --ydesign-align-badges: var(--ydesign-h-align-badges-flex, flex-start);",
+            "    --ydesign-align-slogan: var(--ydesign-h-align-slogan-flex, flex-start);",
+            "    --ydesign-text-slogan: var(--ydesign-h-align-slogan, left);",
             "}",
             "",
-            "body.ydesign-uniform-v-gaps-v .ydesign-vertical > .ydesign-content-layer > .ydesign-logo-container + * {",
-            "    margin-top: 0 !important;",
-            "}",
-            "body.ydesign-uniform-v-gaps-h .ydesign-horizontal > .ydesign-content-layer > .ydesign-logo-container + * {",
-            "    margin-top: 0 !important;",
-            "}",
+            "/* МАТЕМАТИЧНО РІВНІ ВІДСТУПИ ДЛЯ V ТА H */",
+            "body.ydesign-v-uniform-gaps .ydesign-vertical .ydesign-add-title { margin-top: var(--ydesign-uniform-v-gap, 0.25em) !important; margin-bottom: 0 !important; }",
+            "body.ydesign-v-uniform-gaps .ydesign-vertical .ydesign-info-wrap { margin-top: var(--ydesign-uniform-v-gap, 0.25em) !important; margin-bottom: 0 !important; }",
+            "body.ydesign-v-uniform-gaps .ydesign-vertical .ydesign-genres { margin-top: var(--ydesign-uniform-v-gap, 0.25em) !important; margin-bottom: 0 !important; }",
+            "body.ydesign-v-uniform-gaps:not(.ydesign-v-badges-one-row) .ydesign-vertical .ydesign-info-wrap { gap: var(--ydesign-uniform-v-gap, 0.25em) !important; }",
+            "body.ydesign-v-uniform-gaps:not(.ydesign-v-badges-one-row) .ydesign-vertical .ydesign-info-wrap > * + * { margin-top: 0 !important; margin-bottom: 0 !important; }",
+            "body.ydesign-v-uniform-gaps .ydesign-vertical .ydesign-slogan { margin-top: var(--ydesign-uniform-v-gap, 0.25em) !important; margin-bottom: 0 !important; }",
             "",
+            "body.ydesign-h-uniform-gaps .ydesign-horizontal .ydesign-add-title { margin-top: var(--ydesign-uniform-v-gap, 0.25em) !important; margin-bottom: 0 !important; }",
+            "body.ydesign-h-uniform-gaps .ydesign-horizontal .ydesign-info-wrap,",
+            "body.ydesign-h-uniform-gaps .ydesign-horizontal .ydesign-info-wrap-2 { margin-top: var(--ydesign-uniform-v-gap, 0.25em) !important; margin-bottom: 0 !important; }",
+            "body.ydesign-h-uniform-gaps .ydesign-horizontal .ydesign-genres { margin-top: var(--ydesign-uniform-v-gap, 0.25em) !important; margin-bottom: 0 !important; }",
+            "body.ydesign-h-uniform-gaps .ydesign-horizontal .ydesign-slogan { margin-top: var(--ydesign-uniform-v-gap, 0.25em) !important; margin-bottom: 0 !important; }",
+            "",
+            "/* ОПИС ПІД ГОРИЗОНТАЛЬНОЮ КАРТКОЮ */",
             ".ydesign-desc-under {",
             "    position: relative; z-index: 10; width: 100%;",
             "    font-size: calc(var(--ydesign-desc-size-val, 0.85) * 1em) !important;",
-            "    color: rgba(255,255,255,0.75);",
-            "    margin-top: 0.5em; text-align: left;",
-            "    line-height: 1.35;",
-            "    text-shadow: 0 1px 3px rgba(0,0,0,0.8);",
-            "    display: -webkit-box;",
-            "    -webkit-line-clamp: 3;",
-            "    -webkit-box-orient: vertical;",
-            "    overflow: hidden;",
+            "    color: rgba(255,255,255,0.75); margin-top: 0.5em; text-align: left; line-height: 1.35;",
+            "    text-shadow: 0 1px 3px rgba(0,0,0,0.8); display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden;",
             "    height: calc(1.35em * 3) !important; ",
             "}",
             "",
-            "body.ydesign-hide-year .ydesign-badge-year { display: none !important; }",
-            "body.ydesign-hide-seasons .ydesign-badge-seasons { display: none !important; }",
-            "body.ydesign-hide-ua .ydesign-badge-ua { display: none !important; }",
-            "body.ydesign-hide-age .ydesign-badge-age { display: none !important; }",
-            "body.ydesign-hide-slogan .ydesign-slogan-text { display: none !important; }",
+            "/* ВИДИМІСТЬ ЕЛЕМЕНТІВ (V) */",
+            "body.ydesign-v-hide-year .ydesign-vertical .ydesign-badge-year { display: none !important; }",
+            "body.ydesign-v-hide-seasons .ydesign-vertical .ydesign-badge-seasons { display: none !important; }",
+            "body.ydesign-v-hide-ua .ydesign-vertical .ydesign-badge-ua { display: none !important; }",
+            "body.ydesign-v-hide-age .ydesign-vertical .ydesign-badge-age { display: none !important; }",
+            "body.ydesign-v-hide-slogan .ydesign-vertical .ydesign-slogan { display: none !important; }",
+            "body.ydesign-v-hide-add-title .ydesign-vertical .ydesign-add-title { display: none !important; }",
+            "body.ydesign-v-hide-genres .ydesign-vertical .ydesign-genres { display: none !important; }",
+            "",
+            "/* ВИДИМІСТЬ ЕЛЕМЕНТІВ (H) */",
+            "body.ydesign-h-hide-year .ydesign-horizontal .ydesign-badge-year { display: none !important; }",
+            "body.ydesign-h-hide-seasons .ydesign-horizontal .ydesign-badge-seasons { display: none !important; }",
+            "body.ydesign-h-hide-ua .ydesign-horizontal .ydesign-badge-ua { display: none !important; }",
+            "body.ydesign-h-hide-age .ydesign-horizontal .ydesign-badge-age { display: none !important; }",
+            "body.ydesign-h-hide-slogan .ydesign-horizontal .ydesign-slogan { display: none !important; }",
+            "body.ydesign-h-hide-add-title .ydesign-horizontal .ydesign-add-title { display: none !important; }",
+            "body.ydesign-h-hide-genres .ydesign-horizontal .ydesign-genres { display: none !important; }",
+            "body.ydesign-h-hide-desc .ydesign-horizontal .ydesign-desc-under { display: none !important; }",
             "",
             "body[data-ydesign-logo='text'] .ydesign-logo-img { display: none !important; }",
             "body[data-ydesign-logo='text'] .ydesign-fallback-text { display: flex !important; }",
             "body[data-ydesign-logo='logo'] .ydesign-fallback-text { display: none !important; }",
             "",
             "/* =========================================================================",
-            "   РЕДИЗАЙН СЕРІЙ ТА ЕПІЗОДІВ (НАДІЙНИЙ ФОКУС ТА НАВІГАЦІЯ)",
+            "   РЕДИЗАЙН СЕРІЙ: БЕЗПЕЧНІ ВІДСТУПИ, ВІДСУТНІСТЬ ЗРІЗАННЯ ТА ТІНЕЙ",
             "   ========================================================================= */",
             ".explorer.ydesign-has-series .online-prestige.online-prestige-watched.ydesign-empty-history {",
-            "    display: none !important;",
-            "    pointer-events: none !important;",
-            "    visibility: hidden !important;",
-            "    height: 0 !important;",
-            "    margin: 0 !important;",
-            "    padding: 0 !important;",
+            "    display: none !important; pointer-events: none !important; visibility: hidden !important;",
+            "    height: 0 !important; margin: 0 !important; padding: 0 !important;",
+            "}",
+            "",
+            "/* ВИМКНЕННЯ ГРАДІЄНТІВ ТА МАСОК СКРОЛУ */",
+            ".explorer.ydesign-has-series .scroll--mask {",
+            "    -webkit-mask-image: none !important;",
+            "    mask-image: none !important;",
+            "}",
+            ".explorer.ydesign-has-series .scroll--mask::before,",
+            ".explorer.ydesign-has-series .scroll--mask::after,",
+            ".explorer.ydesign-has-series .scroll::before,",
+            ".explorer.ydesign-has-series .scroll::after {",
+            "    display: none !important; content: none !important;",
             "}",
             "",
             "body.ydesign-hide-left-column .explorer.ydesign-has-series .explorer__left {",
             "    display: none !important;",
             "}",
+            "",
             "body.ydesign-hide-left-column .explorer.ydesign-has-series .explorer__files,",
             ".explorer.ydesign-has-series .explorer__files {",
+            "    width: 100% !important; flex: 1 1 100% !important; max-width: 100% !important;",
+            "    padding: 0 !important;",
+            "    box-sizing: border-box !important;",
+            "}",
+            ".explorer.ydesign-has-series .explorer__files-head {",
+            "    padding: 8px 28px 0 28px !important;",
+            "    margin: 0 !important;",
+            "    display: flex !important;",
+            "    align-items: center !important;",
+            "    flex-wrap: wrap !important;",
+            "    gap: 10px !important;",
             "    width: 100% !important;",
-            "    flex: 1 1 100% !important;",
-            "    max-width: 100% !important;",
-            "    padding-left: 0 !important;",
-            "    padding-top: 15px !important;",
+            "    box-sizing: border-box !important;",
+            "}",
+            ".explorer.ydesign-has-series .explorer__files-body {",
+            "    margin: 0 !important; padding: 0 !important;",
+            "}",
+            ".explorer.ydesign-has-series .scroll {",
+            "    overflow-x: visible !important;",
+            "    margin: 0 !important; padding: 0 !important;",
+            "}",
+            ".explorer.ydesign-has-series .scroll .scroll__content,",
+            ".explorer.ydesign-has-series .scroll--mask .scroll__content,",
+            ".explorer.ydesign-has-series .scroll__content {",
+            "    padding-top: 6px !important;",
+            "    padding-bottom: 20px !important; /* Мінімальний відступ знизу */",
+            "    padding-left: 16px !important;   /* Безпечний бічний відступ проти зрізання */",
+            "    padding-right: 16px !important;  /* Безпечний бічний відступ проти зрізання */",
+            "    margin: 0 !important;",
             "    box-sizing: border-box !important;",
             "}",
             ".explorer.ydesign-has-series .explorer__files .scroll__body {",
-            "    padding-top: 12px !important;",
-            "    padding-bottom: 25px !important;",
+            "    padding: 0 !important; margin: 0 !important;",
             "}",
             "",
             ".ydesign-series-active .online-prestige.online-prestige--full {",
-            "    display: inline-block !important;",
-            "    vertical-align: top !important;",
-            "    margin: 10px !important;",
-            "    position: relative !important;",
-            "    height: auto !important;",
-            "    border-radius: 0.85em !important;",
-            "    overflow: hidden !important;",
-            "    background-color: #1a1a1a !important;",
+            "    display: inline-block !important; vertical-align: top !important;",
+            "    margin: 8px 12px !important; position: relative !important; height: auto !important;",
+            "    border-radius: 0.85em !important; overflow: hidden !important; background-color: #1a1a1a !important;",
             "    box-sizing: border-box !important;",
             "    transition: transform 0.22s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.22s cubic-bezier(0.16, 1, 0.3, 1) !important;",
-            "    border: none !important;",
-            "    outline: none !important;",
-            "    box-shadow: 0 4px 14px rgba(0,0,0,0.5) !important;",
-            "    width: calc(var(--ydesign-series-width, 50%) - 20px) !important;",
-            "    cursor: pointer !important;",
-            "    pointer-events: auto !important;",
+            "    border: none !important; outline: none !important; ",
+            "    box-shadow: none !important; /* Прибрано тінь з неактивних карток */",
+            "    width: calc(var(--ydesign-series-width, 50%) - 24px) !important; cursor: pointer !important; pointer-events: auto !important;",
             "}",
-            "",
             ".ydesign-series-active .online-prestige.online-prestige--full::before {",
             "    content: ''; display: block !important; padding-top: 56.25% !important; ",
             "}",
             "",
+            "/* ФОКУС КАРТКИ СЕРІЇ: ЧИСТА БІЛА РАМКА БЕЗ ЧОРНОЇ ТІНІ */",
             ".ydesign-series-active .online-prestige.online-prestige--full.focus {",
-            "    transform: scale(1.035) !important;",
-            "    box-shadow: 0 0 0 3px #ffffff, 0 12px 28px rgba(0,0,0,0.85) !important;",
-            "    z-index: 15 !important;",
+            "    transform: scale(1.035) translateZ(0) !important;",
+            "    box-shadow: 0 0 0 3.5px #ffffff !important; /* Тільки біла рамка */",
+            "    z-index: 50 !important;",
             "}",
             "",
             ".ydesign-series-active .online-prestige.online-prestige--full .online-prestige__img {",
             "    position: absolute !important; top: 0 !important; left: 0 !important;",
-            "    width: 100% !important; height: 100% !important;",
-            "    z-index: 1 !important; border-radius: 0 !important;",
-            "    pointer-events: none !important;",
+            "    width: 100% !important; height: 100% !important; z-index: 1 !important; border-radius: 0 !important; pointer-events: none !important;",
             "}",
             ".ydesign-series-active .online-prestige.online-prestige--full .online-prestige__img img {",
-            "    width: 100% !important; height: 100% !important; object-fit: cover !important;",
-            "    pointer-events: none !important;",
+            "    width: 100% !important; height: 100% !important; object-fit: cover !important; opacity: 1 !important; pointer-events: none !important;",
             "}",
             "",
+            "/* СВІТЛИЙ ГРАДІЄНТ ТІЛЬКИ ЗНИЗУ */",
             ".ydesign-series-active .online-prestige.online-prestige--full .ydesign-series-shade {",
             "    position: absolute !important; top: 0 !important; left: 0 !important; right: 0 !important; bottom: 0 !important;",
-            "    background: linear-gradient(to top, rgba(0,0,0,0.92) 0%, rgba(0,0,0,0.6) 38%, rgba(0,0,0,0.05) 65%, rgba(0,0,0,0.65) 100%) !important;",
-            "    z-index: 2 !important; pointer-events: none !important;",
-            "    transition: background 0.3s ease !important;",
+            "    background: linear-gradient(to top, rgba(0,0,0,0.65) 0%, rgba(0,0,0,0.2) 35%, transparent 65%) !important;",
+            "    z-index: 2 !important; pointer-events: none !important; transition: background 0.3s ease !important;",
             "}",
             "",
             ".ydesign-series-pill {",
-            "    display: inline-flex !important;",
-            "    align-items: center !important;",
-            "    justify-content: center !important;",
-            "    height: 1.70em !important;",
-            "    min-height: 1.70em !important;",
-            "    max-height: 1.70em !important;",
-            "    padding: 0 0.55em !important;",
-            "    box-sizing: border-box !important;",
-            "    font-size: 0.8em !important;",
-            "    font-weight: 600 !important;",
-            "    color: #ffffff !important;",
-            "    text-shadow: none !important;",
-            "    box-shadow: none !important;",
-            "    white-space: nowrap !important;",
-            "    line-height: 1.70em !important;",
-            "    text-align: center !important;",
-            "    vertical-align: middle !important;",
-            "    border: 1px solid transparent !important;",
-            "    background: transparent !important;",
-            "    border-radius: var(--ydesign-series-badge-radius, 50px) !important;",
-            "    pointer-events: none !important;",
+            "    display: inline-flex !important; align-items: center !important; justify-content: center !important;",
+            "    height: 1.85em !important; min-height: 1.85em !important; max-height: 1.85em !important; padding: 0 0.55em !important;",
+            "    box-sizing: border-box !important; font-size: calc(var(--ydesign-series-badge-size-val, 0.8) * 1em) !important;",
+            "    font-weight: 600 !important; color: #ffffff !important; text-shadow: none !important; box-shadow: none !important;",
+            "    white-space: nowrap !important; line-height: 1.1 !important; text-align: center !important; vertical-align: middle !important;",
+            "    border: 1px solid transparent !important; background: transparent !important;",
+            "    border-radius: var(--ydesign-series-badge-radius, 50px) !important; pointer-events: none !important; overflow: visible !important;",
             "}",
             "",
             "body.ydesign-series-shape-pill { --ydesign-series-badge-radius: 50px; }",
@@ -1494,178 +1438,60 @@
             "",
             "body.ydesign-series-glass-pill .ydesign-series-pill {",
             "    background: rgba(255, 255, 255, 0.12) !important;",
-            "    backdrop-filter: blur(6px) !important;",
-            "    -webkit-backdrop-filter: blur(6px) !important;",
-            "    box-shadow: none !important;",
+            "    backdrop-filter: blur(6px) !important; -webkit-backdrop-filter: blur(6px) !important; box-shadow: none !important;",
             "}",
-            "",
-            "body.ydesign-series-border-badges .ydesign-series-pill {",
-            "    border-color: rgba(255, 255, 255, 0.45) !important;",
-            "}",
+            "body.ydesign-series-border-badges .ydesign-series-pill { border-color: rgba(255, 255, 255, 0.45) !important; }",
             "",
             ".ydesign-series-top-left {",
-            "    position: absolute !important;",
-            "    top: 10px !important; left: 12px !important;",
-            "    z-index: 5 !important;",
-            "    display: flex !important; align-items: center !important; gap: 6px !important;",
-            "    pointer-events: none !important;",
+            "    position: absolute !important; top: 10px !important; left: 12px !important; z-index: 5 !important;",
+            "    display: flex !important; align-items: center !important; gap: 6px !important; pointer-events: none !important; overflow: visible !important;",
             "}",
-            "",
             ".ydesign-series-top-right {",
-            "    position: absolute !important;",
-            "    top: 10px !important; right: 12px !important;",
-            "    z-index: 5 !important;",
-            "    display: flex !important; align-items: center !important; gap: 6px !important;",
-            "    pointer-events: none !important;",
+            "    position: absolute !important; top: 10px !important; right: 12px !important; z-index: 5 !important;",
+            "    display: flex !important; align-items: center !important; gap: 6px !important; pointer-events: none !important; overflow: visible !important;",
             "}",
-            "",
             ".ydesign-series-bottom-left {",
-            "    position: absolute !important;",
-            "    bottom: calc(1.15em + 8px) !important; left: 12px !important; right: 80px !important;",
-            "    z-index: 5 !important;",
-            "    display: flex !important; flex-direction: column !important; align-items: flex-start !important;",
-            "    gap: 5px !important;",
-            "    max-width: calc(100% - 92px) !important;",
-            "    overflow: hidden !important;",
-            "    pointer-events: none !important;",
+            "    position: absolute !important; bottom: calc(1.15em + 8px) !important; left: 12px !important; right: 80px !important; z-index: 5 !important;",
+            "    display: flex !important; flex-direction: column !important; align-items: flex-start !important; gap: 5px !important;",
+            "    max-width: calc(100% - 92px) !important; overflow: visible !important; pointer-events: none !important;",
             "}",
-            "",
             ".ydesign-series-bottom-right {",
-            "    position: absolute !important;",
-            "    bottom: calc(1.15em + 8px) !important; right: 12px !important;",
-            "    z-index: 5 !important;",
-            "    display: flex !important; align-items: center !important;",
-            "    pointer-events: none !important;",
+            "    position: absolute !important; bottom: calc(1.15em + 8px) !important; right: 12px !important; z-index: 5 !important;",
+            "    display: flex !important; align-items: center !important; pointer-events: none !important; overflow: visible !important;",
             "}",
             "",
-            ".ydesign-series-voice-wrap {",
-            "    max-width: 100% !important;",
-            "    display: flex !important;",
-            "    overflow: hidden !important;",
-            "    pointer-events: none !important;",
-            "}",
-            "",
+            ".ydesign-series-voice-wrap { max-width: 100% !important; display: flex !important; overflow: visible !important; pointer-events: none !important; }",
             ".ydesign-series-voice-badge {",
-            "    color: #ffffff !important;",
-            "    font-weight: 600 !important;",
-            "    max-width: 100% !important;",
-            "    overflow: hidden !important;",
-            "    text-overflow: ellipsis !important;",
-            "    white-space: nowrap !important;",
-            "    pointer-events: none !important;",
+            "    color: #ffffff !important; font-weight: 600 !important; max-width: 100% !important;",
+            "    overflow: hidden !important; text-overflow: ellipsis !important; white-space: nowrap !important; pointer-events: none !important;",
             "}",
-            "",
-            ".ydesign-series-date {",
-            "    font-weight: 500 !important;",
-            "    color: #ffffff !important;",
-            "    opacity: 0.95 !important;",
-            "    pointer-events: none !important;",
-            "}",
-            "",
-            ".ydesign-series-rate {",
-            "    color: #ffffff !important;",
-            "    font-weight: 700 !important;",
-            "    pointer-events: none !important;",
-            "}",
+            ".ydesign-series-date { font-weight: 500 !important; color: #ffffff !important; opacity: 0.95 !important; pointer-events: none !important; }",
+            ".ydesign-series-rate { color: #ffffff !important; font-weight: 700 !important; pointer-events: none !important; }",
             "",
             ".ydesign-series-active .online-prestige.online-prestige--full .online-prestige__title {",
-            "    font-size: 0.9em !important;",
-            "    font-weight: 600 !important;",
-            "    line-height: 1.25 !important;",
-            "    color: #ffffff !important;",
-            "    text-shadow: 0 2px 4px rgba(0,0,0,0.95) !important;",
-            "    margin: 0 !important; padding: 0 !important;",
-            "    white-space: nowrap !important;",
-            "    overflow: hidden !important;",
-            "    text-overflow: ellipsis !important;",
-            "    width: 100% !important;",
-            "    pointer-events: none !important;",
+            "    font-size: calc(var(--ydesign-series-title-size-val, 0.9) * 1em) !important; font-weight: 600 !important; line-height: 1.25 !important;",
+            "    color: #ffffff !important; text-shadow: 0 2px 4px rgba(0,0,0,0.95) !important; margin: 0 !important; padding: 0 !important;",
+            "    white-space: nowrap !important; overflow: hidden !important; text-overflow: ellipsis !important; width: 100% !important; pointer-events: none !important;",
             "}",
             "",
             ".ydesign-series-active .online-prestige.online-prestige--full .online-prestige__timeline {",
-            "    position: absolute !important;",
-            "    bottom: 0 !important;",
-            "    left: 0 !important;",
-            "    right: 0 !important;",
-            "    width: 100% !important;",
-            "    height: 1.15em !important;",
-            "    margin: 0 !important;",
-            "    z-index: 12 !important;",
-            "    background: rgba(255, 255, 255, 0.22) !important;",
-            "    backdrop-filter: blur(6px) !important;",
-            "    -webkit-backdrop-filter: blur(6px) !important;",
-            "    border-radius: 0 0 0.85em 0.85em !important;",
-            "    overflow: hidden !important;",
-            "    display: block !important;",
-            "    pointer-events: none !important;",
+            "    position: absolute !important; bottom: 0 !important; left: 0 !important; right: 0 !important; width: 100% !important;",
+            "    height: 1.15em !important; margin: 0 !important; z-index: 12 !important;",
+            "    background: rgba(255, 255, 255, 0.22) !important; backdrop-filter: blur(6px) !important; -webkit-backdrop-filter: blur(6px) !important;",
+            "    border-radius: 0 0 0.85em 0.85em !important; overflow: hidden !important; display: block !important; pointer-events: none !important;",
             "}",
-            "",
             ".ydesign-series-active .online-prestige.online-prestige--full .online-prestige__timeline .time-line {",
-            "    width: 100% !important;",
-            "    height: 100% !important;",
-            "    background: transparent !important;",
-            "    margin: 0 !important;",
-            "    border-radius: 0 !important;",
-            "    position: absolute !important;",
-            "    top: 0 !important;",
-            "    left: 0 !important;",
-            "    z-index: 1 !important;",
-            "    pointer-events: none !important;",
+            "    width: 100% !important; height: 100% !important; background: transparent !important; margin: 0 !important; border-radius: 0 !important;",
+            "    position: absolute !important; top: 0 !important; left: 0 !important; z-index: 1 !important; pointer-events: none !important;",
             "}",
-            "",
             ".ydesign-series-active .online-prestige.online-prestige--full .online-prestige__timeline .time-line > div {",
-            "    height: 100% !important;",
-            "    border-radius: 0 !important;",
-            "    background: #ffffff !important;",
-            "    box-shadow: 0 0 8px rgba(255,255,255,0.7) !important;",
-            "    transition: width 0.3s ease !important;",
-            "    pointer-events: none !important;",
+            "    height: 100% !important; border-radius: 0 !important; background: #ffffff !important;",
+            "    box-shadow: 0 0 8px rgba(255,255,255,0.7) !important; transition: width 0.3s ease !important; pointer-events: none !important;",
             "}",
-            "",
             ".ydesign-series-percent-text {",
-            "    position: absolute !important;",
-            "    top: 0 !important;",
-            "    left: 0 !important;",
-            "    right: 0 !important;",
-            "    bottom: 0 !important;",
-            "    width: 100% !important;",
-            "    height: 100% !important;",
-            "    display: flex !important;",
-            "    align-items: center !important;",
-            "    justify-content: center !important;",
-            "    font-size: 0.8em !important;",
-            "    font-weight: 500 !important;",
-            "    color: #000000 !important;",
-            "    text-shadow: none !important;",
-            "    z-index: 20 !important;",
-            "    pointer-events: none !important;",
-            "    line-height: 1 !important;",
-            "}",
-            "",
-            ".ydesign-series-active .online-prestige.online-prestige--full .online-prestige__timeline::after {",
-            "    content: attr(data-percent) !important;",
-            "    position: absolute !important;",
-            "    top: 0 !important;",
-            "    left: 0 !important;",
-            "    width: 100% !important;",
-            "    height: 100% !important;",
-            "    display: flex !important;",
-            "    align-items: center !important;",
-            "    justify-content: center !important;",
-            "    font-size: 0.8em !important;",
-            "    font-weight: 500 !important;",
-            "    color: #000000 !important;",
-            "    text-shadow: none !important;",
-            "    z-index: 19 !important;",
-            "    pointer-events: none !important;",
-            "    line-height: 1 !important;",
-            "}",
-            "",
-            "body.ydesign-hide-left-column .explorer.ydesign-has-series .explorer__left {",
-            "    display: none !important;",
-            "}",
-            "body.ydesign-hide-left-column .explorer.ydesign-has-series .explorer__files {",
-            "    width: 100% !important; flex: 1 1 100% !important; max-width: 100% !important; padding-left: 0 !important;",
+            "    position: absolute !important; top: 0 !important; left: 0 !important; right: 0 !important; bottom: 0 !important;",
+            "    width: 100% !important; height: 100% !important; display: flex !important; align-items: center !important; justify-content: center !important;",
+            "    font-size: 0.8em !important; font-weight: 500 !important; color: #000000 !important; text-shadow: none !important; z-index: 20 !important; pointer-events: none !important; line-height: 1 !important;",
             "}"
         ].join('\n');
     }
@@ -1687,11 +1513,9 @@
             document.body.classList.remove('ydesign-series-shape-pill', 'ydesign-series-shape-rounded', 'ydesign-series-shape-square');
             document.body.classList.add('ydesign-series-shape-' + sShape);
 
-            document.body.classList.toggle('ydesign-uniform-badges', getSet('ydesign_uniform_badges'));
-            document.body.classList.toggle('ydesign-uniform-v-gaps-v', getSet('ydesign_uniform_v_gaps_vert'));
-            document.body.classList.toggle('ydesign-uniform-v-gaps-h', getSet('ydesign_uniform_v_gaps_horz'));
             document.body.classList.toggle('ydesign-hide-left-column', getSet('ydesign_hide_left_column'));
 
+            // Загальні бейджі
             document.body.classList.toggle('ydesign-border-year', getSet('ydesign_border_year'));
             document.body.classList.toggle('ydesign-border-age', getSet('ydesign_border_age'));
             document.body.classList.toggle('ydesign-border-seasons', getSet('ydesign_border_seasons'));
@@ -1709,62 +1533,108 @@
 
             document.body.dataset.ydesignLogo = getSet('ydesign_logo_type');
 
+            // Серії
             var seriesCards = parseInt(getSet('ydesign_series_cards')) || 2;
-            var seriesWidth = (100 / seriesCards) + '%';
-            document.documentElement.style.setProperty('--ydesign-series-width', seriesWidth);
+            document.documentElement.style.setProperty('--ydesign-series-width', (100 / seriesCards) + '%');
+            document.documentElement.style.setProperty('--ydesign-series-badge-size-val', getSet('ydesign_series_badge_size'));
+            document.documentElement.style.setProperty('--ydesign-series-title-size-val', getSet('ydesign_series_title_size'));
 
+            // Сітка
             document.documentElement.style.setProperty('--ydesign-grid-items-v', getSet('ydesign_grid_items_v'));
             document.documentElement.style.setProperty('--ydesign-grid-items-h', getSet('ydesign_grid_items_h'));
-
-            document.documentElement.style.setProperty('--ydesign-logo-h', getSet('ydesign_logo_max_h') + '%');
-            document.documentElement.style.setProperty('--ydesign-logo-w', getSet('ydesign_logo_max_w') + '%');
-
-            document.documentElement.style.setProperty('--ydesign-title-size-val', getSet('ydesign_text_title_size'));
-            document.documentElement.style.setProperty('--ydesign-add-title-size-val', getSet('ydesign_text_add_title_size'));
-            document.documentElement.style.setProperty('--ydesign-text-slogan-size-val', getSet('ydesign_text_slogan_size'));
-            
-            document.documentElement.style.setProperty('--ydesign-badge-size-val', getSet('ydesign_text_badge_size'));
-            document.documentElement.style.setProperty('--ydesign-year-size-val', getSet('ydesign_text_year_size'));
-            document.documentElement.style.setProperty('--ydesign-age-size-val', getSet('ydesign_text_age_size'));
-            document.documentElement.style.setProperty('--ydesign-seasons-size-val', getSet('ydesign_text_seasons_size'));
-            document.documentElement.style.setProperty('--ydesign-ua-size-val', getSet('ydesign_text_ua_size'));
-            document.documentElement.style.setProperty('--ydesign-genres-size-val', getSet('ydesign_text_genres_size'));
-            document.documentElement.style.setProperty('--ydesign-rating-size-val', getSet('ydesign_text_rating_size'));
-            document.documentElement.style.setProperty('--ydesign-desc-size-val', getSet('ydesign_desc_size'));
-
-            document.documentElement.style.setProperty('--ydesign-uniform-v-gap-v', getSet('ydesign_uniform_v_gap_val_vert') + 'em');
-            document.documentElement.style.setProperty('--ydesign-uniform-v-gap-h', getSet('ydesign_uniform_v_gap_val_horz') + 'em');
             document.documentElement.style.setProperty('--ydesign-card-gap', getSet('ydesign_card_gap') + 'em');
-            document.documentElement.style.setProperty('--ydesign-badge-rows-gap', getSet('ydesign_badge_rows_gap') + 'em');
-            document.documentElement.style.setProperty('--ydesign-badges-gap-v', getSet('ydesign_badges_gap_vert') + 'em');
-            document.documentElement.style.setProperty('--ydesign-badges-gap-horz', getSet('ydesign_badges_gap_horz') + 'em');
-            document.documentElement.style.setProperty('--ydesign-genres-gap', getSet('ydesign_genres_gap') + 'em');
-
-            document.documentElement.style.setProperty('--ydesign-content-pb', getSet('ydesign_content_pb') + 'em');
-            document.documentElement.style.setProperty('--ydesign-slogan-padding', getSet('ydesign_slogan_padding') + 'em');
-            document.documentElement.style.setProperty('--ydesign-logo-mb', getSet('ydesign_logo_mb') + 'em');
-            document.documentElement.style.setProperty('--ydesign-add-title-mb', getSet('ydesign_add_title_mb') + 'em');
             document.documentElement.style.setProperty('--ydesign-ratings-saturate', getSet('ydesign_ratings_saturate') + '%');
 
-            var alignLogo = getSet('ydesign_align_logo');
-            document.documentElement.style.setProperty('--ydesign-align-logo', getFlexAlign(alignLogo));
-            document.documentElement.style.setProperty('--ydesign-text-logo', alignLogo);
+            // ----------------- ВЕРТИКАЛЬНІ ПАРАМЕТРИ -----------------
+            document.body.classList.toggle('ydesign-v-uniform-badges', getSet('ydesign_v_uniform_badges', 'ydesign_uniform_badges'));
+            document.body.classList.toggle('ydesign-v-uniform-gaps', getSet('ydesign_v_uniform_v_gaps', 'ydesign_uniform_v_gaps_vert'));
+            document.body.classList.toggle('ydesign-v-badges-one-row', getSet('ydesign_v_badges_one_row', 'ydesign_badges_one_row'));
 
-            var alignAddTitle = getSet('ydesign_align_add_title');
-            document.documentElement.style.setProperty('--ydesign-text-add-title', alignAddTitle);
+            document.body.classList.toggle('ydesign-v-hide-year', !getSet('ydesign_v_show_year', 'ydesign_show_year'));
+            document.body.classList.toggle('ydesign-v-hide-seasons', !getSet('ydesign_v_show_seasons', 'ydesign_show_seasons'));
+            document.body.classList.toggle('ydesign-v-hide-ua', !getSet('ydesign_v_show_ua', 'ydesign_show_ua'));
+            document.body.classList.toggle('ydesign-v-hide-age', !getSet('ydesign_v_show_age', 'ydesign_show_age'));
+            document.body.classList.toggle('ydesign-v-hide-genres', !getSet('ydesign_v_show_genres', 'ydesign_show_genres'));
+            document.body.classList.toggle('ydesign-v-hide-slogan', !getSet('ydesign_v_show_slogan', 'ydesign_show_slogan'));
+            document.body.classList.toggle('ydesign-v-hide-add-title', !getSet('ydesign_v_show_add_title', 'ydesign_show_add_title'));
 
-            document.documentElement.style.setProperty('--ydesign-align-badges', getFlexAlign(getSet('ydesign_align_badges')));
+            document.documentElement.style.setProperty('--ydesign-v-logo-max-h', getSet('ydesign_v_logo_max_h', 'ydesign_logo_max_h'));
+            document.documentElement.style.setProperty('--ydesign-v-logo-max-w', getSet('ydesign_v_logo_max_w', 'ydesign_logo_max_w'));
+            document.documentElement.style.setProperty('--ydesign-v-title-size', getSet('ydesign_v_title_size', 'ydesign_text_title_size'));
+            document.documentElement.style.setProperty('--ydesign-v-add-title-size', getSet('ydesign_v_add_title_size', 'ydesign_text_add_title_size'));
+            document.documentElement.style.setProperty('--ydesign-v-slogan-size', getSet('ydesign_v_slogan_size', 'ydesign_text_slogan_size'));
+            document.documentElement.style.setProperty('--ydesign-v-badge-size', getSet('ydesign_v_badge_size', 'ydesign_text_badge_size'));
+            document.documentElement.style.setProperty('--ydesign-v-year-size', getSet('ydesign_v_year_size', 'ydesign_text_year_size'));
+            document.documentElement.style.setProperty('--ydesign-v-age-size', getSet('ydesign_v_age_size', 'ydesign_text_age_size'));
+            document.documentElement.style.setProperty('--ydesign-v-seasons-size', getSet('ydesign_v_seasons_size', 'ydesign_text_seasons_size'));
+            document.documentElement.style.setProperty('--ydesign-v-ua-size', getSet('ydesign_v_ua_size', 'ydesign_text_ua_size'));
+            document.documentElement.style.setProperty('--ydesign-v-genres-size', getSet('ydesign_v_genres_size', 'ydesign_text_genres_size'));
+            document.documentElement.style.setProperty('--ydesign-v-rating-size', getSet('ydesign_v_rating_size', 'ydesign_text_rating_size'));
+            
+            document.documentElement.style.setProperty('--ydesign-v-logo-mb', getSet('ydesign_v_logo_mb', 'ydesign_logo_mb') + 'em');
+            document.documentElement.style.setProperty('--ydesign-v-add-title-mb', getSet('ydesign_v_add_title_mb', 'ydesign_add_title_mb') + 'em');
+            document.documentElement.style.setProperty('--ydesign-v-badge-rows-gap', getSet('ydesign_v_badge_rows_gap', 'ydesign_badge_rows_gap') + 'em');
+            document.documentElement.style.setProperty('--ydesign-v-badges-gap', getSet('ydesign_v_badges_gap', 'ydesign_badges_gap_vert') + 'em');
+            document.documentElement.style.setProperty('--ydesign-v-genres-gap', getSet('ydesign_v_genres_gap', 'ydesign_genres_gap') + 'em');
+            document.documentElement.style.setProperty('--ydesign-v-content-pb', getSet('ydesign_v_content_pb', 'ydesign_content_pb') + 'em');
+            document.documentElement.style.setProperty('--ydesign-v-slogan-padding', getSet('ydesign_v_slogan_padding', 'ydesign_slogan_padding') + 'em');
+            document.documentElement.style.setProperty('--ydesign-v-uniform-v-gap-val', getSet('ydesign_v_uniform_v_gap_val', 'ydesign_uniform_v_gap_val_vert') + 'em');
 
-            var alignSlogan = getSet('ydesign_align_slogan');
-            document.documentElement.style.setProperty('--ydesign-align-slogan', getFlexAlign(alignSlogan));
-            document.documentElement.style.setProperty('--ydesign-text-slogan', alignSlogan);
+            var vAlignLogo = getSet('ydesign_v_align_logo', 'ydesign_align_logo');
+            document.documentElement.style.setProperty('--ydesign-v-align-logo-flex', getFlexAlign(vAlignLogo));
+            document.documentElement.style.setProperty('--ydesign-v-align-logo', vAlignLogo);
+            document.documentElement.style.setProperty('--ydesign-v-align-add-title', getSet('ydesign_v_align_add_title', 'ydesign_align_add_title'));
+            var vAlignBadges = getSet('ydesign_v_align_badges', 'ydesign_align_badges');
+            document.documentElement.style.setProperty('--ydesign-v-align-badges-flex', getFlexAlign(vAlignBadges));
+            var vAlignSlogan = getSet('ydesign_v_align_slogan', 'ydesign_align_slogan');
+            document.documentElement.style.setProperty('--ydesign-v-align-slogan-flex', getFlexAlign(vAlignSlogan));
+            document.documentElement.style.setProperty('--ydesign-v-align-slogan', vAlignSlogan);
 
-            document.body.classList.toggle('ydesign-hide-year', !getSet('ydesign_show_year'));
-            document.body.classList.toggle('ydesign-hide-seasons', !getSet('ydesign_show_seasons'));
-            document.body.classList.toggle('ydesign-hide-ua', !getSet('ydesign_show_ua'));
-            document.body.classList.toggle('ydesign-hide-age', !getSet('ydesign_show_age'));
-            document.body.classList.toggle('ydesign-hide-slogan', !getSet('ydesign_show_slogan'));
-            document.body.classList.toggle('ydesign-badges-one-row', getSet('ydesign_badges_one_row'));
+            // ----------------- ГОРИЗОНТАЛЬНІ ПАРАМЕТРИ -----------------
+            document.body.classList.toggle('ydesign-h-uniform-badges', getSet('ydesign_h_uniform_badges', 'ydesign_uniform_badges'));
+            document.body.classList.toggle('ydesign-h-uniform-gaps', getSet('ydesign_h_uniform_v_gaps', 'ydesign_uniform_v_gaps_horz'));
+
+            document.body.classList.toggle('ydesign-h-hide-desc', !getSet('ydesign_h_show_desc', 'ydesign_show_desc_horz'));
+            document.body.classList.toggle('ydesign-h-hide-year', !getSet('ydesign_h_show_year', 'ydesign_show_year'));
+            document.body.classList.toggle('ydesign-h-hide-seasons', !getSet('ydesign_h_show_seasons', 'ydesign_show_seasons'));
+            document.body.classList.toggle('ydesign-h-hide-ua', !getSet('ydesign_h_show_ua', 'ydesign_show_ua'));
+            document.body.classList.toggle('ydesign-h-hide-age', !getSet('ydesign_h_show_age', 'ydesign_show_age'));
+            document.body.classList.toggle('ydesign-h-hide-genres', !getSet('ydesign_h_show_genres', 'ydesign_show_genres'));
+            document.body.classList.toggle('ydesign-h-hide-slogan', !getSet('ydesign_h_show_slogan', 'ydesign_show_slogan'));
+            document.body.classList.toggle('ydesign-h-hide-add-title', !getSet('ydesign_h_show_add_title', 'ydesign_show_add_title'));
+
+            document.documentElement.style.setProperty('--ydesign-h-logo-max-h', getSet('ydesign_h_logo_max_h', 'ydesign_logo_max_h'));
+            document.documentElement.style.setProperty('--ydesign-h-logo-max-w', getSet('ydesign_h_logo_max_w', 'ydesign_logo_max_w'));
+            document.documentElement.style.setProperty('--ydesign-h-title-size', getSet('ydesign_h_title_size', 'ydesign_text_title_size'));
+            document.documentElement.style.setProperty('--ydesign-h-add-title-size', getSet('ydesign_h_add_title_size', 'ydesign_text_add_title_size'));
+            document.documentElement.style.setProperty('--ydesign-h-slogan-size', getSet('ydesign_h_slogan_size', 'ydesign_text_slogan_size'));
+            document.documentElement.style.setProperty('--ydesign-h-desc-size', getSet('ydesign_h_desc_size', 'ydesign_desc_size'));
+            document.documentElement.style.setProperty('--ydesign-h-badge-size', getSet('ydesign_h_badge_size', 'ydesign_text_badge_size'));
+            document.documentElement.style.setProperty('--ydesign-h-year-size', getSet('ydesign_h_year_size', 'ydesign_text_year_size'));
+            document.documentElement.style.setProperty('--ydesign-h-age-size', getSet('ydesign_h_age_size', 'ydesign_text_age_size'));
+            document.documentElement.style.setProperty('--ydesign-h-seasons-size', getSet('ydesign_h_seasons_size', 'ydesign_text_seasons_size'));
+            document.documentElement.style.setProperty('--ydesign-h-ua-size', getSet('ydesign_h_ua_size', 'ydesign_text_ua_size'));
+            document.documentElement.style.setProperty('--ydesign-h-genres-size', getSet('ydesign_h_genres_size', 'ydesign_text_genres_size'));
+            document.documentElement.style.setProperty('--ydesign-h-rating-size', getSet('ydesign_h_rating_size', 'ydesign_text_rating_size'));
+            
+            document.documentElement.style.setProperty('--ydesign-h-logo-mb', getSet('ydesign_h_logo_mb', 'ydesign_logo_mb') + 'em');
+            document.documentElement.style.setProperty('--ydesign-h-add-title-mb', getSet('ydesign_h_add_title_mb', 'ydesign_add_title_mb') + 'em');
+            document.documentElement.style.setProperty('--ydesign-h-badge-rows-gap', getSet('ydesign_h_badge_rows_gap', 'ydesign_badge_rows_gap') + 'em');
+            document.documentElement.style.setProperty('--ydesign-h-badges-gap', getSet('ydesign_h_badges_gap', 'ydesign_badges_gap_horz') + 'em');
+            document.documentElement.style.setProperty('--ydesign-h-genres-gap', getSet('ydesign_h_genres_gap', 'ydesign_genres_gap') + 'em');
+            document.documentElement.style.setProperty('--ydesign-h-content-pb', getSet('ydesign_h_content_pb', 'ydesign_content_pb') + 'em');
+            document.documentElement.style.setProperty('--ydesign-h-slogan-padding', getSet('ydesign_h_slogan_padding', 'ydesign_slogan_padding') + 'em');
+            document.documentElement.style.setProperty('--ydesign-h-uniform-v-gap-val', getSet('ydesign_h_uniform_v_gap_val', 'ydesign_uniform_v_gap_val_horz') + 'em');
+
+            var hAlignLogo = getSet('ydesign_h_align_logo', 'ydesign_align_logo');
+            document.documentElement.style.setProperty('--ydesign-h-align-logo-flex', getFlexAlign(hAlignLogo));
+            document.documentElement.style.setProperty('--ydesign-h-align-logo', hAlignLogo);
+            document.documentElement.style.setProperty('--ydesign-h-align-add-title', getSet('ydesign_h_align_add_title', 'ydesign_align_add_title'));
+            var hAlignBadges = getSet('ydesign_h_align_badges', 'ydesign_align_badges');
+            document.documentElement.style.setProperty('--ydesign-h-align-badges-flex', getFlexAlign(hAlignBadges));
+            var hAlignSlogan = getSet('ydesign_h_align_slogan', 'ydesign_align_slogan');
+            document.documentElement.style.setProperty('--ydesign-h-align-slogan-flex', getFlexAlign(hAlignSlogan));
+            document.documentElement.style.setProperty('--ydesign-h-align-slogan', hAlignSlogan);
         } catch (e) {}
     }
 
@@ -1797,7 +1667,8 @@
         var aligns = { 'left': 'Ліворуч', 'center': 'По центру', 'right': 'Праворуч' };
         var shapes = { 'pill': 'Пігулка (Сучасний Pill Capsule)', 'rounded': 'Прямокутний скруглений (4px)', 'square': 'Прямокутний (2px)' };
 
-        ['ydesign_grid', 'ydesign_badges', 'ydesign_gaps', 'ydesign_texts', 'ydesign_series', 'ydesign_perf'].forEach(function (compKey) {
+        var sectionKeys = ['ydesign_grid', 'ydesign_vertical', 'ydesign_horizontal', 'ydesign_badges_style', 'ydesign_texts', 'ydesign_series', 'ydesign_perf'];
+        sectionKeys.forEach(function (compKey) {
             Lampa.Template.add('settings_' + compKey, '<div></div>');
         });
 
@@ -1824,11 +1695,12 @@
         });
 
         var subSections = [
-            { id: 'ydesign_grid', name: '🎬 Відображення карток та Сітка', desc: 'Формат карток (вертикальні/горизонтальні), кількість колонок та ліниве завантаження' },
-            { id: 'ydesign_badges', name: '🏷️ Бейджі, Жанри та Рейтинги', desc: 'Рік, вік, сезони, плашка UA озвучки, жанри, індивідуальні розміри та форма пігулки' },
-            { id: 'ydesign_gaps', name: '📏 Відступи, Рамки та Вирівнювання', desc: 'Окремі рамки для кожного бейджу, точні ручні відступи та математичне вирівнювання' },
-            { id: 'ydesign_texts', name: '🔤 Логотипи, Тексти та Мови', desc: 'Вибір мови, розміри шрифтів, висота/ширина логотипу та якість TMDB' },
-            { id: 'ydesign_series', name: '📺 Редизайн Серій та Епізодів', desc: 'Стиль пігулок, дата в кутку, окрема озвучка, рамки та підложка серій' },
+            { id: 'ydesign_grid', name: '🎬 Відображення карток та Сітка', desc: 'Формат карток на головній/інших сторінках, кількість колонок та ліниве завантаження' },
+            { id: 'ydesign_vertical', name: '📱 Вертикальні картки', desc: 'Окремі налаштування розмірів, логотипу, слогану, бейджів, відступів та вирівнювання' },
+            { id: 'ydesign_horizontal', name: '💻 Горизонтальні картки', desc: 'Окремі налаштування розмірів, логотипу, опису під карткою, бейджів, відступів та вирівнювання' },
+            { id: 'ydesign_badges_style', name: '🏷️ Стилі бейджів та Рейтинги', desc: 'Форма пігулок, скляна підложка, рамки бейджів, кольори віку/UA, вибір рейтингів' },
+            { id: 'ydesign_texts', name: '🔤 Мови, Логотипи та Якість', desc: 'Вибір мов (лого, слоган, опис), тип логотипу та якість зображень TMDB' },
+            { id: 'ydesign_series', name: '📺 Редизайн Серій та Епізодів', desc: 'Розміри бейджів і тексту, кількість карток, стиль пігулок, дата, озвучка, рейтинг' },
             { id: 'ydesign_perf', name: '⚙️ API Ключі, Кеш та Підтримка', desc: 'OMDb/MDBList ключі, очищення кешу плагіну та QR підтримки' }
         ];
 
@@ -1856,38 +1728,119 @@
         Lampa.SettingsApi.addParam({ component: 'ydesign_grid', param: { name: 'ydesign_grid_items_v', type: 'select', values: { '4': '4', '5': '5', '6': '6', '7': '7', '8': '8' }, default: DefaultSettings.ydesign_grid_items_v }, field: { name: 'Кількість карток у сітці (Вертикальні)' } });
         Lampa.SettingsApi.addParam({ component: 'ydesign_grid', param: { name: 'ydesign_grid_items_h', type: 'select', values: { '2': '2', '3': '3', '4': '4', '5': '5' }, default: DefaultSettings.ydesign_grid_items_h }, field: { name: 'Кількість карток у сітці (Горизонтальні)' } });
         Lampa.SettingsApi.addParam({ component: 'ydesign_grid', param: { name: 'ydesign_card_gap', type: 'select', values: gaps, default: DefaultSettings.ydesign_card_gap }, field: { name: 'Відстань між картками' } });
-        Lampa.SettingsApi.addParam({ component: 'ydesign_grid', param: { name: 'ydesign_show_desc_horz', type: 'trigger', default: DefaultSettings.ydesign_show_desc_horz }, field: { name: 'Опис під карткою (Горизонтальні)' } });
 
         // -------------------------------------------------------------
-        // ПІДКАТЕГОРІЯ 2: БЕЙДЖІ, ЖАНРИ ТА РЕЙТИНГИ (ydesign_badges)
+        // ПІДКАТЕГОРІЯ 2: ВЕРТИКАЛЬНІ КАРТКИ (ydesign_vertical)
         // -------------------------------------------------------------
-        Lampa.SettingsApi.addParam({ component: 'ydesign_badges', param: { name: 'ydesign_badge_shape', type: 'select', values: shapes, default: DefaultSettings.ydesign_badge_shape }, field: { name: 'Форма бейджів' } });
-        Lampa.SettingsApi.addParam({ component: 'ydesign_badges', param: { name: 'ydesign_glass_pill_bg', type: 'trigger', default: DefaultSettings.ydesign_glass_pill_bg }, field: { name: 'Скляна підложка для бейджів (Liquid Glass)' } });
-        Lampa.SettingsApi.addParam({ component: 'ydesign_badges', param: { name: 'ydesign_show_year', type: 'trigger', default: DefaultSettings.ydesign_show_year }, field: { name: 'Показувати Рік' } });
-        Lampa.SettingsApi.addParam({ component: 'ydesign_badges', param: { name: 'ydesign_show_seasons', type: 'trigger', default: DefaultSettings.ydesign_show_seasons }, field: { name: 'Показувати Сезони/Серії' } });
-        Lampa.SettingsApi.addParam({ component: 'ydesign_badges', param: { name: 'ydesign_show_age', type: 'trigger', default: DefaultSettings.ydesign_show_age }, field: { name: 'Показувати віковий рейтинг' } });
-        Lampa.SettingsApi.addParam({ component: 'ydesign_badges', param: { name: 'ydesign_color_age', type: 'trigger', default: DefaultSettings.ydesign_color_age }, field: { name: 'Кольорові бейджі віку' } });
-        Lampa.SettingsApi.addParam({ component: 'ydesign_badges', param: { name: 'ydesign_show_ua', type: 'trigger', default: DefaultSettings.ydesign_show_ua }, field: { name: 'Показувати плашку UA (через API)' } });
-        Lampa.SettingsApi.addParam({ component: 'ydesign_badges', param: { name: 'ydesign_color_ua', type: 'trigger', default: DefaultSettings.ydesign_color_ua }, field: { name: 'Кольорова плашка UA (Синьо-жовта)' } });
-        Lampa.SettingsApi.addParam({ component: 'ydesign_badges', param: { name: 'ydesign_show_genres', type: 'trigger', default: DefaultSettings.ydesign_show_genres }, field: { name: 'Показувати Жанри' } });
-        Lampa.SettingsApi.addParam({ component: 'ydesign_badges', param: { name: 'ydesign_show_slogan', type: 'trigger', default: DefaultSettings.ydesign_show_slogan }, field: { name: 'Показувати слоган' } });
-        
-        Lampa.SettingsApi.addParam({ component: 'ydesign_badges', param: { type: 'title' }, field: { name: 'Розміри бейджів (Окремо або Разом)' } });
-        Lampa.SettingsApi.addParam({ component: 'ydesign_badges', param: { name: 'ydesign_uniform_badges', type: 'trigger', default: DefaultSettings.ydesign_uniform_badges }, field: { name: 'Усі бейджі одного розміру' } });
-        Lampa.SettingsApi.addParam({ component: 'ydesign_badges', param: { name: 'ydesign_text_badge_size', type: 'select', values: textSizesExt, default: DefaultSettings.ydesign_text_badge_size }, field: { name: 'Базовий розмір бейджів' } });
-        Lampa.SettingsApi.addParam({ component: 'ydesign_badges', param: { name: 'ydesign_text_year_size', type: 'select', values: textSizesExt, default: DefaultSettings.ydesign_text_year_size }, field: { name: 'Розмір бейджу Року (Індивідуальний)' } });
-        Lampa.SettingsApi.addParam({ component: 'ydesign_badges', param: { name: 'ydesign_text_age_size', type: 'select', values: textSizesExt, default: DefaultSettings.ydesign_text_age_size }, field: { name: 'Розмір бейджу Віку (Індивідуальний)' } });
-        Lampa.SettingsApi.addParam({ component: 'ydesign_badges', param: { name: 'ydesign_text_seasons_size', type: 'select', values: textSizesExt, default: DefaultSettings.ydesign_text_seasons_size }, field: { name: 'Розмір бейджу Сезонів/Серій (Індивідуальний)' } });
-        Lampa.SettingsApi.addParam({ component: 'ydesign_badges', param: { name: 'ydesign_text_ua_size', type: 'select', values: textSizesExt, default: DefaultSettings.ydesign_text_ua_size }, field: { name: 'Розмір бейджу UA озвучки (Індивідуальний)' } });
-        Lampa.SettingsApi.addParam({ component: 'ydesign_badges', param: { name: 'ydesign_text_genres_size', type: 'select', values: textSizesExt, default: DefaultSettings.ydesign_text_genres_size }, field: { name: 'Розмір бейджів Жанрів (Індивідуальний)' } });
-        Lampa.SettingsApi.addParam({ component: 'ydesign_badges', param: { name: 'ydesign_text_rating_size', type: 'select', values: textSizesExt, default: DefaultSettings.ydesign_text_rating_size }, field: { name: 'Розмір бейджів Рейтингів (Індивідуальний)' } });
+        Lampa.SettingsApi.addParam({ component: 'ydesign_vertical', param: { type: 'title' }, field: { name: 'Розміри логотипу та назви' } });
+        Lampa.SettingsApi.addParam({ component: 'ydesign_vertical', param: { name: 'ydesign_v_logo_max_h', type: 'select', values: logoSizes, default: DefaultSettings.ydesign_v_logo_max_h }, field: { name: 'Макс. висота логотипу/тексту' } });
+        Lampa.SettingsApi.addParam({ component: 'ydesign_vertical', param: { name: 'ydesign_v_logo_max_w', type: 'select', values: logoSizes, default: DefaultSettings.ydesign_v_logo_max_w }, field: { name: 'Макс. ширина логотипу/тексту' } });
+        Lampa.SettingsApi.addParam({ component: 'ydesign_vertical', param: { name: 'ydesign_v_title_size', type: 'select', values: textSizesExt, default: DefaultSettings.ydesign_v_title_size }, field: { name: 'Розмір тексту основної назви' } });
+        Lampa.SettingsApi.addParam({ component: 'ydesign_vertical', param: { name: 'ydesign_v_show_add_title', type: 'trigger', default: DefaultSettings.ydesign_v_show_add_title }, field: { name: 'Показувати додаткову назву' } });
+        Lampa.SettingsApi.addParam({ component: 'ydesign_vertical', param: { name: 'ydesign_v_add_title_size', type: 'select', values: textSizesExt, default: DefaultSettings.ydesign_v_add_title_size }, field: { name: 'Розмір додаткової назви' } });
+        Lampa.SettingsApi.addParam({ component: 'ydesign_vertical', param: { name: 'ydesign_v_show_slogan', type: 'trigger', default: DefaultSettings.ydesign_v_show_slogan }, field: { name: 'Показувати слоган' } });
+        Lampa.SettingsApi.addParam({ component: 'ydesign_vertical', param: { name: 'ydesign_v_slogan_size', type: 'select', values: textSizesExt, default: DefaultSettings.ydesign_v_slogan_size }, field: { name: 'Розмір слогану' } });
 
-        Lampa.SettingsApi.addParam({ component: 'ydesign_badges', param: { type: 'title' }, field: { name: 'Рядки та порядок рейтингів' } });
-        Lampa.SettingsApi.addParam({ component: 'ydesign_badges', param: { name: 'ydesign_badges_one_row', type: 'trigger', default: DefaultSettings.ydesign_badges_one_row }, field: { name: 'Усі бейджі в 1 ряд (Вертикальні)' } });
-        Lampa.SettingsApi.addParam({ component: 'ydesign_badges', param: { name: 'ydesign_horz_ratings_row', type: 'trigger', default: DefaultSettings.ydesign_horz_ratings_row }, field: { name: 'Рейтинги з нового рядка (Горизонтальні)' } });
-        Lampa.SettingsApi.addParam({ component: 'ydesign_badges', param: { name: 'ydesign_ratings_saturate', type: 'select', values: saturates, default: DefaultSettings.ydesign_ratings_saturate }, field: { name: 'Насиченість іконок рейтингів' } });
+        Lampa.SettingsApi.addParam({ component: 'ydesign_vertical', param: { type: 'title' }, field: { name: 'Видимість та розміри бейджів' } });
+        Lampa.SettingsApi.addParam({ component: 'ydesign_vertical', param: { name: 'ydesign_v_show_year', type: 'trigger', default: DefaultSettings.ydesign_v_show_year }, field: { name: 'Показувати Рік' } });
+        Lampa.SettingsApi.addParam({ component: 'ydesign_vertical', param: { name: 'ydesign_v_show_seasons', type: 'trigger', default: DefaultSettings.ydesign_v_show_seasons }, field: { name: 'Показувати Сезони/Серії' } });
+        Lampa.SettingsApi.addParam({ component: 'ydesign_vertical', param: { name: 'ydesign_v_show_age', type: 'trigger', default: DefaultSettings.ydesign_v_show_age }, field: { name: 'Показувати віковий рейтинг' } });
+        Lampa.SettingsApi.addParam({ component: 'ydesign_vertical', param: { name: 'ydesign_v_show_ua', type: 'trigger', default: DefaultSettings.ydesign_v_show_ua }, field: { name: 'Показувати плашку UA' } });
+        Lampa.SettingsApi.addParam({ component: 'ydesign_vertical', param: { name: 'ydesign_v_show_genres', type: 'trigger', default: DefaultSettings.ydesign_v_show_genres }, field: { name: 'Показувати Жанри' } });
+        Lampa.SettingsApi.addParam({ component: 'ydesign_vertical', param: { name: 'ydesign_v_badges_one_row', type: 'trigger', default: DefaultSettings.ydesign_v_badges_one_row }, field: { name: 'Усі бейджі в 1 ряд' } });
+
+        Lampa.SettingsApi.addParam({ component: 'ydesign_vertical', param: { name: 'ydesign_v_uniform_badges', type: 'trigger', default: DefaultSettings.ydesign_v_uniform_badges }, field: { name: 'Усі бейджі одного розміру' } });
+        Lampa.SettingsApi.addParam({ component: 'ydesign_vertical', param: { name: 'ydesign_v_badge_size', type: 'select', values: textSizesExt, default: DefaultSettings.ydesign_v_badge_size }, field: { name: 'Базовий розмір бейджів' } });
+        Lampa.SettingsApi.addParam({ component: 'ydesign_vertical', param: { name: 'ydesign_v_year_size', type: 'select', values: textSizesExt, default: DefaultSettings.ydesign_v_year_size }, field: { name: 'Розмір бейджу Року' } });
+        Lampa.SettingsApi.addParam({ component: 'ydesign_vertical', param: { name: 'ydesign_v_age_size', type: 'select', values: textSizesExt, default: DefaultSettings.ydesign_v_age_size }, field: { name: 'Розмір бейджу Віку' } });
+        Lampa.SettingsApi.addParam({ component: 'ydesign_vertical', param: { name: 'ydesign_v_seasons_size', type: 'select', values: textSizesExt, default: DefaultSettings.ydesign_v_seasons_size }, field: { name: 'Розмір бейджу Сезонів/Серій' } });
+        Lampa.SettingsApi.addParam({ component: 'ydesign_vertical', param: { name: 'ydesign_v_ua_size', type: 'select', values: textSizesExt, default: DefaultSettings.ydesign_v_ua_size }, field: { name: 'Розмір бейджу UA озвучки' } });
+        Lampa.SettingsApi.addParam({ component: 'ydesign_vertical', param: { name: 'ydesign_v_genres_size', type: 'select', values: textSizesExt, default: DefaultSettings.ydesign_v_genres_size }, field: { name: 'Розмір бейджів Жанрів' } });
+        Lampa.SettingsApi.addParam({ component: 'ydesign_vertical', param: { name: 'ydesign_v_rating_size', type: 'select', values: textSizesExt, default: DefaultSettings.ydesign_v_rating_size }, field: { name: 'Розмір бейджів Рейтингів' } });
+
+        Lampa.SettingsApi.addParam({ component: 'ydesign_vertical', param: { type: 'title' }, field: { name: 'Вирівнювання та Відступи' } });
+        Lampa.SettingsApi.addParam({ component: 'ydesign_vertical', param: { name: 'ydesign_v_align_logo', type: 'select', values: aligns, default: DefaultSettings.ydesign_v_align_logo }, field: { name: 'Центрування: Логотип/Назва' } });
+        Lampa.SettingsApi.addParam({ component: 'ydesign_vertical', param: { name: 'ydesign_v_align_add_title', type: 'select', values: aligns, default: DefaultSettings.ydesign_v_align_add_title }, field: { name: 'Центрування: Додаткова назва' } });
+        Lampa.SettingsApi.addParam({ component: 'ydesign_vertical', param: { name: 'ydesign_v_align_badges', type: 'select', values: aligns, default: DefaultSettings.ydesign_v_align_badges }, field: { name: 'Центрування: Бейджі/Рейтинги' } });
+        Lampa.SettingsApi.addParam({ component: 'ydesign_vertical', param: { name: 'ydesign_v_align_slogan', type: 'select', values: aligns, default: DefaultSettings.ydesign_v_align_slogan }, field: { name: 'Центрування: Слоган' } });
+
+        Lampa.SettingsApi.addParam({ component: 'ydesign_vertical', param: { name: 'ydesign_v_uniform_v_gaps', type: 'trigger', default: DefaultSettings.ydesign_v_uniform_v_gaps }, field: { name: 'Математично однакові вертикальні відступи' } });
+        Lampa.SettingsApi.addParam({ component: 'ydesign_vertical', param: { name: 'ydesign_v_uniform_v_gap_val', type: 'select', values: microGaps, default: DefaultSettings.ydesign_v_uniform_v_gap_val }, field: { name: 'Значення вертикального відступу' } });
+        Lampa.SettingsApi.addParam({ component: 'ydesign_vertical', param: { name: 'ydesign_v_badges_gap', type: 'select', values: tinyGaps, default: DefaultSettings.ydesign_v_badges_gap }, field: { name: 'Відстань між бейджами по горизонталі' } });
+        Lampa.SettingsApi.addParam({ component: 'ydesign_vertical', param: { name: 'ydesign_v_badge_rows_gap', type: 'select', values: gaps, default: DefaultSettings.ydesign_v_badge_rows_gap }, field: { name: 'Відступ між рядками бейджів' } });
+        Lampa.SettingsApi.addParam({ component: 'ydesign_vertical', param: { name: 'ydesign_v_genres_gap', type: 'select', values: tinyGaps, default: DefaultSettings.ydesign_v_genres_gap }, field: { name: 'Відступ для блоку Жанрів (Ручний режим)' } });
+        Lampa.SettingsApi.addParam({ component: 'ydesign_vertical', param: { name: 'ydesign_v_content_pb', type: 'select', values: gaps, default: DefaultSettings.ydesign_v_content_pb }, field: { name: 'Відступ контенту знизу' } });
+        Lampa.SettingsApi.addParam({ component: 'ydesign_vertical', param: { name: 'ydesign_v_slogan_padding', type: 'select', values: gaps, default: DefaultSettings.ydesign_v_slogan_padding }, field: { name: 'Відступ слогану зверху' } });
+        Lampa.SettingsApi.addParam({ component: 'ydesign_vertical', param: { name: 'ydesign_v_logo_mb', type: 'select', values: gaps, default: DefaultSettings.ydesign_v_logo_mb }, field: { name: 'Відступ назви/лого від бейджів' } });
+        Lampa.SettingsApi.addParam({ component: 'ydesign_vertical', param: { name: 'ydesign_v_add_title_mb', type: 'select', values: gaps, default: DefaultSettings.ydesign_v_add_title_mb }, field: { name: 'Відступ додаткової назви від бейджів' } });
+
+        // -------------------------------------------------------------
+        // ПІДКАТЕГОРІЯ 3: ГОРИЗОНТАЛЬНІ КАРТКИ (ydesign_horizontal)
+        // -------------------------------------------------------------
+        Lampa.SettingsApi.addParam({ component: 'ydesign_horizontal', param: { type: 'title' }, field: { name: 'Розміри логотипу та назви' } });
+        Lampa.SettingsApi.addParam({ component: 'ydesign_horizontal', param: { name: 'ydesign_h_logo_max_h', type: 'select', values: logoSizes, default: DefaultSettings.ydesign_h_logo_max_h }, field: { name: 'Макс. висота логотипу/тексту' } });
+        Lampa.SettingsApi.addParam({ component: 'ydesign_horizontal', param: { name: 'ydesign_h_logo_max_w', type: 'select', values: logoSizes, default: DefaultSettings.ydesign_h_logo_max_w }, field: { name: 'Макс. ширина логотипу/тексту' } });
+        Lampa.SettingsApi.addParam({ component: 'ydesign_horizontal', param: { name: 'ydesign_h_title_size', type: 'select', values: textSizesExt, default: DefaultSettings.ydesign_h_title_size }, field: { name: 'Розмір тексту основної назви' } });
+        Lampa.SettingsApi.addParam({ component: 'ydesign_horizontal', param: { name: 'ydesign_h_show_add_title', type: 'trigger', default: DefaultSettings.ydesign_h_show_add_title }, field: { name: 'Показувати додаткову назву' } });
+        Lampa.SettingsApi.addParam({ component: 'ydesign_horizontal', param: { name: 'ydesign_h_add_title_size', type: 'select', values: textSizesExt, default: DefaultSettings.ydesign_h_add_title_size }, field: { name: 'Розмір додаткової назви' } });
+        Lampa.SettingsApi.addParam({ component: 'ydesign_horizontal', param: { name: 'ydesign_h_show_slogan', type: 'trigger', default: DefaultSettings.ydesign_h_show_slogan }, field: { name: 'Показувати слоган' } });
+        Lampa.SettingsApi.addParam({ component: 'ydesign_horizontal', param: { name: 'ydesign_h_slogan_size', type: 'select', values: textSizesExt, default: DefaultSettings.ydesign_h_slogan_size }, field: { name: 'Розмір слогану' } });
+        Lampa.SettingsApi.addParam({ component: 'ydesign_horizontal', param: { name: 'ydesign_h_show_desc', type: 'trigger', default: DefaultSettings.ydesign_h_show_desc }, field: { name: 'Показувати опис під карткою' } });
+        Lampa.SettingsApi.addParam({ component: 'ydesign_horizontal', param: { name: 'ydesign_h_desc_size', type: 'select', values: textSizesExt, default: DefaultSettings.ydesign_h_desc_size }, field: { name: 'Розмір тексту опису' } });
+
+        Lampa.SettingsApi.addParam({ component: 'ydesign_horizontal', param: { type: 'title' }, field: { name: 'Видимість та розміри бейджів' } });
+        Lampa.SettingsApi.addParam({ component: 'ydesign_horizontal', param: { name: 'ydesign_h_show_year', type: 'trigger', default: DefaultSettings.ydesign_h_show_year }, field: { name: 'Показувати Рік' } });
+        Lampa.SettingsApi.addParam({ component: 'ydesign_horizontal', param: { name: 'ydesign_h_show_seasons', type: 'trigger', default: DefaultSettings.ydesign_h_show_seasons }, field: { name: 'Показувати Сезони/Серії' } });
+        Lampa.SettingsApi.addParam({ component: 'ydesign_horizontal', param: { name: 'ydesign_h_show_age', type: 'trigger', default: DefaultSettings.ydesign_h_show_age }, field: { name: 'Показувати віковий рейтинг' } });
+        Lampa.SettingsApi.addParam({ component: 'ydesign_horizontal', param: { name: 'ydesign_h_show_ua', type: 'trigger', default: DefaultSettings.ydesign_h_show_ua }, field: { name: 'Показувати плашку UA' } });
+        Lampa.SettingsApi.addParam({ component: 'ydesign_horizontal', param: { name: 'ydesign_h_show_genres', type: 'trigger', default: DefaultSettings.ydesign_h_show_genres }, field: { name: 'Показувати Жанри' } });
+        Lampa.SettingsApi.addParam({ component: 'ydesign_horizontal', param: { name: 'ydesign_h_ratings_row', type: 'trigger', default: DefaultSettings.ydesign_h_ratings_row }, field: { name: 'Рейтинги з нового рядка' } });
+
+        Lampa.SettingsApi.addParam({ component: 'ydesign_horizontal', param: { name: 'ydesign_h_uniform_badges', type: 'trigger', default: DefaultSettings.ydesign_h_uniform_badges }, field: { name: 'Усі бейджі одного розміру' } });
+        Lampa.SettingsApi.addParam({ component: 'ydesign_horizontal', param: { name: 'ydesign_h_badge_size', type: 'select', values: textSizesExt, default: DefaultSettings.ydesign_h_badge_size }, field: { name: 'Базовий розмір бейджів' } });
+        Lampa.SettingsApi.addParam({ component: 'ydesign_horizontal', param: { name: 'ydesign_h_year_size', type: 'select', values: textSizesExt, default: DefaultSettings.ydesign_h_year_size }, field: { name: 'Розмір бейджу Року' } });
+        Lampa.SettingsApi.addParam({ component: 'ydesign_horizontal', param: { name: 'ydesign_h_age_size', type: 'select', values: textSizesExt, default: DefaultSettings.ydesign_h_age_size }, field: { name: 'Розмір бейджу Віку' } });
+        Lampa.SettingsApi.addParam({ component: 'ydesign_horizontal', param: { name: 'ydesign_h_seasons_size', type: 'select', values: textSizesExt, default: DefaultSettings.ydesign_h_seasons_size }, field: { name: 'Розмір бейджу Сезонів/Серій' } });
+        Lampa.SettingsApi.addParam({ component: 'ydesign_horizontal', param: { name: 'ydesign_h_ua_size', type: 'select', values: textSizesExt, default: DefaultSettings.ydesign_h_ua_size }, field: { name: 'Розмір бейджу UA озвучки' } });
+        Lampa.SettingsApi.addParam({ component: 'ydesign_horizontal', param: { name: 'ydesign_h_genres_size', type: 'select', values: textSizesExt, default: DefaultSettings.ydesign_h_genres_size }, field: { name: 'Розмір бейджів Жанрів' } });
+        Lampa.SettingsApi.addParam({ component: 'ydesign_horizontal', param: { name: 'ydesign_h_rating_size', type: 'select', values: textSizesExt, default: DefaultSettings.ydesign_h_rating_size }, field: { name: 'Розмір бейджів Рейтингів' } });
+
+        Lampa.SettingsApi.addParam({ component: 'ydesign_horizontal', param: { type: 'title' }, field: { name: 'Вирівнювання та Відступи' } });
+        Lampa.SettingsApi.addParam({ component: 'ydesign_horizontal', param: { name: 'ydesign_h_align_logo', type: 'select', values: aligns, default: DefaultSettings.ydesign_h_align_logo }, field: { name: 'Центрування: Логотип/Назва' } });
+        Lampa.SettingsApi.addParam({ component: 'ydesign_horizontal', param: { name: 'ydesign_h_align_add_title', type: 'select', values: aligns, default: DefaultSettings.ydesign_h_align_add_title }, field: { name: 'Центрування: Додаткова назва' } });
+        Lampa.SettingsApi.addParam({ component: 'ydesign_horizontal', param: { name: 'ydesign_h_align_badges', type: 'select', values: aligns, default: DefaultSettings.ydesign_h_align_badges }, field: { name: 'Центрування: Бейджі/Рейтинги' } });
+        Lampa.SettingsApi.addParam({ component: 'ydesign_horizontal', param: { name: 'ydesign_h_align_slogan', type: 'select', values: aligns, default: DefaultSettings.ydesign_h_align_slogan }, field: { name: 'Центрування: Слоган' } });
+
+        Lampa.SettingsApi.addParam({ component: 'ydesign_horizontal', param: { name: 'ydesign_h_uniform_v_gaps', type: 'trigger', default: DefaultSettings.ydesign_h_uniform_v_gaps }, field: { name: 'Математично однакові вертикальні відступи' } });
+        Lampa.SettingsApi.addParam({ component: 'ydesign_horizontal', param: { name: 'ydesign_h_uniform_v_gap_val', type: 'select', values: microGaps, default: DefaultSettings.ydesign_h_uniform_v_gap_val }, field: { name: 'Значення вертикального відступу' } });
+        Lampa.SettingsApi.addParam({ component: 'ydesign_horizontal', param: { name: 'ydesign_h_badges_gap', type: 'select', values: tinyGaps, default: DefaultSettings.ydesign_h_badges_gap }, field: { name: 'Відстань між бейджами по горизонталі' } });
+        Lampa.SettingsApi.addParam({ component: 'ydesign_horizontal', param: { name: 'ydesign_h_badge_rows_gap', type: 'select', values: gaps, default: DefaultSettings.ydesign_h_badge_rows_gap }, field: { name: 'Відступ між рядками бейджів' } });
+        Lampa.SettingsApi.addParam({ component: 'ydesign_horizontal', param: { name: 'ydesign_h_genres_gap', type: 'select', values: tinyGaps, default: DefaultSettings.ydesign_h_genres_gap }, field: { name: 'Відступ для блоку Жанрів (Ручний режим)' } });
+        Lampa.SettingsApi.addParam({ component: 'ydesign_horizontal', param: { name: 'ydesign_h_content_pb', type: 'select', values: gaps, default: DefaultSettings.ydesign_h_content_pb }, field: { name: 'Відступ контенту знизу' } });
+        Lampa.SettingsApi.addParam({ component: 'ydesign_horizontal', param: { name: 'ydesign_h_slogan_padding', type: 'select', values: gaps, default: DefaultSettings.ydesign_h_slogan_padding }, field: { name: 'Відступ слогану зверху' } });
+        Lampa.SettingsApi.addParam({ component: 'ydesign_horizontal', param: { name: 'ydesign_h_logo_mb', type: 'select', values: gaps, default: DefaultSettings.ydesign_h_logo_mb }, field: { name: 'Відступ назви/лого від бейджів' } });
+        Lampa.SettingsApi.addParam({ component: 'ydesign_horizontal', param: { name: 'ydesign_h_add_title_mb', type: 'select', values: gaps, default: DefaultSettings.ydesign_h_add_title_mb }, field: { name: 'Відступ додаткової назви від бейджів' } });
+
+        // -------------------------------------------------------------
+        // ПІДКАТЕГОРІЯ 4: СТИЛІ БЕЙДЖІВ ТА РЕЙТИНГИ (ydesign_badges_style)
+        // -------------------------------------------------------------
+        Lampa.SettingsApi.addParam({ component: 'ydesign_badges_style', param: { name: 'ydesign_badge_shape', type: 'select', values: shapes, default: DefaultSettings.ydesign_badge_shape }, field: { name: 'Форма бейджів' } });
+        Lampa.SettingsApi.addParam({ component: 'ydesign_badges_style', param: { name: 'ydesign_glass_pill_bg', type: 'trigger', default: DefaultSettings.ydesign_glass_pill_bg }, field: { name: 'Скляна підложка (Liquid Glass)' } });
+        Lampa.SettingsApi.addParam({ component: 'ydesign_badges_style', param: { name: 'ydesign_color_age', type: 'trigger', default: DefaultSettings.ydesign_color_age }, field: { name: 'Кольорові бейджі віку' } });
+        Lampa.SettingsApi.addParam({ component: 'ydesign_badges_style', param: { name: 'ydesign_color_ua', type: 'trigger', default: DefaultSettings.ydesign_color_ua }, field: { name: 'Кольорова плашка UA (Синьо-жовта)' } });
+
+        Lampa.SettingsApi.addParam({ component: 'ydesign_badges_style', param: { type: 'title' }, field: { name: 'Окремі рамки для елементів' } });
+        Lampa.SettingsApi.addParam({ component: 'ydesign_badges_style', param: { name: 'ydesign_border_year', type: 'trigger', default: DefaultSettings.ydesign_border_year }, field: { name: 'Рамка для бейджу Року' } });
+        Lampa.SettingsApi.addParam({ component: 'ydesign_badges_style', param: { name: 'ydesign_border_age', type: 'trigger', default: DefaultSettings.ydesign_border_age }, field: { name: 'Рамка для бейджу Віку' } });
+        Lampa.SettingsApi.addParam({ component: 'ydesign_badges_style', param: { name: 'ydesign_border_seasons', type: 'trigger', default: DefaultSettings.ydesign_border_seasons }, field: { name: 'Рамка для бейджу Сезонів/Серій' } });
+        Lampa.SettingsApi.addParam({ component: 'ydesign_badges_style', param: { name: 'ydesign_border_ua', type: 'trigger', default: DefaultSettings.ydesign_border_ua }, field: { name: 'Рамка для бейджу UA озвучки' } });
+        Lampa.SettingsApi.addParam({ component: 'ydesign_badges_style', param: { name: 'ydesign_border_genres', type: 'trigger', default: DefaultSettings.ydesign_border_genres }, field: { name: 'Рамка для бейджів Жанрів' } });
+        Lampa.SettingsApi.addParam({ component: 'ydesign_badges_style', param: { name: 'ydesign_border_ratings', type: 'trigger', default: DefaultSettings.ydesign_border_ratings }, field: { name: 'Рамка для бейджів Рейтингів' } });
+
+        Lampa.SettingsApi.addParam({ component: 'ydesign_badges_style', param: { type: 'title' }, field: { name: 'Вибір та насиченість рейтингів' } });
+        Lampa.SettingsApi.addParam({ component: 'ydesign_badges_style', param: { name: 'ydesign_ratings_saturate', type: 'select', values: saturates, default: DefaultSettings.ydesign_ratings_saturate }, field: { name: 'Насиченість іконок рейтингів' } });
         Lampa.SettingsApi.addParam({
-            component: 'ydesign_badges',
+            component: 'ydesign_badges_style',
             param: { name: 'ydesign_ratings_order_btn', type: 'button' },
             field: { name: 'Порядок та вибір рейтингів', description: getSet('ydesign_ratings_order') },
             onChange: function () {
@@ -1905,69 +1858,32 @@
         });
 
         // -------------------------------------------------------------
-        // ПІДКАТЕГОРІЯ 3: ВІДСТУПИ, РАМКИ ТА ВИРІВНЮВАННЯ (ydesign_gaps)
-        // -------------------------------------------------------------
-        Lampa.SettingsApi.addParam({ component: 'ydesign_gaps', param: { type: 'title' }, field: { name: 'Окремі рамки для елементів' } });
-        Lampa.SettingsApi.addParam({ component: 'ydesign_gaps', param: { name: 'ydesign_border_year', type: 'trigger', default: DefaultSettings.ydesign_border_year }, field: { name: 'Рамка для бейджу Року' } });
-        Lampa.SettingsApi.addParam({ component: 'ydesign_gaps', param: { name: 'ydesign_border_age', type: 'trigger', default: DefaultSettings.ydesign_border_age }, field: { name: 'Рамка для бейджу Віку' } });
-        Lampa.SettingsApi.addParam({ component: 'ydesign_gaps', param: { name: 'ydesign_border_seasons', type: 'trigger', default: DefaultSettings.ydesign_border_seasons }, field: { name: 'Рамка для бейджу Сезонів/Серій' } });
-        Lampa.SettingsApi.addParam({ component: 'ydesign_gaps', param: { name: 'ydesign_border_ua', type: 'trigger', default: DefaultSettings.ydesign_border_ua }, field: { name: 'Рамка для бейджу UA озвучки' } });
-        Lampa.SettingsApi.addParam({ component: 'ydesign_gaps', param: { name: 'ydesign_border_genres', type: 'trigger', default: DefaultSettings.ydesign_border_genres }, field: { name: 'Рамка для бейджів Жанрів' } });
-        Lampa.SettingsApi.addParam({ component: 'ydesign_gaps', param: { name: 'ydesign_border_ratings', type: 'trigger', default: DefaultSettings.ydesign_border_ratings }, field: { name: 'Рамка для бейджів Рейтингів' } });
-
-        Lampa.SettingsApi.addParam({ component: 'ydesign_gaps', param: { type: 'title' }, field: { name: 'Математично рівні відступи' } });
-        Lampa.SettingsApi.addParam({ component: 'ydesign_gaps', param: { name: 'ydesign_uniform_v_gaps_vert', type: 'trigger', default: DefaultSettings.ydesign_uniform_v_gaps_vert }, field: { name: 'Вертикальні відступи однакові (Вертикальні картки)' } });
-        Lampa.SettingsApi.addParam({ component: 'ydesign_gaps', param: { name: 'ydesign_uniform_v_gap_val_vert', type: 'select', values: microGaps, default: DefaultSettings.ydesign_uniform_v_gap_val_vert }, field: { name: 'Вертикальний відступ (Вертикальні картки)' } });
-        Lampa.SettingsApi.addParam({ component: 'ydesign_gaps', param: { name: 'ydesign_uniform_v_gaps_horz', type: 'trigger', default: DefaultSettings.ydesign_uniform_v_gaps_horz }, field: { name: 'Вертикальні відступи однакові (Горизонтальні картки)' } });
-        Lampa.SettingsApi.addParam({ component: 'ydesign_gaps', param: { name: 'ydesign_uniform_v_gap_val_horz', type: 'select', values: microGaps, default: DefaultSettings.ydesign_uniform_v_gap_val_horz }, field: { name: 'Вертикальний відступ (Горизонтальні картки)' } });
-
-        Lampa.SettingsApi.addParam({ component: 'ydesign_gaps', param: { type: 'title' }, field: { name: 'Ручні налаштування відступів' } });
-        Lampa.SettingsApi.addParam({ component: 'ydesign_gaps', param: { name: 'ydesign_badges_gap_vert', type: 'select', values: tinyGaps, default: DefaultSettings.ydesign_badges_gap_vert }, field: { name: 'Відстань між бейджами по горизонталі (Вертикальні картки)' } });
-        Lampa.SettingsApi.addParam({ component: 'ydesign_badges', param: { name: 'ydesign_badges_gap_horz', type: 'select', values: tinyGaps, default: DefaultSettings.ydesign_badges_gap_horz }, field: { name: 'Відстань між бейджами по горизонталі (Горизонтальні картки)' } });
-
-        Lampa.SettingsApi.addParam({ component: 'ydesign_gaps', param: { name: 'ydesign_badge_rows_gap', type: 'select', values: gaps, default: DefaultSettings.ydesign_badge_rows_gap }, field: { name: 'Відступ між рядками бейджів/рейтингів' } });
-        Lampa.SettingsApi.addParam({ component: 'ydesign_gaps', param: { name: 'ydesign_genres_gap', type: 'select', values: tinyGaps, default: DefaultSettings.ydesign_genres_gap }, field: { name: 'Відступ для блоку Жанрів (Ручний режим)' } });
-        Lampa.SettingsApi.addParam({ component: 'ydesign_gaps', param: { name: 'ydesign_content_pb', type: 'select', values: gaps, default: DefaultSettings.ydesign_content_pb }, field: { name: 'Відступ контенту знизу' } });
-        Lampa.SettingsApi.addParam({ component: 'ydesign_gaps', param: { name: 'ydesign_slogan_padding', type: 'select', values: gaps, default: DefaultSettings.ydesign_slogan_padding }, field: { name: 'Відступ слогану зверху' } });
-        Lampa.SettingsApi.addParam({ component: 'ydesign_gaps', param: { name: 'ydesign_logo_mb', type: 'select', values: gaps, default: DefaultSettings.ydesign_logo_mb }, field: { name: 'Відступ назви/лого від бейджів' } });
-        Lampa.SettingsApi.addParam({ component: 'ydesign_gaps', param: { name: 'ydesign_add_title_mb', type: 'select', values: gaps, default: DefaultSettings.ydesign_add_title_mb }, field: { name: 'Відступ додаткової назви від бейджів' } });
-
-        // -------------------------------------------------------------
-        // ПІДКАТЕГОРІЯ 4: ЛОГОТИПИ, ТЕКСТИ ТА МОВИ (ydesign_texts)
+        // ПІДКАТЕГОРІЯ 5: МОВИ, ЛОГОТИПИ ТА ЯКІСТЬ (ydesign_texts)
         // -------------------------------------------------------------
         Lampa.SettingsApi.addParam({ component: 'ydesign_texts', param: { name: 'ydesign_logo_type', type: 'select', values: { 'logo': 'Логотип (зображення)', 'text': 'Текст' }, default: DefaultSettings.ydesign_logo_type }, field: { name: 'Відображення назви' } });
         Lampa.SettingsApi.addParam({ component: 'ydesign_texts', param: { name: 'ydesign_lang', type: 'select', values: { 'uk': 'Тільки Українська', 'uk_en': 'Укр -> Англ -> Ориг', 'en_orig': 'Англ -> Ориг' }, default: DefaultSettings.ydesign_lang }, field: { name: 'Мова логотипу/назви' } });
         Lampa.SettingsApi.addParam({ component: 'ydesign_texts', param: { name: 'ydesign_slogan_lang', type: 'select', values: { 'uk': 'Тільки Українська', 'uk_en': 'Укр (Англ. якщо немає)', 'en': 'Тільки Англійська' }, default: DefaultSettings.ydesign_slogan_lang }, field: { name: 'Мова слогану' } });
         Lampa.SettingsApi.addParam({ component: 'ydesign_texts', param: { name: 'ydesign_desc_lang', type: 'select', values: { 'uk': 'Тільки Українська', 'uk_en': 'Укр (Англ. якщо немає)', 'en': 'Тільки Англійська' }, default: DefaultSettings.ydesign_desc_lang }, field: { name: 'Мова опису під карткою' } });
-        Lampa.SettingsApi.addParam({ component: 'ydesign_texts', param: { name: 'ydesign_show_add_title', type: 'trigger', default: DefaultSettings.ydesign_show_add_title }, field: { name: 'Показувати додаткову назву' } });
         Lampa.SettingsApi.addParam({ component: 'ydesign_texts', param: { name: 'ydesign_add_title_lang', type: 'select', values: { 'uk': 'Завжди Українська', 'en': 'Завжди Англійська', 'auto': 'Залежить від логотипу' }, default: DefaultSettings.ydesign_add_title_lang }, field: { name: 'Мова додаткової назви' } });
 
         Lampa.SettingsApi.addParam({ component: 'ydesign_texts', param: { name: 'ydesign_poster_quality', type: 'select', values: qualities, default: DefaultSettings.ydesign_poster_quality }, field: { name: 'Якість постерів' } });
         Lampa.SettingsApi.addParam({ component: 'ydesign_texts', param: { name: 'ydesign_backdrop_quality', type: 'select', values: qualities, default: DefaultSettings.ydesign_backdrop_quality }, field: { name: 'Якість бекдропів' } });
         Lampa.SettingsApi.addParam({ component: 'ydesign_texts', param: { name: 'ydesign_logo_quality', type: 'select', values: qualities, default: DefaultSettings.ydesign_logo_quality }, field: { name: 'Якість логотипів' } });
 
-        Lampa.SettingsApi.addParam({ component: 'ydesign_texts', param: { name: 'ydesign_align_logo', type: 'select', values: aligns, default: DefaultSettings.ydesign_align_logo }, field: { name: 'Центрування: Логотип/Назва' } });
-        Lampa.SettingsApi.addParam({ component: 'ydesign_texts', param: { name: 'ydesign_align_add_title', type: 'select', values: aligns, default: DefaultSettings.ydesign_align_add_title }, field: { name: 'Центрування: Додаткова назва' } });
-        Lampa.SettingsApi.addParam({ component: 'ydesign_texts', param: { name: 'ydesign_align_badges', type: 'select', values: aligns, default: DefaultSettings.ydesign_align_badges }, field: { name: 'Центрування: Бейджі/Рейтинги' } });
-        Lampa.SettingsApi.addParam({ component: 'ydesign_texts', param: { name: 'ydesign_align_slogan', type: 'select', values: aligns, default: DefaultSettings.ydesign_align_slogan }, field: { name: 'Центрування: Слоган' } });
-
-        Lampa.SettingsApi.addParam({ component: 'ydesign_texts', param: { name: 'ydesign_logo_max_h', type: 'select', values: logoSizes, default: DefaultSettings.ydesign_logo_max_h }, field: { name: 'Макс. висота логотипу/тексту' } });
-        Lampa.SettingsApi.addParam({ component: 'ydesign_texts', param: { name: 'ydesign_logo_max_w', type: 'select', values: logoSizes, default: DefaultSettings.ydesign_logo_max_w }, field: { name: 'Макс. ширина логотипу/тексту' } });
-        Lampa.SettingsApi.addParam({ component: 'ydesign_texts', param: { name: 'ydesign_text_title_size', type: 'select', values: textSizesExt, default: DefaultSettings.ydesign_text_title_size }, field: { name: 'Розмір тексту основної назви' } });
-        Lampa.SettingsApi.addParam({ component: 'ydesign_texts', param: { name: 'ydesign_text_add_title_size', type: 'select', values: textSizesExt, default: DefaultSettings.ydesign_text_add_title_size }, field: { name: 'Розмір шрифту додаткової назви' } });
-        Lampa.SettingsApi.addParam({ component: 'ydesign_texts', param: { name: 'ydesign_text_slogan_size', type: 'select', values: textSizesExt, default: DefaultSettings.ydesign_text_slogan_size }, field: { name: 'Розмір тексту слогану' } });
-        Lampa.SettingsApi.addParam({ component: 'ydesign_texts', param: { name: 'ydesign_desc_size', type: 'select', values: textSizesExt, default: DefaultSettings.ydesign_desc_size }, field: { name: 'Розмір тексту опису' } });
-
         // -------------------------------------------------------------
-        // ПІДКАТЕГОРІЯ 5: РЕДИЗАЙН СЕРІЙ ТА ЕПІЗОДІВ (ydesign_series)
+        // ПІДКАТЕГОРІЯ 6: РЕДИЗАЙН СЕРІЙ ТА ЕПІЗОДІВ (ydesign_series)
         // -------------------------------------------------------------
         Lampa.SettingsApi.addParam({ component: 'ydesign_series', param: { name: 'ydesign_series_redesign', type: 'trigger', default: DefaultSettings.ydesign_series_redesign }, field: { name: 'Змінити вигляд серій', description: 'Активувати новий вигляд карток всередині серій' } });
         Lampa.SettingsApi.addParam({ component: 'ydesign_series', param: { name: 'ydesign_series_cards', type: 'select', values: { '1': '1', '2': '2', '3': '3', '4': '4' }, default: DefaultSettings.ydesign_series_cards }, field: { name: 'Кількість карток серій' } });
         Lampa.SettingsApi.addParam({ component: 'ydesign_series', param: { name: 'ydesign_hide_left_column', type: 'trigger', default: DefaultSettings.ydesign_hide_left_column }, field: { name: 'Прибрати ліву колонку (Серії)', description: 'Приховує опис та розтягує картки серій на весь екран' } });
 
+        Lampa.SettingsApi.addParam({ component: 'ydesign_series', param: { type: 'title' }, field: { name: 'Розміри елементів на картках серій' } });
+        Lampa.SettingsApi.addParam({ component: 'ydesign_series', param: { name: 'ydesign_series_badge_size', type: 'select', values: textSizesExt, default: DefaultSettings.ydesign_series_badge_size }, field: { name: 'Розмір бейджів на серіях' } });
+        Lampa.SettingsApi.addParam({ component: 'ydesign_series', param: { name: 'ydesign_series_title_size', type: 'select', values: textSizesExt, default: DefaultSettings.ydesign_series_title_size }, field: { name: 'Розмір назви серії' } });
+
         Lampa.SettingsApi.addParam({ component: 'ydesign_series', param: { type: 'title' }, field: { name: 'Стиль та бейджі на картках серій' } });
         Lampa.SettingsApi.addParam({ component: 'ydesign_series', param: { name: 'ydesign_series_badge_shape', type: 'select', values: shapes, default: DefaultSettings.ydesign_series_badge_shape }, field: { name: 'Форма бейджів на серіях' } });
-        Lampa.SettingsApi.addParam({ component: 'ydesign_series', param: { name: 'ydesign_series_glass_pill', type: 'trigger', default: DefaultSettings.ydesign_series_glass_pill }, field: { name: 'Скляна підложка (Liquid Glass) для бейджів серій' } });
+        Lampa.SettingsApi.addParam({ component: 'ydesign_series', param: { name: 'ydesign_series_glass_pill', type: 'trigger', default: DefaultSettings.ydesign_series_glass_pill }, field: { name: 'Скляна підложка (Liquid Glass)' } });
         Lampa.SettingsApi.addParam({ component: 'ydesign_series', param: { name: 'ydesign_series_border_badges', type: 'trigger', default: DefaultSettings.ydesign_series_border_badges }, field: { name: 'Рамка для бейджів серій' } });
 
         Lampa.SettingsApi.addParam({ component: 'ydesign_series', param: { name: 'ydesign_series_show_date', type: 'trigger', default: DefaultSettings.ydesign_series_show_date }, field: { name: 'Показувати дату виходу (зверху ліворуч)' } });
@@ -1976,7 +1892,7 @@
         Lampa.SettingsApi.addParam({ component: 'ydesign_series', param: { name: 'ydesign_series_show_time', type: 'trigger', default: DefaultSettings.ydesign_series_show_time }, field: { name: 'Показувати тривалість серії (знизу праворуч)' } });
 
         // -------------------------------------------------------------
-        // ПІДКАТЕГОРІЯ 6: API КЛЮЧІ, КЕШ ТА ПІДТРИМКА (ydesign_perf)
+        // ПІДКАТЕГОРІЯ 7: API КЛЮЧІ, КЕШ ТА ПІДТРИМКА (ydesign_perf)
         // -------------------------------------------------------------
         Lampa.SettingsApi.addParam({
             component: 'ydesign_perf',
@@ -2027,27 +1943,17 @@
             if (e && e.name && e.name.indexOf('ydesign_') !== -1) {
                 applyDynamicCSS();
 
-                var cssOnlyParams = [
-                    'ydesign_lazy_load', 'ydesign_grid_items_v', 'ydesign_grid_items_h',
-                    'ydesign_logo_max_h', 'ydesign_logo_max_w', 'ydesign_text_title_size',
-                    'ydesign_text_add_title_size', 'ydesign_text_slogan_size', 'ydesign_text_badge_size',
-                    'ydesign_text_year_size', 'ydesign_text_age_size', 'ydesign_text_seasons_size', 'ydesign_text_ua_size',
-                    'ydesign_text_genres_size', 'ydesign_text_rating_size', 'ydesign_desc_size',
-                    'ydesign_uniform_v_gap_val_vert', 'ydesign_uniform_v_gap_val_horz', 'ydesign_card_gap',
-                    'ydesign_badge_rows_gap', 'ydesign_badges_gap_vert', 'ydesign_badges_gap_horz',
-                    'ydesign_genres_gap', 'ydesign_content_pb', 'ydesign_slogan_padding', 'ydesign_logo_mb',
-                    'ydesign_add_title_mb', 'ydesign_ratings_saturate', 'ydesign_align_logo', 'ydesign_align_badges',
-                    'ydesign_align_slogan', 'ydesign_series_cards', 'ydesign_uniform_v_gaps_vert', 'ydesign_uniform_v_gaps_horz',
-                    'ydesign_uniform_badges', 'ydesign_series_redesign',
-                    'ydesign_border_year', 'ydesign_border_age', 'ydesign_border_seasons', 'ydesign_border_ua',
-                    'ydesign_border_ratings', 'ydesign_border_info', 'ydesign_border_genres',
-                    'ydesign_badges_one_row', 'ydesign_show_year', 'ydesign_show_seasons', 'ydesign_show_ua',
-                    'ydesign_show_age', 'ydesign_show_slogan', 'ydesign_logo_type', 'ydesign_hide_left_column', 'ydesign_align_add_title',
-                    'ydesign_color_age', 'ydesign_color_ua', 'ydesign_badge_shape', 'ydesign_glass_pill_bg',
-                    'ydesign_series_glass_pill', 'ydesign_series_border_badges', 'ydesign_series_badge_shape'
+                var nonCssParams = [
+                    'ydesign_lang', 'ydesign_slogan_lang', 'ydesign_desc_lang', 'ydesign_add_title_lang',
+                    'ydesign_poster_quality', 'ydesign_backdrop_quality', 'ydesign_logo_quality',
+                    'ydesign_ratings_order', 'ydesign_omdb_key', 'ydesign_mdblist_key',
+                    'ydesign_v_show_genres', 'ydesign_h_show_genres',
+                    'ydesign_v_show_add_title', 'ydesign_h_show_add_title',
+                    'ydesign_v_show_slogan', 'ydesign_h_show_slogan',
+                    'ydesign_h_show_desc'
                 ];
 
-                if (cssOnlyParams.indexOf(e.name) === -1) {
+                if (nonCssParams.indexOf(e.name) !== -1) {
                     document.querySelectorAll('.ydesign-card').forEach(function (c) {
                         if (c._ydesign_data) buildCardCustomDOM(c, c._ydesign_data);
                     });
@@ -2061,7 +1967,7 @@
     }
 
     // =========================================================================
-    // 12. ПЕРЕХОПЛЕННЯ ТА РЕНДЕРИНГ КАРТОК (LAMPA MAKER CARD OVERRIDE)
+    // 12. ПЕРЕХОПЛЕННЯ ТА РЕНДЕРИНГ КАРТОК
     // =========================================================================
     function overrideCards() {
         try {
@@ -2124,7 +2030,7 @@
     }
 
     // =========================================================================
-    // 13. ПОКРАЩЕНИЙ РЕДИЗАЙН СЕРІЙ ТА ЕПІЗОДІВ (ТОЧНІ ДАНІ З TMDB)
+    // 13. ПОКРАЩЕНИЙ РЕДИЗАЙН СЕРІЙ ТА ЕПІЗОДІВ
     // =========================================================================
     function cleanBulletsAndSymbols(str) {
         if (!str) return '';
@@ -2147,7 +2053,6 @@
         return /^(2160p|1080p|720p|480p|360p|4k|uhd|hdr|fhd|hd|sd)$/i.test(str.trim());
     }
 
-    // Перехоплення шаблону Lampa
     function hookTemplates() {
         if (!window.Lampa || !Lampa.Template) return;
         
@@ -2225,7 +2130,6 @@
         return null;
     }
 
-    // Точне визначення номеру серії з об'єкту або DOM-позиції
     function getEpisodeNumber(card) {
         var data = card.data || card._online_data || {};
         
@@ -2265,7 +2169,6 @@
             if (!isNaN(epSg) && epSg > 0) return epSg;
         }
         
-        // Гарантований фолбек за порядковим номером картки у списку
         if (card.parentNode) {
             var siblings = card.parentNode.querySelectorAll('.online-prestige--full');
             for (var i = 0; i < siblings.length; i++) {
@@ -2278,7 +2181,6 @@
         return null;
     }
 
-    // Точне визначення номеру сезону
     function getSeasonNumber(card) {
         var data = card.data || card._online_data || {};
         
@@ -2319,7 +2221,6 @@
         return 1;
     }
 
-    // ЄДИНИЙ ПАРАЛЕЛЬНИЙ ЗАПИТ НА СЕЗОН (Deduplication)
     var InFlightSeasonRequests = {};
     function fetchTmdbSeason(tvId, seasonNum) {
         var cacheKey = 'tmdb_season_v7_' + tvId + '_' + seasonNum;
@@ -2434,7 +2335,6 @@
         return promise;
     }
 
-    // Запит деталей сезону та серії
     function getTmdbMetadata(movie, season, episode) {
         return new Promise(function (resolve) {
             if (!movie || !movie.id) return resolve(null);
@@ -2640,10 +2540,9 @@
         if (imgEl && imgEl.src && imgEl.src.indexOf('data:') === -1) {
             getProminentColorAsync(imgEl.src).then(function (color) {
                 if (color && shade) {
-                    card.style.backgroundColor = color;
-                    var rgba90 = color.replace('rgb', 'rgba').replace(')', ', 0.92)');
-                    var rgba50 = color.replace('rgb', 'rgba').replace(')', ', 0.55)');
-                    shade.style.background = 'linear-gradient(to top, ' + color + ' 0%, ' + rgba90 + ' 38%, transparent 68%, ' + rgba50 + ' 100%)';
+                    var rgba65 = color.replace('rgb', 'rgba').replace(')', ', 0.65)');
+                    var rgba20 = color.replace('rgb', 'rgba').replace(')', ', 0.20)');
+                    shade.style.background = 'linear-gradient(to top, ' + rgba65 + ' 0%, ' + rgba20 + ' 35%, transparent 65%)';
                 }
             });
         }
@@ -2770,7 +2669,6 @@
         if (!bottomRight.parentNode) card.appendChild(bottomRight);
         bottomRight.innerHTML = ''; 
 
-        // Отримання точних даних з TMDB
         getTmdbMetadata(movieObj, sNum, eNum).then(function (tmdb) {
             if (!tmdb) return;
 
