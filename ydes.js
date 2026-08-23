@@ -9,7 +9,7 @@
     // =========================================================================
     var CONFIG = {
         name: 'YDesign',
-        cacheTime: 7 * 24 * 60 * 60 * 1000, // 7 днів
+        cacheTime: 7 * 24 * 60 * 60 * 1000,
         tmdbKey: function () {
             try {
                 return (window.Lampa && Lampa.TMDB && Lampa.TMDB.key) ? Lampa.TMDB.key() : '4ef0d7355d9ffb5151e987764708ce96';
@@ -139,7 +139,7 @@
     }
 
     // =========================================================================
-    // 3. РОЗПІЗНАВАННЯ ТИПУ КАРТОК
+    // 3. РОЗПІЗНАВАННЯ ТИПУ КАРТОК ТА МЕДІА
     // =========================================================================
     function isPersonCard(data) {
         if (!data) return false;
@@ -179,8 +179,22 @@
         return false;
     }
 
+    function isTvMedia(movie) {
+        if (!movie) return false;
+        if (movie.media_type === 'tv') return true;
+        if (movie.media_type === 'movie') return false;
+        if (movie.type === 'tv' || movie.type === 'tv_series') return true;
+        if (movie.type === 'movie') return false;
+        if (movie.number_of_seasons !== undefined && movie.number_of_seasons !== null && movie.number_of_seasons > 0) return true;
+        if (movie.seasons && movie.seasons.length > 0) return true;
+        if (movie.first_air_date && !movie.release_date) return true;
+        if (movie.name && !movie.title) return true;
+        if (movie.original_name && !movie.original_title) return true;
+        return false;
+    }
+
     // =========================================================================
-    // 4. БАГАТОРІВНЕВИЙ КЕШ (БЕЗ ВИКОРИСТАННЯ MAP ДЛЯ ES5)
+    // 4. БАГАТОРІВНЕВИЙ КЕШ (ES5 Object Map)
     // =========================================================================
     var MemoryCache = {
         _data: {},
@@ -259,7 +273,6 @@
 
             var img = new Image();
             img.crossOrigin = 'Anonymous';
-            // img.decoding = 'async'; // Залишено, браузери які не знають просто проігнорують
 
             img.onload = function () {
                 try {
@@ -339,7 +352,7 @@
     };
 
     // =========================================================================
-    // 7. ПАРСИНГ ДАНИХ ТА API ЗАПИТИ
+    // 7. ПАРСИНГ ДАНИХ ТА API ЗАПИТИ ДЛЯ ГОЛОВНИХ КАРТОК
     // =========================================================================
     function parseAgeRating(ageStr) {
         if (!ageStr) return '16+';
@@ -481,7 +494,6 @@
                 timeout: 4500,
                 success: function(data) {
                     var enData = null;
-
                     var needEn = false;
                     if (sloganLang === 'en' || descLang === 'en' || langPref === 'en_orig') needEn = true;
                     if (sloganLang === 'uk_en' && (!data.tagline || !data.tagline.trim())) needEn = true;
@@ -701,7 +713,6 @@
                     }
 
                     var img = new Image();
-                    // img.decoding = 'async'; // Не всі старі браузери знають, можна просто опустити
                     img.onload = function () {
                         imgLayer.style.setProperty('--loaded-bg', 'url(' + fullUrl + ')');
                         imgLayer.classList.add('loaded');
@@ -1389,7 +1400,6 @@
             "    padding: 0 !important;",
             "}",
             "",
-            "/* Захисний відступ зверху, щоб картки серій ніколи не заїжджали під верхні кнопки */",
             "body.ydesign-hide-left-column .explorer.ydesign-has-series .explorer__left {",
             "    display: none !important;",
             "}",
@@ -1447,7 +1457,6 @@
             "    pointer-events: none !important;",
             "}",
             "",
-            "/* Динамічний градієнтний шар серій */",
             ".ydesign-series-active .online-prestige.online-prestige--full .ydesign-series-shade {",
             "    position: absolute !important; top: 0 !important; left: 0 !important; right: 0 !important; bottom: 0 !important;",
             "    background: linear-gradient(to top, rgba(0,0,0,0.92) 0%, rgba(0,0,0,0.6) 38%, rgba(0,0,0,0.05) 65%, rgba(0,0,0,0.65) 100%) !important;",
@@ -1455,7 +1464,6 @@
             "    transition: background 0.3s ease !important;",
             "}",
             "",
-            "/* Стилі пігулок серій */",
             ".ydesign-series-pill {",
             "    display: inline-flex !important;",
             "    align-items: center !important;",
@@ -1560,7 +1568,6 @@
             "    pointer-events: none !important;",
             "}",
             "",
-            "/* Зменшений розмір тексту назви серії */",
             ".ydesign-series-active .online-prestige.online-prestige--full .online-prestige__title {",
             "    font-size: 0.9em !important;",
             "    font-weight: 600 !important;",
@@ -1575,7 +1582,6 @@
             "    pointer-events: none !important;",
             "}",
             "",
-            "/* ВІДНОВЛЕНА ВИСОКА СМУЖКА ТАЙМКОДУ */",
             ".ydesign-series-active .online-prestige.online-prestige--full .online-prestige__timeline {",
             "    position: absolute !important;",
             "    bottom: 0 !important;",
@@ -1616,7 +1622,6 @@
             "    pointer-events: none !important;",
             "}",
             "",
-            "/* ЧИСТИЙ ТОНКИЙ ЧОРНИЙ ШРИФТ ВІДСОТКІВ БЕЗ СВІЧЕННЯ */",
             ".ydesign-series-percent-text {",
             "    position: absolute !important;",
             "    top: 0 !important;",
@@ -1687,7 +1692,6 @@
             document.body.classList.toggle('ydesign-uniform-v-gaps-h', getSet('ydesign_uniform_v_gaps_horz'));
             document.body.classList.toggle('ydesign-hide-left-column', getSet('ydesign_hide_left_column'));
 
-            // Окремі класи рамок
             document.body.classList.toggle('ydesign-border-year', getSet('ydesign_border_year'));
             document.body.classList.toggle('ydesign-border-age', getSet('ydesign_border_age'));
             document.body.classList.toggle('ydesign-border-seasons', getSet('ydesign_border_seasons'));
@@ -1699,7 +1703,6 @@
             document.body.classList.toggle('ydesign-color-ua', getSet('ydesign_color_ua'));
             document.body.classList.toggle('ydesign-glass-pill', getSet('ydesign_glass_pill_bg'));
 
-            // Форма бейджів
             var shape = getSet('ydesign_badge_shape');
             document.body.classList.remove('ydesign-shape-pill', 'ydesign-shape-rounded', 'ydesign-shape-square');
             document.body.classList.add('ydesign-shape-' + shape);
@@ -1804,7 +1807,6 @@
             icon: '<svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="4" ry="4"></rect><path d="M8 8l4 4 4-4"></path><path d="M12 12v4"></path></svg>'
         });
 
-        // 1. ДОНАТ ТА ІНФОРМАЦІЯ НА САМОМУ ПЕРШОМУ МІСЦІ В МЕНЮ
         Lampa.SettingsApi.addParam({
             component: 'ydesign',
             param: { name: 'ydesign_donate_btn_main', type: 'button' },
@@ -1851,7 +1853,7 @@
         Lampa.SettingsApi.addParam({ component: 'ydesign_grid', param: { name: 'ydesign_lazy_load', type: 'trigger', default: DefaultSettings.ydesign_lazy_load }, field: { name: 'Ліниве завантаження', description: 'Завантажувати додаткові дані (лого, рейтинги) тільки при появі картки на екрані' } });
         Lampa.SettingsApi.addParam({ component: 'ydesign_grid', param: { name: 'ydesign_card_type_main', type: 'select', values: { 'vertical': 'Вертикальні (9:16)', 'horizontal': 'Горизонтальні (16:11)' }, default: DefaultSettings.ydesign_card_type_main }, field: { name: 'Тип карток (Головна)' } });
         Lampa.SettingsApi.addParam({ component: 'ydesign_grid', param: { name: 'ydesign_card_type_other', type: 'select', values: { 'vertical': 'Вертикальні (9:16)', 'horizontal': 'Горизонтальні (16:11)' }, default: DefaultSettings.ydesign_card_type_other }, field: { name: 'Тип карток (Інші сторінки)' } });
-        Lampa.SettingsApi.addParam({ component: 'ydesign_grid', param: { name: 'ydesign_grid_items_v', type: 'select', values: { '4': '4', '5': '5', '6': '6', '7': '7', '8': '8' }, default: DefaultSettings.ydesign_grid_items_v }, field: { name: 'Кількість карток у сітці (Вертикальні)', description: 'Вирішує проблему пустого відступу зправа. Картки будуть розтягуватись щоб зайняти весь простір.' } });
+        Lampa.SettingsApi.addParam({ component: 'ydesign_grid', param: { name: 'ydesign_grid_items_v', type: 'select', values: { '4': '4', '5': '5', '6': '6', '7': '7', '8': '8' }, default: DefaultSettings.ydesign_grid_items_v }, field: { name: 'Кількість карток у сітці (Вертикальні)' } });
         Lampa.SettingsApi.addParam({ component: 'ydesign_grid', param: { name: 'ydesign_grid_items_h', type: 'select', values: { '2': '2', '3': '3', '4': '4', '5': '5' }, default: DefaultSettings.ydesign_grid_items_h }, field: { name: 'Кількість карток у сітці (Горизонтальні)' } });
         Lampa.SettingsApi.addParam({ component: 'ydesign_grid', param: { name: 'ydesign_card_gap', type: 'select', values: gaps, default: DefaultSettings.ydesign_card_gap }, field: { name: 'Відстань між картками' } });
         Lampa.SettingsApi.addParam({ component: 'ydesign_grid', param: { name: 'ydesign_show_desc_horz', type: 'trigger', default: DefaultSettings.ydesign_show_desc_horz }, field: { name: 'Опис під карткою (Горизонтальні)' } });
@@ -1859,20 +1861,20 @@
         // -------------------------------------------------------------
         // ПІДКАТЕГОРІЯ 2: БЕЙДЖІ, ЖАНРИ ТА РЕЙТИНГИ (ydesign_badges)
         // -------------------------------------------------------------
-        Lampa.SettingsApi.addParam({ component: 'ydesign_badges', param: { name: 'ydesign_badge_shape', type: 'select', values: shapes, default: DefaultSettings.ydesign_badge_shape }, field: { name: 'Форма бейджів', description: 'Сучасна форма пігулки (Pill Capsule) зі стильним скругленням' } });
-        Lampa.SettingsApi.addParam({ component: 'ydesign_badges', param: { name: 'ydesign_glass_pill_bg', type: 'trigger', default: DefaultSettings.ydesign_glass_pill_bg }, field: { name: 'Скляна підложка для бейджів (Liquid Glass)', description: 'Додає напівпрозорий скляний фон під кожну плашку бейджа' } });
+        Lampa.SettingsApi.addParam({ component: 'ydesign_badges', param: { name: 'ydesign_badge_shape', type: 'select', values: shapes, default: DefaultSettings.ydesign_badge_shape }, field: { name: 'Форма бейджів' } });
+        Lampa.SettingsApi.addParam({ component: 'ydesign_badges', param: { name: 'ydesign_glass_pill_bg', type: 'trigger', default: DefaultSettings.ydesign_glass_pill_bg }, field: { name: 'Скляна підложка для бейджів (Liquid Glass)' } });
         Lampa.SettingsApi.addParam({ component: 'ydesign_badges', param: { name: 'ydesign_show_year', type: 'trigger', default: DefaultSettings.ydesign_show_year }, field: { name: 'Показувати Рік' } });
         Lampa.SettingsApi.addParam({ component: 'ydesign_badges', param: { name: 'ydesign_show_seasons', type: 'trigger', default: DefaultSettings.ydesign_show_seasons }, field: { name: 'Показувати Сезони/Серії' } });
         Lampa.SettingsApi.addParam({ component: 'ydesign_badges', param: { name: 'ydesign_show_age', type: 'trigger', default: DefaultSettings.ydesign_show_age }, field: { name: 'Показувати віковий рейтинг' } });
-        Lampa.SettingsApi.addParam({ component: 'ydesign_badges', param: { name: 'ydesign_color_age', type: 'trigger', default: DefaultSettings.ydesign_color_age }, field: { name: 'Кольорові бейджі віку (18+, 16+, 12+, 0+)', description: 'Вимкніть для класичного чорно-білого вигляду' } });
+        Lampa.SettingsApi.addParam({ component: 'ydesign_badges', param: { name: 'ydesign_color_age', type: 'trigger', default: DefaultSettings.ydesign_color_age }, field: { name: 'Кольорові бейджі віку' } });
         Lampa.SettingsApi.addParam({ component: 'ydesign_badges', param: { name: 'ydesign_show_ua', type: 'trigger', default: DefaultSettings.ydesign_show_ua }, field: { name: 'Показувати плашку UA (через API)' } });
-        Lampa.SettingsApi.addParam({ component: 'ydesign_badges', param: { name: 'ydesign_color_ua', type: 'trigger', default: DefaultSettings.ydesign_color_ua }, field: { name: 'Кольорова плашка UA (Синьо-жовта)', description: 'Вимкніть для чорно-білого вигляду' } });
+        Lampa.SettingsApi.addParam({ component: 'ydesign_badges', param: { name: 'ydesign_color_ua', type: 'trigger', default: DefaultSettings.ydesign_color_ua }, field: { name: 'Кольорова плашка UA (Синьо-жовта)' } });
         Lampa.SettingsApi.addParam({ component: 'ydesign_badges', param: { name: 'ydesign_show_genres', type: 'trigger', default: DefaultSettings.ydesign_show_genres }, field: { name: 'Показувати Жанри' } });
         Lampa.SettingsApi.addParam({ component: 'ydesign_badges', param: { name: 'ydesign_show_slogan', type: 'trigger', default: DefaultSettings.ydesign_show_slogan }, field: { name: 'Показувати слоган' } });
         
         Lampa.SettingsApi.addParam({ component: 'ydesign_badges', param: { type: 'title' }, field: { name: 'Розміри бейджів (Окремо або Разом)' } });
-        Lampa.SettingsApi.addParam({ component: 'ydesign_badges', param: { name: 'ydesign_uniform_badges', type: 'trigger', default: DefaultSettings.ydesign_uniform_badges }, field: { name: 'Усі бейджі одного розміру', description: 'Коли увімкнено - усі бейджі (рік, вік, сезони, UA, жанри, рейтинги) мають строго однакову висоту пігулки та однаковий розмір шрифту.' } });
-        Lampa.SettingsApi.addParam({ component: 'ydesign_badges', param: { name: 'ydesign_text_badge_size', type: 'select', values: textSizesExt, default: DefaultSettings.ydesign_text_badge_size }, field: { name: 'Базовий розмір бейджів (коли однаковий розмір)' } });
+        Lampa.SettingsApi.addParam({ component: 'ydesign_badges', param: { name: 'ydesign_uniform_badges', type: 'trigger', default: DefaultSettings.ydesign_uniform_badges }, field: { name: 'Усі бейджі одного розміру' } });
+        Lampa.SettingsApi.addParam({ component: 'ydesign_badges', param: { name: 'ydesign_text_badge_size', type: 'select', values: textSizesExt, default: DefaultSettings.ydesign_text_badge_size }, field: { name: 'Базовий розмір бейджів' } });
         Lampa.SettingsApi.addParam({ component: 'ydesign_badges', param: { name: 'ydesign_text_year_size', type: 'select', values: textSizesExt, default: DefaultSettings.ydesign_text_year_size }, field: { name: 'Розмір бейджу Року (Індивідуальний)' } });
         Lampa.SettingsApi.addParam({ component: 'ydesign_badges', param: { name: 'ydesign_text_age_size', type: 'select', values: textSizesExt, default: DefaultSettings.ydesign_text_age_size }, field: { name: 'Розмір бейджу Віку (Індивідуальний)' } });
         Lampa.SettingsApi.addParam({ component: 'ydesign_badges', param: { name: 'ydesign_text_seasons_size', type: 'select', values: textSizesExt, default: DefaultSettings.ydesign_text_seasons_size }, field: { name: 'Розмір бейджу Сезонів/Серій (Індивідуальний)' } });
@@ -1881,9 +1883,9 @@
         Lampa.SettingsApi.addParam({ component: 'ydesign_badges', param: { name: 'ydesign_text_rating_size', type: 'select', values: textSizesExt, default: DefaultSettings.ydesign_text_rating_size }, field: { name: 'Розмір бейджів Рейтингів (Індивідуальний)' } });
 
         Lampa.SettingsApi.addParam({ component: 'ydesign_badges', param: { type: 'title' }, field: { name: 'Рядки та порядок рейтингів' } });
-        Lampa.SettingsApi.addParam({ component: 'ydesign_badges', param: { name: 'ydesign_badges_one_row', type: 'trigger', default: DefaultSettings.ydesign_badges_one_row }, field: { name: 'Усі бейджі в 1 ряд (Вертикальні)', description: 'Рейтинги та бейджі будуть розташовані в один суцільний ряд' } });
-        Lampa.SettingsApi.addParam({ component: 'ydesign_badges', param: { name: 'ydesign_horz_ratings_row', type: 'trigger', default: DefaultSettings.ydesign_horz_ratings_row }, field: { name: 'Рейтинги з нового рядка (Горизонтальні)', description: 'Переносить блок рейтингів під бейджі року/віку' } });
-        Lampa.SettingsApi.addParam({ component: 'ydesign_badges', param: { name: 'ydesign_ratings_saturate', type: 'select', values: saturates, default: DefaultSettings.ydesign_ratings_saturate }, field: { name: 'Насиченість іконок рейтингів', description: 'Керує колірною гамою логотипів рейтингів' } });
+        Lampa.SettingsApi.addParam({ component: 'ydesign_badges', param: { name: 'ydesign_badges_one_row', type: 'trigger', default: DefaultSettings.ydesign_badges_one_row }, field: { name: 'Усі бейджі в 1 ряд (Вертикальні)' } });
+        Lampa.SettingsApi.addParam({ component: 'ydesign_badges', param: { name: 'ydesign_horz_ratings_row', type: 'trigger', default: DefaultSettings.ydesign_horz_ratings_row }, field: { name: 'Рейтинги з нового рядка (Горизонтальні)' } });
+        Lampa.SettingsApi.addParam({ component: 'ydesign_badges', param: { name: 'ydesign_ratings_saturate', type: 'select', values: saturates, default: DefaultSettings.ydesign_ratings_saturate }, field: { name: 'Насиченість іконок рейтингів' } });
         Lampa.SettingsApi.addParam({
             component: 'ydesign_badges',
             param: { name: 'ydesign_ratings_order_btn', type: 'button' },
@@ -1914,17 +1916,17 @@
         Lampa.SettingsApi.addParam({ component: 'ydesign_gaps', param: { name: 'ydesign_border_ratings', type: 'trigger', default: DefaultSettings.ydesign_border_ratings }, field: { name: 'Рамка для бейджів Рейтингів' } });
 
         Lampa.SettingsApi.addParam({ component: 'ydesign_gaps', param: { type: 'title' }, field: { name: 'Математично рівні відступи' } });
-        Lampa.SettingsApi.addParam({ component: 'ydesign_gaps', param: { name: 'ydesign_uniform_v_gaps_vert', type: 'trigger', default: DefaultSettings.ydesign_uniform_v_gaps_vert }, field: { name: 'Вертикальні відступи однакові (Вертикальні картки)', description: 'Відстань між додатковою назвою, роком, рейтингами, жанрами та слоганом стане строго єдиною' } });
+        Lampa.SettingsApi.addParam({ component: 'ydesign_gaps', param: { name: 'ydesign_uniform_v_gaps_vert', type: 'trigger', default: DefaultSettings.ydesign_uniform_v_gaps_vert }, field: { name: 'Вертикальні відступи однакові (Вертикальні картки)' } });
         Lampa.SettingsApi.addParam({ component: 'ydesign_gaps', param: { name: 'ydesign_uniform_v_gap_val_vert', type: 'select', values: microGaps, default: DefaultSettings.ydesign_uniform_v_gap_val_vert }, field: { name: 'Вертикальний відступ (Вертикальні картки)' } });
-        Lampa.SettingsApi.addParam({ component: 'ydesign_gaps', param: { name: 'ydesign_uniform_v_gaps_horz', type: 'trigger', default: DefaultSettings.ydesign_uniform_v_gaps_horz }, field: { name: 'Вертикальні відступи однакові (Горизонтальні картки)', description: 'Відстань між додатковою назвою, роком, рейтингами, жанрами та слоганом стане строго єдиною' } });
+        Lampa.SettingsApi.addParam({ component: 'ydesign_gaps', param: { name: 'ydesign_uniform_v_gaps_horz', type: 'trigger', default: DefaultSettings.ydesign_uniform_v_gaps_horz }, field: { name: 'Вертикальні відступи однакові (Горизонтальні картки)' } });
         Lampa.SettingsApi.addParam({ component: 'ydesign_gaps', param: { name: 'ydesign_uniform_v_gap_val_horz', type: 'select', values: microGaps, default: DefaultSettings.ydesign_uniform_v_gap_val_horz }, field: { name: 'Вертикальний відступ (Горизонтальні картки)' } });
 
         Lampa.SettingsApi.addParam({ component: 'ydesign_gaps', param: { type: 'title' }, field: { name: 'Ручні налаштування відступів' } });
         Lampa.SettingsApi.addParam({ component: 'ydesign_gaps', param: { name: 'ydesign_badges_gap_vert', type: 'select', values: tinyGaps, default: DefaultSettings.ydesign_badges_gap_vert }, field: { name: 'Відстань між бейджами по горизонталі (Вертикальні картки)' } });
         Lampa.SettingsApi.addParam({ component: 'ydesign_badges', param: { name: 'ydesign_badges_gap_horz', type: 'select', values: tinyGaps, default: DefaultSettings.ydesign_badges_gap_horz }, field: { name: 'Відстань між бейджами по горизонталі (Горизонтальні картки)' } });
 
-        Lampa.SettingsApi.addParam({ component: 'ydesign_gaps', param: { name: 'ydesign_badge_rows_gap', type: 'select', values: gaps, default: DefaultSettings.ydesign_badge_rows_gap }, field: { name: 'Відступ між рядками бейджів/рейтингів', description: 'По вертикалі' } });
-        Lampa.SettingsApi.addParam({ component: 'ydesign_gaps', param: { name: 'ydesign_genres_gap', type: 'select', values: tinyGaps, default: DefaultSettings.ydesign_genres_gap }, field: { name: 'Відступ для блоку Жанрів (Ручний режим)', description: 'Зверху та знизу жанрів (коли вимкнено однакові відступи)' } });
+        Lampa.SettingsApi.addParam({ component: 'ydesign_gaps', param: { name: 'ydesign_badge_rows_gap', type: 'select', values: gaps, default: DefaultSettings.ydesign_badge_rows_gap }, field: { name: 'Відступ між рядками бейджів/рейтингів' } });
+        Lampa.SettingsApi.addParam({ component: 'ydesign_gaps', param: { name: 'ydesign_genres_gap', type: 'select', values: tinyGaps, default: DefaultSettings.ydesign_genres_gap }, field: { name: 'Відступ для блоку Жанрів (Ручний режим)' } });
         Lampa.SettingsApi.addParam({ component: 'ydesign_gaps', param: { name: 'ydesign_content_pb', type: 'select', values: gaps, default: DefaultSettings.ydesign_content_pb }, field: { name: 'Відступ контенту знизу' } });
         Lampa.SettingsApi.addParam({ component: 'ydesign_gaps', param: { name: 'ydesign_slogan_padding', type: 'select', values: gaps, default: DefaultSettings.ydesign_slogan_padding }, field: { name: 'Відступ слогану зверху' } });
         Lampa.SettingsApi.addParam({ component: 'ydesign_gaps', param: { name: 'ydesign_logo_mb', type: 'select', values: gaps, default: DefaultSettings.ydesign_logo_mb }, field: { name: 'Відступ назви/лого від бейджів' } });
@@ -1937,7 +1939,7 @@
         Lampa.SettingsApi.addParam({ component: 'ydesign_texts', param: { name: 'ydesign_lang', type: 'select', values: { 'uk': 'Тільки Українська', 'uk_en': 'Укр -> Англ -> Ориг', 'en_orig': 'Англ -> Ориг' }, default: DefaultSettings.ydesign_lang }, field: { name: 'Мова логотипу/назви' } });
         Lampa.SettingsApi.addParam({ component: 'ydesign_texts', param: { name: 'ydesign_slogan_lang', type: 'select', values: { 'uk': 'Тільки Українська', 'uk_en': 'Укр (Англ. якщо немає)', 'en': 'Тільки Англійська' }, default: DefaultSettings.ydesign_slogan_lang }, field: { name: 'Мова слогану' } });
         Lampa.SettingsApi.addParam({ component: 'ydesign_texts', param: { name: 'ydesign_desc_lang', type: 'select', values: { 'uk': 'Тільки Українська', 'uk_en': 'Укр (Англ. якщо немає)', 'en': 'Тільки Англійська' }, default: DefaultSettings.ydesign_desc_lang }, field: { name: 'Мова опису під карткою' } });
-        Lampa.SettingsApi.addParam({ component: 'ydesign_texts', param: { name: 'ydesign_show_add_title', type: 'trigger', default: DefaultSettings.ydesign_show_add_title }, field: { name: 'Показувати додаткову назву', description: 'Українська назва над бейджами, якщо логотип англійський' } });
+        Lampa.SettingsApi.addParam({ component: 'ydesign_texts', param: { name: 'ydesign_show_add_title', type: 'trigger', default: DefaultSettings.ydesign_show_add_title }, field: { name: 'Показувати додаткову назву' } });
         Lampa.SettingsApi.addParam({ component: 'ydesign_texts', param: { name: 'ydesign_add_title_lang', type: 'select', values: { 'uk': 'Завжди Українська', 'en': 'Завжди Англійська', 'auto': 'Залежить від логотипу' }, default: DefaultSettings.ydesign_add_title_lang }, field: { name: 'Мова додаткової назви' } });
 
         Lampa.SettingsApi.addParam({ component: 'ydesign_texts', param: { name: 'ydesign_poster_quality', type: 'select', values: qualities, default: DefaultSettings.ydesign_poster_quality }, field: { name: 'Якість постерів' } });
@@ -1960,7 +1962,7 @@
         // ПІДКАТЕГОРІЯ 5: РЕДИЗАЙН СЕРІЙ ТА ЕПІЗОДІВ (ydesign_series)
         // -------------------------------------------------------------
         Lampa.SettingsApi.addParam({ component: 'ydesign_series', param: { name: 'ydesign_series_redesign', type: 'trigger', default: DefaultSettings.ydesign_series_redesign }, field: { name: 'Змінити вигляд серій', description: 'Активувати новий вигляд карток всередині серій' } });
-        Lampa.SettingsApi.addParam({ component: 'ydesign_series', param: { name: 'ydesign_series_cards', type: 'select', values: { '1': '1', '2': '2', '3': '3', '4': '4' }, default: DefaultSettings.ydesign_series_cards }, field: { name: 'Кількість карток серій', description: 'Скільки карток показувати в один ряд (для нового вигляду серій)' } });
+        Lampa.SettingsApi.addParam({ component: 'ydesign_series', param: { name: 'ydesign_series_cards', type: 'select', values: { '1': '1', '2': '2', '3': '3', '4': '4' }, default: DefaultSettings.ydesign_series_cards }, field: { name: 'Кількість карток серій' } });
         Lampa.SettingsApi.addParam({ component: 'ydesign_series', param: { name: 'ydesign_hide_left_column', type: 'trigger', default: DefaultSettings.ydesign_hide_left_column }, field: { name: 'Прибрати ліву колонку (Серії)', description: 'Приховує опис та розтягує картки серій на весь екран' } });
 
         Lampa.SettingsApi.addParam({ component: 'ydesign_series', param: { type: 'title' }, field: { name: 'Стиль та бейджі на картках серій' } });
@@ -1970,7 +1972,7 @@
 
         Lampa.SettingsApi.addParam({ component: 'ydesign_series', param: { name: 'ydesign_series_show_date', type: 'trigger', default: DefaultSettings.ydesign_series_show_date }, field: { name: 'Показувати дату виходу (зверху ліворуч)' } });
         Lampa.SettingsApi.addParam({ component: 'ydesign_series', param: { name: 'ydesign_series_show_voice', type: 'trigger', default: DefaultSettings.ydesign_series_show_voice }, field: { name: 'Показувати студію озвучки (окремим рядком)' } });
-        Lampa.SettingsApi.addParam({ component: 'ydesign_series', param: { name: 'ydesign_series_show_rate', type: 'trigger', default: DefaultSettings.ydesign_series_show_rate }, field: { name: 'Показувати рейтинг серії (зверху праворуч)' } });
+        Lampa.SettingsApi.addParam({ component: 'ydesign_series', param: { name: 'ydesign_series_show_rate', type: 'trigger', default: DefaultSettings.ydesign_series_show_rate }, field: { name: 'Показувати рейтинг (зверху праворуч)' } });
         Lampa.SettingsApi.addParam({ component: 'ydesign_series', param: { name: 'ydesign_series_show_time', type: 'trigger', default: DefaultSettings.ydesign_series_show_time }, field: { name: 'Показувати тривалість серії (знизу праворуч)' } });
 
         // -------------------------------------------------------------
@@ -2021,7 +2023,6 @@
             onChange: function () { window.open('https://ymods.donatik.ua/', '_blank'); }
         });
 
-        // Слідкуємо за змінами
         Lampa.Settings.listener.follow('change', function (e) {
             if (e && e.name && e.name.indexOf('ydesign_') !== -1) {
                 applyDynamicCSS();
@@ -2123,7 +2124,7 @@
     }
 
     // =========================================================================
-    // 13. ПОКРАЩЕНИЙ РЕДИЗАЙН СЕРІЙ ТА ЕПІЗОДІВ
+    // 13. ПОКРАЩЕНИЙ РЕДИЗАЙН СЕРІЙ ТА ЕПІЗОДІВ (ТОЧНІ ДАНІ З TMDB)
     // =========================================================================
     function cleanBulletsAndSymbols(str) {
         if (!str) return '';
@@ -2146,6 +2147,384 @@
         return /^(2160p|1080p|720p|480p|360p|4k|uhd|hdr|fhd|hd|sd)$/i.test(str.trim());
     }
 
+    // Перехоплення шаблону Lampa
+    function hookTemplates() {
+        if (!window.Lampa || !Lampa.Template) return;
+        
+        if (Lampa.Template.get && !Lampa.Template._ydesign_hooked_get) {
+            Lampa.Template._ydesign_hooked_get = true;
+            var origGet = Lampa.Template.get;
+            Lampa.Template.get = function(name, vars, like_static) {
+                var res = origGet.apply(this, arguments);
+                if (name === 'online_prestige_full' && vars) {
+                    try {
+                        if (typeof res === 'object' && res.length && res[0]) {
+                            res[0]._online_data = vars;
+                            res[0].data = vars;
+                            if (vars.season !== undefined) res[0].dataset.season = vars.season;
+                            if (vars.episode !== undefined) res[0].dataset.episode = vars.episode;
+                            if (vars.voice_name) res[0].dataset.voice = vars.voice_name;
+                            if (vars.quality) res[0].dataset.quality = vars.quality;
+                        }
+                    } catch(e) {}
+                }
+                return res;
+            };
+        }
+        
+        if (Lampa.Template.js && !Lampa.Template._ydesign_hooked_js) {
+            Lampa.Template._ydesign_hooked_js = true;
+            var origJs = Lampa.Template.js;
+            Lampa.Template.js = function(name, vars) {
+                var res = origJs.apply(this, arguments);
+                if (name === 'online_prestige_full' && vars && res) {
+                    try {
+                        res._online_data = vars;
+                        res.data = vars;
+                        if (vars.season !== undefined) res.dataset.season = vars.season;
+                        if (vars.episode !== undefined) res.dataset.episode = vars.episode;
+                        if (vars.voice_name) res.dataset.voice = vars.voice_name;
+                        if (vars.quality) res.dataset.quality = vars.quality;
+                    } catch(e) {}
+                }
+                return res;
+            };
+        }
+    }
+
+    function getCurrentMovie() {
+        if (!window.Lampa) return null;
+        if (Lampa.Activity && Lampa.Activity.active) {
+            var act = Lampa.Activity.active();
+            if (act) {
+                if (act.movie) {
+                    var m1 = typeof act.movie === 'function' ? act.movie() : act.movie;
+                    if (m1 && (m1.id || m1.title || m1.name)) return m1;
+                }
+                if (act.card) {
+                    var m2 = typeof act.card === 'function' ? act.card() : act.card;
+                    if (m2 && (m2.id || m2.title || m2.name)) return m2;
+                }
+                if (act.data && act.data.movie) return act.data.movie;
+                if (act.activity) {
+                    var a = act.activity;
+                    if (a.movie) {
+                        var m3 = typeof a.movie === 'function' ? a.movie() : a.movie;
+                        if (m3 && (m3.id || m3.title || m3.name)) return m3;
+                    }
+                    if (a.card) {
+                        var m4 = typeof a.card === 'function' ? a.card() : a.card;
+                        if (m4 && (m4.id || m4.title || m4.name)) return m4;
+                    }
+                    if (a.object && a.object.movie) return a.object.movie;
+                    if (a.props && a.props.card) return a.props.card;
+                }
+            }
+        }
+        if (window.lampa_movie) return window.lampa_movie;
+        return null;
+    }
+
+    // Точне визначення номеру серії з об'єкту або DOM-позиції
+    function getEpisodeNumber(card) {
+        var data = card.data || card._online_data || {};
+        
+        if (data.episode !== undefined && data.episode !== null && data.episode !== '') {
+            var epD = parseInt(data.episode, 10);
+            if (!isNaN(epD) && epD > 0) return epD;
+        }
+        
+        if (card.dataset.episode) {
+            var epDs = parseInt(card.dataset.episode, 10);
+            if (!isNaN(epDs) && epDs > 0) return epDs;
+        }
+        
+        var epBadge = card.querySelector('.online-prestige__episode-number');
+        if (epBadge) {
+            var epBNum = parseInt(epBadge.innerText.trim(), 10);
+            if (!isNaN(epBNum) && epBNum > 0) return epBNum;
+        }
+        
+        var rawText = ((data.title || '') + ' ' + (card.querySelector('.online-prestige__title') ? card.querySelector('.online-prestige__title').innerText : '')).toLowerCase();
+        
+        var seMatch = /s\d+\s*e(\d+)/i.exec(rawText);
+        if (seMatch) {
+            var epSe = parseInt(seMatch[1], 10);
+            if (!isNaN(epSe) && epSe > 0) return epSe;
+        }
+        
+        var epMatch = /(?:епізод|серія|серия|episode|ep)\s*(\d+)|(\d+)\s*(?:епізод|серія|серия|episode|ep)/i.exec(rawText);
+        if (epMatch) {
+            var epM = parseInt(epMatch[1] || epMatch[2], 10);
+            if (!isNaN(epM) && epM > 0) return epM;
+        }
+        
+        var singleNumMatch = /^\s*0*(\d{1,3})\s*$/.exec(rawText.trim());
+        if (singleNumMatch) {
+            var epSg = parseInt(singleNumMatch[1], 10);
+            if (!isNaN(epSg) && epSg > 0) return epSg;
+        }
+        
+        // Гарантований фолбек за порядковим номером картки у списку
+        if (card.parentNode) {
+            var siblings = card.parentNode.querySelectorAll('.online-prestige--full');
+            for (var i = 0; i < siblings.length; i++) {
+                if (siblings[i] === card) {
+                    return i + 1;
+                }
+            }
+        }
+        
+        return null;
+    }
+
+    // Точне визначення номеру сезону
+    function getSeasonNumber(card) {
+        var data = card.data || card._online_data || {};
+        
+        if (data.season !== undefined && data.season !== null && data.season !== '') {
+            var sD = parseInt(data.season, 10);
+            if (!isNaN(sD) && sD > 0) return sD;
+        }
+        
+        if (card.dataset.season) {
+            var sDs = parseInt(card.dataset.season, 10);
+            if (!isNaN(sDs) && sDs > 0) return sDs;
+        }
+        
+        var rawText = ((data.title || '') + ' ' + (card.querySelector('.online-prestige__title') ? card.querySelector('.online-prestige__title').innerText : '')).toLowerCase();
+        
+        var seMatch = /s(\d+)\s*e\d+/i.exec(rawText);
+        if (seMatch) {
+            var sSe = parseInt(seMatch[1], 10);
+            if (!isNaN(sSe) && sSe > 0) return sSe;
+        }
+        
+        var sMatch = /(?:сезон|season)\s*(\d+)|(\d+)\s*(?:сезон|season)/i.exec(rawText);
+        if (sMatch) {
+            var sM = parseInt(sMatch[1] || sMatch[2], 10);
+            if (!isNaN(sM) && sM > 0) return sM;
+        }
+        
+        var filterSeasonEl = document.querySelector('.filter--filter, .filter--sort, .explorer__files-head');
+        if (filterSeasonEl) {
+            var fText = filterSeasonEl.innerText.toLowerCase();
+            var fMatch = /(?:сезон|season)\s*(\d+)|(\d+)\s*(?:сезон|season)/i.exec(fText);
+            if (fMatch) {
+                var sf = parseInt(fMatch[1] || fMatch[2], 10);
+                if (!isNaN(sf) && sf > 0) return sf;
+            }
+        }
+        
+        return 1;
+    }
+
+    // ЄДИНИЙ ПАРАЛЕЛЬНИЙ ЗАПИТ НА СЕЗОН (Deduplication)
+    var InFlightSeasonRequests = {};
+    function fetchTmdbSeason(tvId, seasonNum) {
+        var cacheKey = 'tmdb_season_v7_' + tvId + '_' + seasonNum;
+        var cached = ApiCache.get(cacheKey);
+        if (cached) return Promise.resolve(cached);
+        
+        if (InFlightSeasonRequests[cacheKey]) {
+            return InFlightSeasonRequests[cacheKey];
+        }
+        
+        var tmdbKey = CONFIG.tmdbKey();
+        var promise = new Promise(function (resolve) {
+            var urlUk = 'https://api.themoviedb.org/3/tv/' + tvId + '/season/' + seasonNum + '?api_key=' + tmdbKey + '&language=uk-UA';
+            
+            $.ajax({
+                url: urlUk,
+                timeout: 5000,
+                success: function (dataUk) {
+                    var needEn = false;
+                    if (dataUk && dataUk.episodes && dataUk.episodes.length) {
+                        for (var i = 0; i < dataUk.episodes.length; i++) {
+                            var eName = (dataUk.episodes[i].name || '').trim();
+                            if (!eName || eName.indexOf('Епізод') === 0 || eName.indexOf('Эпизод') === 0 || eName.indexOf('Episode') === 0) {
+                                needEn = true;
+                                break;
+                            }
+                        }
+                    }
+                    
+                    if (needEn) {
+                        var urlEn = 'https://api.themoviedb.org/3/tv/' + tvId + '/season/' + seasonNum + '?api_key=' + tmdbKey + '&language=en-US';
+                        $.ajax({
+                            url: urlEn,
+                            timeout: 3500,
+                            success: function (dataEn) {
+                                if (dataUk.episodes && dataEn.episodes) {
+                                    for (var j = 0; j < dataUk.episodes.length; j++) {
+                                        var epUk = dataUk.episodes[j];
+                                        var epEn = null;
+                                        for (var k = 0; k < dataEn.episodes.length; k++) {
+                                            if (parseInt(dataEn.episodes[k].episode_number, 10) === parseInt(epUk.episode_number, 10)) {
+                                                epEn = dataEn.episodes[k];
+                                                break;
+                                            }
+                                        }
+                                        if (epEn) {
+                                            var uName = (epUk.name || '').trim();
+                                            if (!uName || uName.indexOf('Епізод') === 0 || uName.indexOf('Эпизод') === 0 || uName === ('Episode ' + epUk.episode_number)) {
+                                                epUk.name = epEn.name;
+                                            }
+                                            if (!epUk.overview && epEn.overview) epUk.overview = epEn.overview;
+                                            if (!epUk.runtime && epEn.runtime) epUk.runtime = epEn.runtime;
+                                        }
+                                    }
+                                }
+                                ApiCache.set(cacheKey, dataUk);
+                                delete InFlightSeasonRequests[cacheKey];
+                                resolve(dataUk);
+                            },
+                            error: function () {
+                                ApiCache.set(cacheKey, dataUk);
+                                delete InFlightSeasonRequests[cacheKey];
+                                resolve(dataUk);
+                            }
+                        });
+                    } else {
+                        ApiCache.set(cacheKey, dataUk);
+                        delete InFlightSeasonRequests[cacheKey];
+                        resolve(dataUk);
+                    }
+                },
+                error: function () {
+                    delete InFlightSeasonRequests[cacheKey];
+                    resolve(null);
+                }
+            });
+        });
+        
+        InFlightSeasonRequests[cacheKey] = promise;
+        return promise;
+    }
+
+    var InFlightMovieRequests = {};
+    function fetchTmdbMovie(movieId) {
+        var cacheKey = 'tmdb_movie_v7_' + movieId;
+        var cached = ApiCache.get(cacheKey);
+        if (cached) return Promise.resolve(cached);
+        
+        if (InFlightMovieRequests[cacheKey]) {
+            return InFlightMovieRequests[cacheKey];
+        }
+        
+        var tmdbKey = CONFIG.tmdbKey();
+        var promise = new Promise(function (resolve) {
+            var urlMovie = 'https://api.themoviedb.org/3/movie/' + movieId + '?api_key=' + tmdbKey + '&language=uk-UA';
+            $.ajax({
+                url: urlMovie,
+                timeout: 4500,
+                success: function (dataM) {
+                    ApiCache.set(cacheKey, dataM);
+                    delete InFlightMovieRequests[cacheKey];
+                    resolve(dataM);
+                },
+                error: function () {
+                    delete InFlightMovieRequests[cacheKey];
+                    resolve(null);
+                }
+            });
+        });
+        
+        InFlightMovieRequests[cacheKey] = promise;
+        return promise;
+    }
+
+    // Запит деталей сезону та серії
+    function getTmdbMetadata(movie, season, episode) {
+        return new Promise(function (resolve) {
+            if (!movie || !movie.id) return resolve(null);
+            
+            var isTv = isTvMedia(movie);
+            
+            if (isTv) {
+                var sNum = (season !== null && season !== undefined && !isNaN(season) && season > 0) ? season : 1;
+                
+                fetchTmdbSeason(movie.id, sNum).then(function (seasonObj) {
+                    var defaultRuntime = (movie.episode_run_time && movie.episode_run_time.length) ? movie.episode_run_time[0] : null;
+                    
+                    if (!seasonObj) {
+                        return resolve({
+                            isTv: true,
+                            title: episode ? ('Епізод ' + episode) : ('Сезон ' + sNum),
+                            date: movie.first_air_date,
+                            rate: movie.vote_average,
+                            time: defaultRuntime,
+                            season: sNum,
+                            episode: episode
+                        });
+                    }
+                    
+                    if (episode !== null && episode !== undefined && !isNaN(episode)) {
+                        var ep = null;
+                        if (seasonObj.episodes && seasonObj.episodes.length) {
+                            for (var i = 0; i < seasonObj.episodes.length; i++) {
+                                if (parseInt(seasonObj.episodes[i].episode_number, 10) === parseInt(episode, 10)) {
+                                    ep = seasonObj.episodes[i];
+                                    break;
+                                }
+                            }
+                        }
+                        
+                        if (ep) {
+                            var epRate = (ep.vote_average !== undefined && ep.vote_average !== null && ep.vote_average > 0) ? ep.vote_average : (seasonObj.vote_average || movie.vote_average);
+                            var epDate = ep.air_date || seasonObj.air_date || movie.first_air_date;
+                            var epTime = ep.runtime ? ep.runtime : defaultRuntime;
+                            var epTitle = ep.name || ('Епізод ' + episode);
+                            
+                            resolve({
+                                isTv: true,
+                                title: epTitle,
+                                date: epDate,
+                                rate: epRate,
+                                time: epTime,
+                                season: sNum,
+                                episode: episode
+                            });
+                        } else {
+                            resolve({
+                                isTv: true,
+                                title: 'Епізод ' + episode,
+                                date: seasonObj.air_date || movie.first_air_date,
+                                rate: seasonObj.vote_average || movie.vote_average,
+                                time: defaultRuntime,
+                                season: sNum,
+                                episode: episode
+                            });
+                        }
+                    } else {
+                        resolve({
+                            isTv: true,
+                            title: seasonObj.name || ('Сезон ' + sNum),
+                            date: seasonObj.air_date || movie.first_air_date,
+                            rate: seasonObj.vote_average || movie.vote_average,
+                            time: defaultRuntime,
+                            season: sNum,
+                            episode: null
+                        });
+                    }
+                });
+            } else {
+                fetchTmdbMovie(movie.id).then(function (movieObj) {
+                    var mData = movieObj || movie;
+                    resolve({
+                        isTv: false,
+                        title: mData.title || movie.title || movie.name,
+                        date: mData.release_date || movie.release_date,
+                        rate: mData.vote_average || movie.vote_average,
+                        time: mData.runtime || movie.runtime,
+                        season: null,
+                        episode: null
+                    });
+                });
+            }
+        });
+    }
+
     function updateCardTimeline(card) {
         try {
             if (!card || !card.classList || !card.classList.contains('online-prestige--full')) return;
@@ -2156,7 +2535,6 @@
 
             var percent = null;
 
-            // 1. Зчитування зі style.width внутрішньої лінії плеєра
             if (innerLine && innerLine.style && innerLine.style.width) {
                 var sw = innerLine.style.width.trim();
                 if (sw && sw !== '0%' && sw !== '0px') {
@@ -2167,15 +2545,14 @@
                 }
             }
 
-            // 2. Зчитування з об'єкта даних картки
-            if (percent === null && card.data && card.data.timeline && card.data.timeline.percent) {
-                var dp = parseFloat(card.data.timeline.percent);
+            var cardData = card.data || card._online_data;
+            if (percent === null && cardData && cardData.timeline && cardData.timeline.percent) {
+                var dp = parseFloat(cardData.timeline.percent);
                 if (!isNaN(dp) && dp > 0 && dp <= 100) {
                     percent = Math.round(dp);
                 }
             }
 
-            // 3. Якщо перегляду немає - прибираємо будь-який помилковий текст та ховаємо таймлайн
             if (percent === null || percent <= 0) {
                 if (existingTimeline) {
                     var oldText = existingTimeline.querySelector('.ydesign-series-percent-text');
@@ -2188,7 +2565,6 @@
                 return;
             }
 
-            // 4. Якщо реальний прогрес є (> 0%)
             var timeline = existingTimeline;
             if (!timeline && rawTl) {
                 timeline = document.createElement('div');
@@ -2226,7 +2602,6 @@
     function formatPrestigeCard(card) {
         if (!getSet('ydesign_series_redesign')) return false;
         
-        // Приховуємо лише порожній рядок/банер історії (якщо є "Нет истории просмотра" / "Немає історії")
         if (card.classList.contains('online-prestige-watched')) {
             var txt = (card.innerText || '').toLowerCase();
             if (txt.indexOf('истори') !== -1 || txt.indexOf('історі') !== -1 || txt.indexOf('history') !== -1) {
@@ -2237,14 +2612,11 @@
             }
         }
 
-        // Якщо це картка вибору фільму/папки/сезону (без класу --full), НЕ ховаємо її, зберігаємо для вибору
         if (!card.classList.contains('online-prestige--full')) {
             return false;
         }
 
-        // Забезпечуємо наявність selector для повноцінних карток
         card.classList.add('selector');
-
         if (card.dataset.fixedLayout === "true") return false;
         card.dataset.fixedLayout = "true";
 
@@ -2257,7 +2629,6 @@
             card.style.opacity = '0.55';
         }
 
-        // 1. Градієнтний шар затемнення
         var shade = card.querySelector('.ydesign-series-shade');
         if (!shade) {
             shade = document.createElement('div');
@@ -2265,7 +2636,6 @@
             card.appendChild(shade);
         }
 
-        // Динамічний витяг кольору кадру серії
         var imgEl = card.querySelector('.online-prestige__img img');
         if (imgEl && imgEl.src && imgEl.src.indexOf('data:') === -1) {
             getProminentColorAsync(imgEl.src).then(function (color) {
@@ -2278,155 +2648,162 @@
             });
         }
 
-        // 2. Витягуємо сирі дані з картки
         var infoBlock = card.querySelector('.online-prestige__info');
         var rawText = infoBlock ? infoBlock.innerText : '';
 
-        var dateVal = '';
-        var voiceVal = '';
-        var rateVal = '';
-
-        // Пошук дати
         var monthNames = '(?:Січня|Лютого|Березня|Квітня|Травня|Червня|Липня|Серпня|Вересня|Жовтня|Листопада|Грудня|января|февраля|марта|апреля|мая|июня|июля|августа|сентября|октября|ноября|декабря|Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec|January|February|March|April|June|July|August|September|October|November|December)';
         var dateRegex = new RegExp('(\\d{1,2}\\s+' + monthNames + '(?:\\s+\\d{2,4})?|\\d{4}-\\d{2}-\\d{2}|\\d{1,2}\\.\\d{1,2}\\.\\d{2,4}|\\d{4}\\s*р\\.?)', 'i');
-        
         var dateMatch = dateRegex.exec(rawText);
-        if (dateMatch) {
-            dateVal = dateMatch[0].trim();
-            rawText = rawText.split(dateMatch[0]).join(' ');
-        }
+        if (dateMatch) rawText = rawText.split(dateMatch[0]).join(' ');
 
-        // Пошук рейтингу
         if (infoBlock) {
             var spans = infoBlock.querySelectorAll('span');
             for (var s = 0; s < spans.length; s++) {
                 var st = spans[s].textContent.replace(/★/g, '').trim();
                 if (isValidNumericRating(st)) {
-                    rateVal = parseFloat(st).toFixed(1);
                     rawText = rawText.split(spans[s].textContent).join(' ');
                     break;
                 }
             }
         }
-        if (!rateVal) {
-            var rateMatch = /(?:★\s*)?(\b[1-9](\.\d)?\b)/.exec(rawText);
-            if (rateMatch && isValidNumericRating(rateMatch[1])) {
-                rateVal = parseFloat(rateMatch[1]).toFixed(1);
-                rawText = rawText.replace(rateMatch[0], ' ');
-            }
-        }
+        var rateMatch = /(?:★\s*)?(\b[1-9](\.\d)?\b)/.exec(rawText);
+        if (rateMatch && isValidNumericRating(rateMatch[1])) rawText = rawText.replace(rateMatch[0], ' ');
 
-        // Якщо дата все ще не знайдена, але є 4-значний рік
-        if (!dateVal) {
-            var yearMatch = /\b(19\d\d|20\d\d)\b/.exec(rawText);
-            if (yearMatch) {
-                dateVal = yearMatch[0].trim();
-                rawText = rawText.replace(yearMatch[0], ' ');
-            }
-        }
+        var yearMatch = /\b(19\d\d|20\d\d)\b/.exec(rawText);
+        if (yearMatch) rawText = rawText.replace(yearMatch[0], ' ');
 
-        // Очищаємо залишковий текст
-        if (rateVal) rawText = rawText.replace(new RegExp('\\b' + rateVal + '\\b', 'g'), ' ');
-        if (dateVal) rawText = rawText.replace(new RegExp(dateVal, 'g'), ' ');
+        var timeRegex = /\b\d+\s*(?:хв|мин|min)\b/i;
+        var timeMatch = timeRegex.exec(rawText);
+        if (timeMatch) rawText = rawText.replace(timeMatch[0], ' ');
 
         var qualityEl = card.querySelector('.online-prestige__quality');
         var qualityVal = qualityEl ? cleanBulletsAndSymbols(qualityEl.innerText) : '';
 
-        var timeEl = card.querySelector('.online-prestige__time');
-        var timeVal = timeEl ? cleanBulletsAndSymbols(timeEl.innerText) : '';
-
         var titleEl = card.querySelector('.online-prestige__title');
-        var originalTitle = titleEl ? cleanBulletsAndSymbols(titleEl.innerText) : '';
+        var sourceTitle = titleEl ? cleanBulletsAndSymbols(titleEl.innerText) : '';
 
-        voiceVal = cleanBulletsAndSymbols(rawText);
+        var cardData = card.data || card._online_data || {};
+        var voiceVal = '';
+        if (cardData.voice_name) {
+            voiceVal = cleanBulletsAndSymbols(cardData.voice_name);
+        } else {
+            voiceVal = cleanBulletsAndSymbols(rawText);
+        }
 
         if (voiceVal && (voiceVal.length > 25 || /[.,!?]/.test(voiceVal))) {
-            if (originalTitle && !isQualityString(originalTitle)) {
-                voiceVal = originalTitle;
-                originalTitle = '';
+            if (sourceTitle && !isQualityString(sourceTitle)) {
+                voiceVal = sourceTitle;
+                sourceTitle = '';
             } else {
                 voiceVal = '';
             }
-        } else if (isQualityString(originalTitle)) {
-            if (!qualityVal) qualityVal = originalTitle;
+        } else if (isQualityString(sourceTitle)) {
+            if (!qualityVal) qualityVal = sourceTitle;
             if (voiceVal && !isQualityString(voiceVal)) {
-                originalTitle = voiceVal;
+                sourceTitle = voiceVal;
                 voiceVal = '';
             } else {
-                originalTitle = '';
+                sourceTitle = '';
             }
         }
 
-        if (voiceVal === originalTitle) voiceVal = '';
-        if (voiceVal && voiceVal.length > 32) {
-            voiceVal = voiceVal.substring(0, 30) + '...';
-        }
+        if (voiceVal === sourceTitle) voiceVal = '';
+        if (voiceVal && voiceVal.length > 32) voiceVal = voiceVal.substring(0, 30) + '...';
+        if (!voiceVal && !qualityVal && sourceTitle && !isQualityString(sourceTitle)) voiceVal = sourceTitle;
 
-        // Приховуємо старий нативний блок body
         var oldBody = card.querySelector('.online-prestige__body');
         if (oldBody) oldBody.style.display = 'none';
 
-        // 1. Верхній лівий кут (Зменшена дата виходу)
-        var topLeft = card.querySelector('.ydesign-series-top-left');
-        if (!topLeft) {
-            topLeft = document.createElement('div');
-            topLeft.className = 'ydesign-series-top-left';
-            card.appendChild(topLeft);
-        }
-        topLeft.innerHTML = '';
-        if (dateVal && getSet('ydesign_series_show_date')) {
-            topLeft.innerHTML = '<span class="ydesign-series-pill ydesign-series-date">' + dateVal + '</span>';
-        }
+        var topLeft = card.querySelector('.ydesign-series-top-left') || document.createElement('div');
+        topLeft.className = 'ydesign-series-top-left';
+        if (!topLeft.parentNode) card.appendChild(topLeft);
+        topLeft.innerHTML = ''; 
 
-        // 2. Верхній правий кут (Рейтинг + Якість)
-        var topRight = card.querySelector('.ydesign-series-top-right');
-        if (!topRight) {
-            topRight = document.createElement('div');
-            topRight.className = 'ydesign-series-top-right';
-            card.appendChild(topRight);
-        }
+        var topRight = card.querySelector('.ydesign-series-top-right') || document.createElement('div');
+        topRight.className = 'ydesign-series-top-right';
+        if (!topRight.parentNode) card.appendChild(topRight);
         topRight.innerHTML = '';
-        if (rateVal && getSet('ydesign_series_show_rate')) {
-            topRight.innerHTML += '<span class="ydesign-series-pill ydesign-series-rate">★ ' + rateVal + '</span>';
-        }
         if (qualityVal) {
-            topRight.innerHTML += '<span class="ydesign-series-pill ydesign-series-quality">' + qualityVal + '</span>';
+            topRight.innerHTML = '<span class="ydesign-series-pill ydesign-series-quality">' + qualityVal + '</span>';
         }
 
-        // 3. Нижній лівий кут (Озвучка окремим рядком + Назва серії)
-        var bottomLeft = card.querySelector('.ydesign-series-bottom-left');
-        if (!bottomLeft) {
-            bottomLeft = document.createElement('div');
-            bottomLeft.className = 'ydesign-series-bottom-left';
-            card.appendChild(bottomLeft);
+        var movieObj = getCurrentMovie();
+        var isTv = isTvMedia(movieObj);
+        var movieTitle = movieObj ? (movieObj.title || movieObj.name || '') : '';
+
+        if (voiceVal && movieTitle && voiceVal.toLowerCase() === movieTitle.toLowerCase()) {
+            voiceVal = '';
         }
+
+        var bottomLeft = card.querySelector('.ydesign-series-bottom-left') || document.createElement('div');
+        bottomLeft.className = 'ydesign-series-bottom-left';
+        if (!bottomLeft.parentNode) card.appendChild(bottomLeft);
         bottomLeft.innerHTML = '';
+
+        var voiceBadgeWrap = null;
         if (voiceVal && getSet('ydesign_series_show_voice')) {
-            var voiceWrap = document.createElement('div');
-            voiceWrap.className = 'ydesign-series-voice-wrap';
-            voiceWrap.innerHTML = '<span class="ydesign-series-pill ydesign-series-voice-badge">' + voiceVal + '</span>';
-            bottomLeft.appendChild(voiceWrap);
+            voiceBadgeWrap = document.createElement('div');
+            voiceBadgeWrap.className = 'ydesign-series-voice-wrap';
+            voiceBadgeWrap.innerHTML = '<span class="ydesign-series-pill ydesign-series-voice-badge">' + voiceVal + '</span>';
+            bottomLeft.appendChild(voiceBadgeWrap);
         }
-        if (originalTitle) {
-            var cleanTitle = document.createElement('div');
-            cleanTitle.className = 'online-prestige__title';
-            cleanTitle.innerText = originalTitle;
-            bottomLeft.appendChild(cleanTitle);
-        }
+        
+        var cleanTitleEl = document.createElement('div');
+        cleanTitleEl.className = 'online-prestige__title';
 
-        // 4. Нижній правий кут (Час/Тривалість)
-        var bottomRight = card.querySelector('.ydesign-series-bottom-right');
-        if (!bottomRight) {
-            bottomRight = document.createElement('div');
-            bottomRight.className = 'ydesign-series-bottom-right';
-            card.appendChild(bottomRight);
-        }
-        bottomRight.innerHTML = '';
-        if (timeVal && getSet('ydesign_series_show_time')) {
-            bottomRight.innerHTML = '<span class="ydesign-series-pill ydesign-series-time">' + timeVal + '</span>';
-        }
+        var sNum = getSeasonNumber(card);
+        var eNum = getEpisodeNumber(card);
 
-        // 5. Оновлення та прикріплення високої лінії таймкоду з відсотками
+        if (isTv) {
+            if (eNum !== null) {
+                cleanTitleEl.innerText = 'Епізод ' + eNum + '...';
+            } else {
+                cleanTitleEl.innerText = 'Сезон ' + sNum + '...';
+            }
+        } else {
+            cleanTitleEl.innerText = movieTitle || sourceTitle || 'Фільм';
+        }
+        bottomLeft.appendChild(cleanTitleEl);
+
+        var bottomRight = card.querySelector('.ydesign-series-bottom-right') || document.createElement('div');
+        bottomRight.className = 'ydesign-series-bottom-right';
+        if (!bottomRight.parentNode) card.appendChild(bottomRight);
+        bottomRight.innerHTML = ''; 
+
+        // Отримання точних даних з TMDB
+        getTmdbMetadata(movieObj, sNum, eNum).then(function (tmdb) {
+            if (!tmdb) return;
+
+            if (tmdb.date && getSet('ydesign_series_show_date')) {
+                topLeft.innerHTML = '<span class="ydesign-series-pill ydesign-series-date">' + tmdb.date + '</span>';
+            }
+
+            if (tmdb.rate && getSet('ydesign_series_show_rate')) {
+                var rFormat = parseFloat(tmdb.rate).toFixed(1);
+                if (rFormat > 0) {
+                    var rateHtml = '<span class="ydesign-series-pill ydesign-series-rate">★ ' + rFormat + '</span>';
+                    topRight.innerHTML = rateHtml + topRight.innerHTML;
+                }
+            }
+            
+            if (tmdb.time && getSet('ydesign_series_show_time')) {
+                bottomRight.innerHTML = '<span class="ydesign-series-pill ydesign-series-time">' + tmdb.time + ' хв</span>';
+            }
+
+            if (tmdb.isTv) {
+                if (tmdb.title) {
+                    cleanTitleEl.innerText = tmdb.title;
+                    if (voiceBadgeWrap && voiceVal && voiceVal.toLowerCase() === tmdb.title.toLowerCase()) {
+                        voiceBadgeWrap.remove();
+                    }
+                }
+            } else {
+                if (tmdb.title) {
+                    cleanTitleEl.innerText = tmdb.title;
+                }
+            }
+        });
+
         updateCardTimeline(card);
 
         return false;
@@ -2496,7 +2873,6 @@
 
             seriesObserver.observe(document.body, { childList: true, subtree: true });
 
-            // Постійне оновлення % прогресу без блокування навігації
             setInterval(function () {
                 if (!getSet('ydesign_series_redesign')) return;
 
@@ -2505,7 +2881,6 @@
                     updateCardTimeline(activeCards[cIdx]);
                 }
 
-                // Фокусуємо перший елемент при завантаженні сторінки, якщо фокус взагалі відсутній
                 if (pageJustLoaded) {
                     var active = document.querySelector('.activity--active');
                     if (active) {
@@ -2541,6 +2916,7 @@
     // =========================================================================
     function init() {
         try {
+            hookTemplates();
             createSettings();
 
             var currentSource = 'tmdb';
@@ -2583,6 +2959,8 @@
             console.error('YDesign init error:', e);
         }
     }
+
+    hookTemplates();
 
     if (window.appready) {
         init();
