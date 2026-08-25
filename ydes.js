@@ -65,7 +65,7 @@
         ydesign_border_ua: true,
         ydesign_border_genres: true,
         ydesign_border_ratings: true,
-        ydesign_ratings_order: 'tmdb, imdb, rt, popcorn',
+        ydesign_ratings_order: 'tmdb, popcorn, mc, ',
         ydesign_ratings_saturate: '100',
 
         ydesign_logo_type: 'logo',
@@ -103,20 +103,20 @@
         ydesign_v_align_add_title: 'left',
         ydesign_v_align_badges: 'left',
         ydesign_v_align_slogan: 'left',
-        ydesign_v_uniform_v_gaps: true,
-        ydesign_v_uniform_v_gap_val: '0.25',
+        ydesign_v_uniform_v_gaps: false,
+        ydesign_v_uniform_v_gap_val: '0.05',
         ydesign_v_badges_gap: '0.15',
         ydesign_v_badge_rows_gap: '0.3',
-        ydesign_v_genres_gap: '0.0',
+        ydesign_v_genres_gap: '-0.35',
         ydesign_v_content_pb: '0.3',
         ydesign_v_slogan_padding: '0.3',
-        ydesign_v_logo_mb: '1.2',
+        ydesign_v_logo_mb: '1.0',
         ydesign_v_add_title_mb: '0.3',
 
         // Горизонтальні
         ydesign_h_logo_max_h: '35',
         ydesign_h_logo_max_w: '80',
-        ydesign_h_title_size: '1.5',
+        ydesign_h_title_size: '1.8',
         ydesign_h_add_title_size: '0.9',
         ydesign_h_slogan_size: '0.7',
         ydesign_h_desc_size: '1.0',
@@ -141,10 +141,10 @@
         ydesign_h_align_add_title: 'left',
         ydesign_h_align_badges: 'left',
         ydesign_h_align_slogan: 'left',
-        ydesign_h_uniform_v_gaps: true,
-        ydesign_h_uniform_v_gap_val: '0.25',
+        ydesign_h_uniform_v_gaps: false,
+        ydesign_h_uniform_v_gap_val: '0.00',
         ydesign_h_badges_gap: '0.15',
-        ydesign_h_badge_rows_gap: '0.3',
+        ydesign_h_badge_rows_gap: '-0.3',
         ydesign_h_genres_gap: '0.0',
         ydesign_h_content_pb: '0.3',
         ydesign_h_slogan_padding: '0.3',
@@ -159,7 +159,7 @@
         ydesign_series_title_size: '0.9',
         ydesign_series_badge_shape: 'pill',
         ydesign_series_glass_pill: true,
-        ydesign_series_border_badges: true,
+        ydesign_series_border_badges: false,
         ydesign_series_show_date: true,
         ydesign_series_show_voice: true,
         ydesign_series_show_rate: true,
@@ -174,18 +174,18 @@
             if (!window.Lampa || !Lampa.Storage) {
                 if (DefaultSettings.hasOwnProperty(key)) return DefaultSettings[key];
                 if (fallbackKey && DefaultSettings.hasOwnProperty(fallbackKey)) return DefaultSettings[fallbackKey];
-                return undefined;
+                return '';
             }
             var val = Lampa.Storage.get(key);
-            if (val !== null && val !== undefined && val !== '') return val;
+            if (val !== null && val !== undefined && val !== '' && val !== 'undefined') return val;
             if (fallbackKey) {
                 var fval = Lampa.Storage.get(fallbackKey);
-                if (fval !== null && fval !== undefined && fval !== '') return fval;
+                if (fval !== null && fval !== undefined && fval !== '' && fval !== 'undefined') return fval;
             }
         } catch (e) {}
         if (DefaultSettings.hasOwnProperty(key)) return DefaultSettings[key];
         if (fallbackKey && DefaultSettings.hasOwnProperty(fallbackKey)) return DefaultSettings[fallbackKey];
-        return undefined;
+        return '';
     }
 
     // =========================================================================
@@ -942,6 +942,36 @@
                     desc.innerText = extData.overview ? extData.overview : ' ';
                     el.appendChild(desc);
                 }
+
+                var hideOverflowingBadges = function() {
+                    if (!contentLayer || !contentLayer.isConnected) return;
+                    var containers = contentLayer.querySelectorAll('.ydesign-info-wrap, .ydesign-info-wrap-2, .ydesign-badges, .ydesign-genres, .ydesign-ratings');
+                    for (var c = 0; c < containers.length; c++) {
+                        var cont = containers[c];
+                        var children = cont.children;
+                        if (children.length > 1) {
+                            var style = window.getComputedStyle(cont);
+                            if (style.flexDirection !== 'row') continue;
+                            var firstTop = children[0].offsetTop;
+                            for (var i = 1; i < children.length; i++) {
+                                if (children[i].offsetTop > firstTop + 12) {
+                                    children[i].style.opacity = '0';
+                                    children[i].style.pointerEvents = 'none';
+                                } else {
+                                    children[i].style.opacity = '1';
+                                    children[i].style.pointerEvents = 'auto';
+                                }
+                            }
+                        }
+                    }
+                };
+
+                if (typeof ResizeObserver !== 'undefined') {
+                    var ro = new ResizeObserver(hideOverflowingBadges);
+                    ro.observe(contentLayer);
+                }
+                setTimeout(hideOverflowingBadges, 150);
+                setTimeout(hideOverflowingBadges, 800);
             });
         };
 
@@ -997,6 +1027,13 @@
             "    box-shadow: 0 0 0 4px #ffffff !important;",
             "}",
             "",
+            "body.is--touch .ydesign-active .ydesign-card.focus {",
+            "    transform: none !important; ",
+            "}",
+            "body.is--touch .ydesign-active .ydesign-card.focus .card__view {",
+            "    box-shadow: none !important;",
+            "}",
+            "",
             ".ydesign-active .ydesign-card .card__view {",
             "    position: relative; top: 0; left: 0; right: 0; bottom: 0;",
             "    width: 100%; height: 0 !important;",
@@ -1019,7 +1056,7 @@
             "",
             "@media (max-width: 768px) {",
             "    .ydesign-active .card.ydesign-vertical { width: calc(100% / 2); height: auto !important; }    ",
-            "    .ydesign-active .card.ydesign-horizontal { width: calc(100% / 2); height: auto !important; }  ",
+            "    .ydesign-active .card.ydesign-horizontal { width: 100%; height: auto !important; }  ",
             "    .ydesign-active .items-line:not(.vinyl-line) .card.ydesign-vertical { width: 46vw; }    ",
             "    .ydesign-active .items-line:not(.vinyl-line) .card.ydesign-horizontal { width: 94vw; }  ",
             "}",
@@ -1405,6 +1442,10 @@
             "    transform: scale(1.035) translateZ(0) !important;",
             "    box-shadow: 0 0 0 3.5px #ffffff !important; /* Тільки біла рамка */",
             "    z-index: 50 !important;",
+            "}",
+            "body.is--touch .ydesign-series-active .online-prestige.online-prestige--full.focus {",
+            "    transform: none !important;",
+            "    box-shadow: none !important;",
             "}",
             "",
             ".ydesign-series-active .online-prestige.online-prestige--full .online-prestige__img {",
