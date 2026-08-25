@@ -407,6 +407,17 @@
             icon: `<svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 8l6 6"></path><path d="M4 14l6-6 2-3"></path><path d="M2 5h12"></path><path d="M7 2h1"></path><path d="M22 22l-5-10-5 10"></path><path d="M14 18h6"></path></svg>`
         });
 
+        // 1. Кнопка підтримки розробника (з YDesign)
+        Lampa.SettingsApi.addParam({
+            component: 'ytranslate',
+            param: { name: 'ytranslate_donate_btn_main', type: 'button' },
+            field: {
+                name: '💙 YTranslate • Підтримати розробника',
+                description: 'Натисніть для переходу на ymods.donatik.ua та отримання оновлень'
+            },
+            onChange: function () { window.open('https://ymods.donatik.ua/', '_blank'); }
+        });
+
         Lampa.SettingsApi.addParam({
             component: 'ytranslate',
             param: { name: 'ytranslate_title', type: 'trigger', default: DefaultSettings.ytranslate_title },
@@ -465,6 +476,17 @@
                     Lampa.Noty.show('Кеш перекладів очищено (' + keysToRemove.length + ' записів)');
                 }
             }
+        });
+
+        // 2. Донат QR-код (з YDesign)
+        Lampa.SettingsApi.addParam({
+            component: 'ytranslate',
+            param: { name: 'ytranslate_donate_qr', type: 'button' },
+            field: {
+                name: 'Підтримати розробника',
+                description: '<div style="margin-top:0.5em;"><img src="https://raw.githubusercontent.com/yarikrazor-star/lmp/refs/heads/main/qrcode_363224392_90d1274dab2843222e1b2172e2fe0026.png" style="width:230px; border-radius:10px; box-shadow: 0 4px 10px rgba(0,0,0,0.5);"></div><div style="margin-top:0.5em; opacity:0.8;">Натисніть для переходу на ymods.donatik.ua</div>'
+            },
+            onChange: function () { window.open('https://ymods.donatik.ua/', '_blank'); }
         });
     }
 
