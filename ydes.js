@@ -68,6 +68,25 @@
         ydesign_ratings_order: 'tmdb, popcorn, mc, ',
         ydesign_ratings_saturate: '100',
 
+        // Шрифти
+        ydesign_font: 'golos-montserrat',
+        ydesign_font_family: '',
+        ydesign_font_css: '',
+
+        // Верхні бейджі
+        ydesign_notch_show: true,
+        ydesign_notch_bg: true,
+        ydesign_notch_border: true,
+        ydesign_notch_uniform_size: true,
+        ydesign_notch_size: '0.5',
+        ydesign_notch_type_size: '0.5',
+        ydesign_notch_standard_size: '0.5',
+        ydesign_notch_custom_size: '0.5',
+        ydesign_notch_show_type: true,
+        ydesign_notch_show_standard: true,
+        ydesign_notch_show_custom: true,
+        ydesign_notch_std_monochrome: false,
+
         ydesign_logo_type: 'logo',
         ydesign_lang: 'uk_en',
         ydesign_slogan_lang: 'uk_en',
@@ -241,6 +260,342 @@
         if (movie.name && !movie.title) return true;
         if (movie.original_name && !movie.original_title) return true;
         return false;
+    }
+
+    // =========================================================================
+    // 3.1. ТИПОГРАФІКА ТА ШРИФТИ (NETFLIX UI)
+    // =========================================================================
+    var YDESIGN_FONT_FALLBACK = '"SegoeUI","Helvetica Neue",Helvetica,Arial,sans-serif';
+
+    var YDESIGN_FONTS = {
+        'golos-montserrat': {
+            css: 'family=Golos+Text:wght@400..900&family=Montserrat:wght@600..900',
+            ui: '"Golos Text"',
+            display: '"Montserrat"',
+            numeric: '"Montserrat"',
+            caps: true
+        },
+        'golos': {
+            css: 'family=Golos+Text:wght@400..900',
+            ui: '"Golos Text"',
+            display: '"Golos Text"',
+            numeric: '"Golos Text"',
+            caps: false
+        },
+        'manrope': {
+            css: 'family=Manrope:wght@400..800',
+            ui: '"Manrope"',
+            display: '"Manrope"',
+            numeric: '"Manrope"',
+            caps: false
+        },
+        'montserrat': {
+            css: 'family=Montserrat:wght@400..900',
+            ui: '"Montserrat"',
+            display: '"Montserrat"',
+            numeric: '"Montserrat"',
+            caps: true
+        },
+        'inter': {
+            css: 'family=Inter:wght@400..900',
+            ui: '"Inter"',
+            display: '"Inter"',
+            numeric: '"Inter"',
+            caps: false
+        },
+        'inter-montserrat': {
+            css: 'family=Inter:wght@400..900&family=Montserrat:wght@600..900',
+            ui: '"Inter"',
+            display: '"Montserrat"',
+            numeric: '"Montserrat"',
+            caps: true
+        }
+    };
+
+    function fontActive() {
+        var key = '' + getSet('ydesign_font');
+        if (key === 'off') return null;
+
+        if (key === 'custom') {
+            var family = ('' + getSet('ydesign_font_family')).trim();
+            if (!family) return null;
+            var quoted = /[",]/.test(family) ? family : '"' + family + '"';
+            return {
+                url: ('' + getSet('ydesign_font_css')).trim(),
+                ui: quoted,
+                display: quoted,
+                numeric: quoted,
+                caps: false
+            };
+        }
+
+        var preset = YDESIGN_FONTS[key] || YDESIGN_FONTS['golos-montserrat'];
+        return {
+            url: 'https://fonts.googleapis.com/css2?' + preset.css + '&display=swap',
+            ui: preset.ui,
+            display: preset.display,
+            numeric: preset.numeric,
+            caps: preset.caps
+        };
+    }
+
+    function fontLink(url) {
+        var link = document.getElementById('ydesign-font-link');
+        if (!url) {
+            if (link && link.parentNode) link.parentNode.removeChild(link);
+            return;
+        }
+        if (!link) {
+            link = document.createElement('link');
+            link.id = 'ydesign-font-link';
+            link.rel = 'stylesheet';
+            link.type = 'text/css';
+            link.onerror = function () {
+                console.log('YDesign', 'Font load failed:', url);
+            };
+            document.head.appendChild(link);
+        }
+        if (link.getAttribute('href') !== url) link.setAttribute('href', url);
+    }
+
+    function cssFont(font) {
+        var ui   = font.ui + ',' + YDESIGN_FONT_FALLBACK;
+        var disp = font.display + ',' + font.ui + ',' + YDESIGN_FONT_FALLBACK;
+        var num  = font.numeric + ',Arial,Helvetica,sans-serif';
+
+        var rules = [
+            'body.ydesign--font, body.ydesign--font input, body.ydesign--font textarea, body.ydesign--font button, body.ydesign--font .simple-keyboard-input { font-family: ' + ui + ' !important; }',
+
+            'body.ydesign--font .items-line__title,',
+            'body.ydesign--font .full-start-new__title,',
+            'body.ydesign--font .full-start__title,',
+            'body.ydesign--font .settings__head,',
+            'body.ydesign--font .search-box__title,',
+            'body.ydesign--font .card__title,',
+            'body.ydesign--font .ydesign-text-title,',
+            'body.ydesign--font .nfx-bb__title,',
+            'body.ydesign--font .nfx-row__title,',
+            'body.ydesign--font .empty__title { font-family: ' + disp + ' !important; }',
+
+            'body.ydesign--font .nfx-card__rank > span { font-family: ' + num + ' !important; }',
+            'body.ydesign--font .items-line__title, body.ydesign--font .nfx-row__title { font-weight: 800; letter-spacing: -.005em; }',
+            'body.ydesign--font .full-start-new__title, body.ydesign--font .full-start__title { font-weight: 800; }',
+            'body.ydesign--font .ydesign-card-notch { font-family: ' + ui + ' !important; }'
+        ];
+
+        if (font.caps) {
+            rules.push('body.ydesign--font .full-start-new__title, body.ydesign--font .full-start__title, body.ydesign--font .nfx-bb__title { letter-spacing: .015em; }');
+        }
+
+        return rules.join('\n');
+    }
+
+    function fontApply() {
+        var font = fontActive();
+        var styleEl = document.getElementById('ydesign-font-css');
+
+        if (!font) {
+            fontLink('');
+            if (styleEl && styleEl.parentNode) styleEl.parentNode.removeChild(styleEl);
+            document.body.classList.remove('ydesign--font');
+            return;
+        }
+
+        fontLink(font.url);
+
+        if (!styleEl) {
+            styleEl = document.createElement('style');
+            styleEl.id = 'ydesign-font-css';
+            document.head.appendChild(styleEl);
+        }
+        styleEl.textContent = cssFont(font);
+        document.body.classList.add('ydesign--font');
+    }
+
+    // =========================================================================
+    // 3.2. ВЕРХНІЙ БЛОК-ВИРІЗ КАРТКИ ("ЧОЛКА") ТА МІТКИ
+    // =========================================================================
+    function getMediaTypeName(data) {
+        var isTv = isTvMedia(data) || (data && (data.media_type === 'tv' || data.type === 'tv'));
+        var lang = (window.Lampa && Lampa.Storage) ? (Lampa.Storage.get('language', 'uk') || 'uk') : 'uk';
+        if (lang === 'en') return isTv ? 'Series' : 'Movie';
+        if (lang === 'ru') return isTv ? 'Сериал' : 'Фильм';
+        return isTv ? 'Серіал' : 'Фільм';
+    }
+
+    function getCustomFavTags(data, cardEl) {
+        if (!data) return [];
+        var tags = [];
+        var seen = {};
+
+        function addTag(name) {
+            if (!name) return;
+            var trimmed = String(name).trim();
+            if (trimmed && !seen[trimmed]) {
+                seen[trimmed] = true;
+                tags.push(trimmed);
+            }
+        }
+
+        // 1. Статуси та мітки перегляду Lampa (look, viewed, scheduled, continued, thrown)
+        try {
+            if (window.Lampa && Lampa.Favorite && Lampa.Favorite.check) {
+                var favStatus = Lampa.Favorite.check(data) || {};
+                var markKeys = ['look', 'viewed', 'scheduled', 'continued', 'thrown'];
+                var markDict = {
+                    look: 'Дивлюся',
+                    viewed: 'Переглянуто',
+                    scheduled: 'Заплановано',
+                    continued: 'Продовжую',
+                    thrown: 'Кинуто'
+                };
+                for (var i = 0; i < markKeys.length; i++) {
+                    var mk = markKeys[i];
+                    if (favStatus[mk]) {
+                        var markTitle = (window.Lampa && Lampa.Lang && Lampa.Lang.translate) ? Lampa.Lang.translate('title_' + mk) : '';
+                        if (!markTitle || markTitle.indexOf('title_') === 0) {
+                            markTitle = markDict[mk] || mk;
+                        }
+                        addTag(markTitle);
+                    }
+                }
+            }
+        } catch (e) {}
+
+        // 2. Списки та мітки з розширення custom-favs
+        try {
+            var cf = (window.Lampa && Lampa.Storage) ? Lampa.Storage.get('custom_favorite', {}) : {};
+            if (cf && cf.customTypes && data.id) {
+                var systemFields = ['card', 'migrationVersion'];
+                var dataIdStr = String(data.id);
+                for (var typeName in cf.customTypes) {
+                    if (systemFields.indexOf(typeName) !== -1) continue;
+                    var uid = cf.customTypes[typeName];
+                    var list = cf[uid];
+                    if (Array.isArray(list)) {
+                        for (var j = 0; j < list.length; j++) {
+                            if (String(list[j]) === dataIdStr) {
+                                addTag(typeName);
+                                break;
+                            }
+                        }
+                    }
+                }
+            }
+        } catch (e) {}
+
+        // 3. Якщо у картці вже був наявний елемент .card__marker
+        try {
+            if (cardEl && cardEl.querySelector) {
+                var markerSpan = cardEl.querySelector('.card__marker span');
+                if (markerSpan && markerSpan.innerText) {
+                    addTag(markerSpan.innerText);
+                }
+            }
+        } catch (e) {}
+
+        return tags;
+    }
+
+    function getStandardFavoriteIconsHtml(data) {
+        if (!data || !data.id) return '';
+        var iconsHtml = '';
+        try {
+            var favStatus = (window.Lampa && Lampa.Favorite && Lampa.Favorite.check) ? Lampa.Favorite.check(data) : {};
+            var isWatched = false;
+            try {
+                if (window.Lampa && Lampa.Timeline && Lampa.Timeline.watched) {
+                    isWatched = Lampa.Timeline.watched(data);
+                }
+            } catch (e) {}
+
+            // 1. Закладки (book)
+            if (favStatus.book) {
+                iconsHtml += '<svg class="ydesign-notch-icon ydesign-notch-icon-book" viewBox="0 0 24 24" fill="currentColor"><path d="M17 3H7c-1.1 0-2 .9-2 2v16l7-3 7 3V5c0-1.1-.9-2-2-2z"/></svg>';
+            }
+            // 2. Подобається (like)
+            if (favStatus.like) {
+                iconsHtml += '<svg class="ydesign-notch-icon ydesign-notch-icon-like" viewBox="0 0 24 24" fill="currentColor"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>';
+            }
+            // 3. Пізніше (wath)
+            if (favStatus.wath) {
+                iconsHtml += '<svg class="ydesign-notch-icon ydesign-notch-icon-wath" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm.5 13H11V7h1.5v6.2l3.75 2.25-.75 1.23-4-2.48z"/></svg>';
+            }
+            // 4. Історія перегляду (history / watched)
+            if (favStatus.history || isWatched) {
+                iconsHtml += '<svg class="ydesign-notch-icon ydesign-notch-icon-history" viewBox="0 0 24 24" fill="currentColor"><path d="M13 3a9 9 0 0 0-9 9H1l3.89 3.89.07.14L9 12H6c0-3.87 3.13-7 7-7s7 3.13 7 7-3.13 7-7 7c-1.93 0-3.68-.79-4.94-2.06l-1.42 1.42A8.954 8.954 0 0 0 13 21a9 9 0 0 0 0-18zm-1 5v5l4.28 2.54.72-1.21-3.5-2.08V8H12z"/></svg>';
+            }
+        } catch (e) {}
+
+        if (iconsHtml) {
+            var isMono = !!getSet('ydesign_notch_std_monochrome');
+            return '<span class="ydesign-notch-std-list' + (isMono ? ' ydesign-notch-mono' : '') + '">' + iconsHtml + '</span>';
+        }
+        return '';
+    }
+
+    function renderCardNotchContent(data, cardEl) {
+        if (!data || !getSet('ydesign_notch_show')) return '';
+
+        var html = '';
+
+        // 1-а група: Тип медіа (Фільм або Серіал)
+        if (getSet('ydesign_notch_show_type')) {
+            var typeName = getMediaTypeName(data);
+            if (typeName) {
+                html += '<span class="ydesign-notch-type">' + typeName + '</span>';
+            }
+        }
+
+        // 2-а група: Стандартні мітки (закладки, подобається, пізніше, історія)
+        if (getSet('ydesign_notch_show_standard')) {
+            var stdIcons = getStandardFavoriteIconsHtml(data);
+            if (stdIcons) {
+                html += stdIcons;
+            }
+        }
+
+        // 3-я група: Кастомні мітки та статуси перегляду (Дивлюся, Переглянуто, custom-favs)
+        if (getSet('ydesign_notch_show_custom')) {
+            var customTags = getCustomFavTags(data, cardEl);
+            if (customTags && customTags.length > 0) {
+                customTags.forEach(function (tag) {
+                    html += '<span class="ydesign-notch-custom">' + tag + '</span>';
+                });
+            }
+        }
+
+        return html;
+    }
+
+    function updateCardNotch(cardEl, data) {
+        if (!cardEl) return;
+        var view = cardEl.querySelector ? cardEl.querySelector('.card__view') : null;
+        if (!view) return;
+
+        var notchEl = view.querySelector('.ydesign-card-notch');
+        if (!getSet('ydesign_notch_show')) {
+            if (notchEl) notchEl.style.display = 'none';
+            return;
+        }
+
+        var contentHtml = renderCardNotchContent(data, cardEl);
+        if (!contentHtml) {
+            if (notchEl) {
+                notchEl.innerHTML = '';
+                notchEl.style.display = 'none';
+            }
+            return;
+        }
+
+        if (!notchEl) {
+            notchEl = document.createElement('div');
+            notchEl.className = 'ydesign-card-notch';
+            view.appendChild(notchEl);
+        }
+
+        notchEl.innerHTML = contentHtml;
+        notchEl.style.display = '';
     }
 
     // =========================================================================
@@ -735,6 +1090,10 @@
 
         var prefix = isHorz ? 'ydesign_h_' : 'ydesign_v_';
 
+        el._ydesign_updateNotch = function () {
+            updateCardNotch(el, data);
+        };
+
         var buildExtendedCard = function () {
             var view = el.querySelector('.card__view');
             if (!view) return;
@@ -747,6 +1106,7 @@
             view.appendChild(imgLayer);
             view.appendChild(gradientLayer);
             view.appendChild(contentLayer);
+            updateCardNotch(el, data);
 
             var bgQuality = isHorz ? getSet('ydesign_backdrop_quality') : getSet('ydesign_poster_quality');
 
@@ -1039,7 +1399,10 @@
             "    width: 100%; height: 0 !important;",
             "    border-radius: 0.85em !important;",
             "    background-color: #1a1a1a; ",
-            "    overflow: hidden;",
+            "    overflow: hidden !important;",
+            "    transform: translateZ(0);",
+            "    -webkit-mask-image: -webkit-radial-gradient(white, black);",
+            "    mask-image: radial-gradient(white, black);",
             "    box-shadow: 0 0 0 4px transparent;",
             "    transition: background-color 0.4s ease, box-shadow 0.22s cubic-bezier(0.16, 1, 0.3, 1);",
             "}",
@@ -1254,6 +1617,65 @@
             "body.ydesign-border-age.ydesign-color-age .ydesign-age-16 { border-color: rgba(255, 152, 0, 0.85) !important; }",
             "body.ydesign-border-age.ydesign-color-age .ydesign-age-14, body.ydesign-border-age.ydesign-color-age .ydesign-age-13 { border-color: rgba(255, 215, 64, 0.85) !important; }",
             "body.ydesign-border-age.ydesign-color-age .ydesign-age-6, body.ydesign-border-age.ydesign-color-age .ydesign-age-0 { border-color: rgba(105, 240, 174, 0.85) !important; }",
+            "",
+            "/* ВЕРХНІЙ БЛОК БЕЙДЖІВ КАРТКИ */",
+            ".ydesign-card-notch {",
+            "    position: absolute !important; top: 0 !important; left: 50% !important;",
+            "    transform: translateX(-50%) !important; z-index: 25 !important;",
+            "    display: inline-flex !important; align-items: center !important; justify-content: center !important;",
+            "    gap: 0.4em !important; padding: 0.18em 0.6em !important;",
+            "    box-sizing: border-box !important; white-space: nowrap !important; pointer-events: none !important;",
+            "    max-width: 92% !important; overflow: hidden !important;",
+            "    margin: 0 !important; margin-top: 0 !important;",
+            "    border-top: none !important; border-radius: 0 0 0.65em 0.65em !important;",
+            "    border-top-left-radius: 0 !important; border-top-right-radius: 0 !important;",
+            "    border-bottom-left-radius: 0.65em !important; border-bottom-right-radius: 0.65em !important;",
+            "    transition: all 0.2s ease !important;",
+            "}",
+            "body.ydesign-notch-hide .ydesign-card-notch { display: none !important; }",
+            "body.ydesign-notch-bg .ydesign-card-notch {",
+            "    background: rgba(255, 255, 255, 0.12) !important;",
+            "    backdrop-filter: blur(6px) !important; -webkit-backdrop-filter: blur(6px) !important;",
+            "}",
+            "body:not(.ydesign-notch-bg) .ydesign-card-notch {",
+            "    background: transparent !important; backdrop-filter: none !important; -webkit-backdrop-filter: none !important;",
+            "}",
+            "body.ydesign-notch-border .ydesign-card-notch {",
+            "    border-left: 1px solid rgba(255, 255, 255, 0.6) !important;",
+            "    border-right: 1px solid rgba(255, 255, 255, 0.6) !important;",
+            "    border-bottom: 1px solid rgba(255, 255, 255, 0.6) !important;",
+            "    border-top: none !important;",
+            "}",
+            "body:not(.ydesign-notch-border) .ydesign-card-notch { border: none !important; }",
+            ".ydesign-notch-type {",
+            "    font-size: var(--ydesign-notch-type-size, 0.5em) !important;",
+            "    font-weight: 400 !important; color: #ffffff !important;",
+            "    text-transform: uppercase !important; letter-spacing: 0.04em !important;",
+            "    line-height: 1 !important; white-space: nowrap !important; flex-shrink: 0 !important;",
+            "}",
+            ".ydesign-notch-std-list {",
+            "    display: inline-flex !important; align-items: center !important; gap: 0.25em !important; flex-shrink: 0 !important;",
+            "}",
+            ".ydesign-notch-icon {",
+            "    display: inline-block !important;",
+            "    width: var(--ydesign-notch-std-size, 0.5em) !important; height: var(--ydesign-notch-std-size, 0.5em) !important;",
+            "    vertical-align: middle !important; flex-shrink: 0 !important;",
+            "}",
+            "body.ydesign-notch-mono .ydesign-notch-icon,",
+            ".ydesign-notch-mono .ydesign-notch-icon {",
+            "    color: rgba(255, 255, 255, 0.92) !important;",
+            "}",
+            "body:not(.ydesign-notch-mono) .ydesign-notch-icon-book { color: #ffd166 !important; }",
+            "body:not(.ydesign-notch-mono) .ydesign-notch-icon-like { color: #ff4757 !important; }",
+            "body:not(.ydesign-notch-mono) .ydesign-notch-icon-wath { color: #00d2d3 !important; }",
+            "body:not(.ydesign-notch-mono) .ydesign-notch-icon-history { color: #be95ff !important; }",
+            ".ydesign-notch-custom {",
+            "    font-size: var(--ydesign-notch-custom-size, 0.5em) !important;",
+            "    font-weight: 400 !important; color: #ffffff !important;",
+            "    text-transform: uppercase !important; letter-spacing: 0.04em !important;",
+            "    background: transparent !important; padding: 0 !important; border: none !important; border-radius: 0 !important;",
+            "    line-height: 1 !important; white-space: nowrap !important; flex-shrink: 0 !important;",
+            "}",
             "",
             "/* ВЕРТИКАЛЬНІ КАРТКИ CSS ЗМІННІ */",
             ".ydesign-active .ydesign-card.ydesign-vertical {",
@@ -1586,6 +2008,22 @@
             document.documentElement.style.setProperty('--ydesign-card-gap', getSet('ydesign_card_gap') + 'em');
             document.documentElement.style.setProperty('--ydesign-ratings-saturate', getSet('ydesign_ratings_saturate') + '%');
 
+            // Верхні бейджі
+            document.body.classList.toggle('ydesign-notch-hide', !getSet('ydesign_notch_show'));
+            document.body.classList.toggle('ydesign-notch-bg', !!getSet('ydesign_notch_bg'));
+            document.body.classList.toggle('ydesign-notch-border', !!getSet('ydesign_notch_border'));
+            document.body.classList.toggle('ydesign-notch-mono', !!getSet('ydesign_notch_std_monochrome'));
+
+            var nUniform = !!getSet('ydesign_notch_uniform_size');
+            var nSize = getSet('ydesign_notch_size') || '0.5';
+            var nTypeSize = nUniform ? nSize : (getSet('ydesign_notch_type_size') || '0.5');
+            var nStdSize = nUniform ? nSize : (getSet('ydesign_notch_standard_size') || '0.5');
+            var nCustSize = nUniform ? nSize : (getSet('ydesign_notch_custom_size') || '0.5');
+
+            document.documentElement.style.setProperty('--ydesign-notch-type-size', nTypeSize + 'em');
+            document.documentElement.style.setProperty('--ydesign-notch-std-size', nStdSize + 'em');
+            document.documentElement.style.setProperty('--ydesign-notch-custom-size', nCustSize + 'em');
+
             // ----------------- ВЕРТИКАЛЬНІ ПАРАМЕТРИ -----------------
             document.body.classList.toggle('ydesign-v-uniform-badges', getSet('ydesign_v_uniform_badges', 'ydesign_uniform_badges'));
             document.body.classList.toggle('ydesign-v-uniform-gaps', getSet('ydesign_v_uniform_v_gaps', 'ydesign_uniform_v_gaps_vert'));
@@ -1688,7 +2126,7 @@
         var qualities = { 'w92': 'w92', 'w154': 'w154', 'w200': 'w200', 'w300': 'w300', 'w500': 'w500', 'w780': 'w780', 'original': 'Оригінал' };
 
         var textSizesExt = {};
-        for (var i = 5; i <= 40; i += 1) { var v = (i / 10).toFixed(1); textSizesExt[v] = v; }
+        for (var i = 3; i <= 40; i += 1) { var v = (i / 10).toFixed(1); textSizesExt[v] = v; }
 
         var gaps = {};
         for (var g = -20; g <= 40; g += 1) { var gv = (g / 10).toFixed(1); gaps[gv] = gv + ' em'; }
@@ -1708,7 +2146,7 @@
         var aligns = { 'left': 'Ліворуч', 'center': 'По центру', 'right': 'Праворуч' };
         var shapes = { 'pill': 'Пігулка (Сучасний Pill Capsule)', 'rounded': 'Прямокутний скруглений (4px)', 'square': 'Прямокутний (2px)' };
 
-        var sectionKeys = ['ydesign_grid', 'ydesign_vertical', 'ydesign_horizontal', 'ydesign_badges_style', 'ydesign_texts', 'ydesign_series', 'ydesign_perf'];
+        var sectionKeys = ['ydesign_grid', 'ydesign_vertical', 'ydesign_horizontal', 'ydesign_notch', 'ydesign_badges_style', 'ydesign_fonts', 'ydesign_texts', 'ydesign_series', 'ydesign_perf'];
         sectionKeys.forEach(function (compKey) {
             Lampa.Template.add('settings_' + compKey, '<div></div>');
         });
@@ -1739,7 +2177,9 @@
             { id: 'ydesign_grid', name: '🎬 Відображення карток та Сітка', desc: 'Формат карток на головній/інших сторінках, кількість колонок та ліниве завантаження' },
             { id: 'ydesign_vertical', name: '📱 Вертикальні картки', desc: 'Окремі налаштування розмірів, логотипу, слогану, бейджів, відступів та вирівнювання' },
             { id: 'ydesign_horizontal', name: '💻 Горизонтальні картки', desc: 'Окремі налаштування розмірів, логотипу, опису під карткою, бейджів, відступів та вирівнювання' },
+            { id: 'ydesign_notch', name: '✂️ Верхні бейджі', desc: 'Верхній блок вирізу: тип (Фільм/Серіал), стандартні мітки, статус перегляду' },
             { id: 'ydesign_badges_style', name: '🏷️ Стилі бейджів та Рейтинги', desc: 'Форма пігулок, скляна підложка, рамки бейджів, кольори віку/UA, вибір рейтингів' },
+            { id: 'ydesign_fonts', name: '🔤 Шрифти', desc: 'Вибір шрифтів Google Fonts для всієї програми' },
             { id: 'ydesign_texts', name: '🔤 Мови, Логотипи та Якість', desc: 'Вибір мов (лого, слоган, опис), тип логотипу та якість зображень TMDB' },
             { id: 'ydesign_series', name: '📺 Редизайн Серій та Епізодів', desc: 'Розміри бейджів і тексту, кількість карток, стиль пігулок, дата, озвучка, рейтинг' },
             { id: 'ydesign_perf', name: '⚙️ API Ключі, Кеш та Підтримка', desc: 'OMDb/MDBList ключі, очищення кешу плагіну та QR підтримки' }
@@ -1863,6 +2303,74 @@
         Lampa.SettingsApi.addParam({ component: 'ydesign_horizontal', param: { name: 'ydesign_h_add_title_mb', type: 'select', values: gaps, default: DefaultSettings.ydesign_h_add_title_mb }, field: { name: 'Відступ додаткової назви від бейджів' } });
 
         // -------------------------------------------------------------
+        // ПІДКАТЕГОРІЯ: ВЕРХНІ БЕЙДЖІ (ydesign_notch)
+        // -------------------------------------------------------------
+        Lampa.SettingsApi.addParam({
+            component: 'ydesign_notch',
+            param: { name: 'ydesign_notch_show', type: 'trigger', default: DefaultSettings.ydesign_notch_show },
+            field: { name: 'Показувати верхні бейджі', description: 'Блок-виріз зверху посередині картки' }
+        });
+        Lampa.SettingsApi.addParam({
+            component: 'ydesign_notch',
+            param: { name: 'ydesign_notch_bg', type: 'trigger', default: DefaultSettings.ydesign_notch_bg },
+            field: { name: 'Скляна підложка', description: 'Напівпрозоре скло для блоку' }
+        });
+        Lampa.SettingsApi.addParam({
+            component: 'ydesign_notch',
+            param: { name: 'ydesign_notch_border', type: 'trigger', default: DefaultSettings.ydesign_notch_border },
+            field: { name: 'Контурна рамка', description: 'Рамка по контуру блоку (одна на весь блок)' }
+        });
+        Lampa.SettingsApi.addParam({
+            component: 'ydesign_notch',
+            param: { name: 'ydesign_notch_std_monochrome', type: 'trigger', default: DefaultSettings.ydesign_notch_std_monochrome },
+            field: { name: 'Монохромні іконки міток', description: 'Відображати стандартні іконки білим кольором замість різнокольорових' }
+        });
+
+        Lampa.SettingsApi.addParam({ component: 'ydesign_notch', param: { type: 'title' }, field: { name: 'Розміри бейджів у блоці' } });
+        Lampa.SettingsApi.addParam({
+            component: 'ydesign_notch',
+            param: { name: 'ydesign_notch_uniform_size', type: 'trigger', default: DefaultSettings.ydesign_notch_uniform_size },
+            field: { name: 'Всі одного розміру', description: 'Однакова величина всіх елементів або окремо для кожного блоку' }
+        });
+        Lampa.SettingsApi.addParam({
+            component: 'ydesign_notch',
+            param: { name: 'ydesign_notch_size', type: 'select', values: textSizesExt, default: DefaultSettings.ydesign_notch_size },
+            field: { name: 'Загальний розмір бейджів', description: 'Діє, коли увімкнено варіант "Всі одного розміру"' }
+        });
+        Lampa.SettingsApi.addParam({
+            component: 'ydesign_notch',
+            param: { name: 'ydesign_notch_type_size', type: 'select', values: textSizesExt, default: DefaultSettings.ydesign_notch_type_size },
+            field: { name: 'Розмір типу (Фільм/Серіал)', description: 'Розмір шрифту першого блоку типу' }
+        });
+        Lampa.SettingsApi.addParam({
+            component: 'ydesign_notch',
+            param: { name: 'ydesign_notch_standard_size', type: 'select', values: textSizesExt, default: DefaultSettings.ydesign_notch_standard_size },
+            field: { name: 'Розмір стандартних міток', description: 'Розмір іконок закладок, подобається, пізніше, історії' }
+        });
+        Lampa.SettingsApi.addParam({
+            component: 'ydesign_notch',
+            param: { name: 'ydesign_notch_custom_size', type: 'select', values: textSizesExt, default: DefaultSettings.ydesign_notch_custom_size },
+            field: { name: 'Розмір мітки статусу/custom-favs', description: 'Розмір тексту бейджа статусу перегляду (Дивлюся тощо)' }
+        });
+
+        Lampa.SettingsApi.addParam({ component: 'ydesign_notch', param: { type: 'title' }, field: { name: 'Групи бейджів у блоці' } });
+        Lampa.SettingsApi.addParam({
+            component: 'ydesign_notch',
+            param: { name: 'ydesign_notch_show_type', type: 'trigger', default: DefaultSettings.ydesign_notch_show_type },
+            field: { name: '1. Тип медіа (Фільм / Серіал)', description: 'Перший блок рядка' }
+        });
+        Lampa.SettingsApi.addParam({
+            component: 'ydesign_notch',
+            param: { name: 'ydesign_notch_show_standard', type: 'trigger', default: DefaultSettings.ydesign_notch_show_standard },
+            field: { name: '2. Стандартні мітки Lampa', description: 'Другий блок: закладки, подобається, пізніше, історія' }
+        });
+        Lampa.SettingsApi.addParam({
+            component: 'ydesign_notch',
+            param: { name: 'ydesign_notch_show_custom', type: 'trigger', default: DefaultSettings.ydesign_notch_show_custom },
+            field: { name: '3. Мітки статусу (Дивлюся / custom-favs)', description: 'Третій блок: статус перегляду та списки custom-favs' }
+        });
+
+        // -------------------------------------------------------------
         // ПІДКАТЕГОРІЯ 4: СТИЛІ БЕЙДЖІВ ТА РЕЙТИНГИ (ydesign_badges_style)
         // -------------------------------------------------------------
         Lampa.SettingsApi.addParam({ component: 'ydesign_badges_style', param: { name: 'ydesign_badge_shape', type: 'select', values: shapes, default: DefaultSettings.ydesign_badge_shape }, field: { name: 'Форма бейджів' } });
@@ -1892,6 +2400,54 @@
                 }, function (new_val) {
                     if (new_val !== undefined) {
                         Lampa.Storage.set('ydesign_ratings_order', new_val.trim().toLowerCase());
+                        Lampa.Settings.update();
+                    }
+                });
+            }
+        });
+
+        // -------------------------------------------------------------
+        // ПІДКАТЕГОРІЯ: ШРИФТИ (ydesign_fonts)
+        // -------------------------------------------------------------
+        var fontOptions = {
+            'golos-montserrat': 'Golos Text + Montserrat (рекомендовано)',
+            'golos': 'Golos Text',
+            'manrope': 'Manrope',
+            'montserrat': 'Montserrat',
+            'inter': 'Inter',
+            'inter-montserrat': 'Inter + Montserrat',
+            'custom': 'Свій шрифт',
+            'off': 'Як у Lampa (SegoeUI)'
+        };
+
+        Lampa.SettingsApi.addParam({
+            component: 'ydesign_fonts',
+            param: { name: 'ydesign_font', type: 'select', values: fontOptions, default: DefaultSettings.ydesign_font },
+            field: { name: 'Шрифт інтерфейсу', description: 'Завантажується з Google Fonts, діє на всю програму' }
+        });
+        Lampa.SettingsApi.addParam({
+            component: 'ydesign_fonts',
+            param: { name: 'ydesign_font_family_btn', type: 'button' },
+            field: { name: 'Назва власного шрифту', description: getSet('ydesign_font_family') || 'Не вказано (наприклад: Golos Sharp)' },
+            onChange: function () {
+                Lampa.Input.edit({ title: 'Назва власного шрифту', value: getSet('ydesign_font_family'), free: true, nosave: true }, function (new_val) {
+                    if (new_val !== undefined) {
+                        Lampa.Storage.set('ydesign_font_family', new_val.trim());
+                        fontApply();
+                        Lampa.Settings.update();
+                    }
+                });
+            }
+        });
+        Lampa.SettingsApi.addParam({
+            component: 'ydesign_fonts',
+            param: { name: 'ydesign_font_css_btn', type: 'button' },
+            field: { name: 'URL CSS власного шрифту', description: getSet('ydesign_font_css') || 'Не вказано (наприклад: http://.../font.css)' },
+            onChange: function () {
+                Lampa.Input.edit({ title: 'URL CSS власного шрифту', value: getSet('ydesign_font_css'), free: true, nosave: true }, function (new_val) {
+                    if (new_val !== undefined) {
+                        Lampa.Storage.set('ydesign_font_css', new_val.trim());
+                        fontApply();
                         Lampa.Settings.update();
                     }
                 });
@@ -1982,7 +2538,22 @@
 
         Lampa.Settings.listener.follow('change', function (e) {
             if (e && e.name && e.name.indexOf('ydesign_') !== -1) {
+                if (e.name === 'ydesign_font' || e.name === 'ydesign_font_family' || e.name === 'ydesign_font_css') {
+                    fontApply();
+                }
+
                 applyDynamicCSS();
+
+                var notchCardParams = [
+                    'ydesign_notch_show', 'ydesign_notch_show_type',
+                    'ydesign_notch_show_standard', 'ydesign_notch_show_custom',
+                    'ydesign_notch_std_monochrome'
+                ];
+                if (notchCardParams.indexOf(e.name) !== -1) {
+                    document.querySelectorAll('.ydesign-card').forEach(function (c) {
+                        if (c._ydesign_updateNotch) c._ydesign_updateNotch();
+                    });
+                }
 
                 var nonCssParams = [
                     'ydesign_lang', 'ydesign_slogan_lang', 'ydesign_desc_lang', 'ydesign_add_title_lang',
@@ -2014,6 +2585,21 @@
         try {
             var CardMaker = Lampa.Maker.map('Card');
             if (!CardMaker || !CardMaker.Card) return;
+
+            if (CardMaker.Favorite) {
+                var originalFavoriteOnUpdate = CardMaker.Favorite.onUpdate;
+                CardMaker.Favorite.onUpdate = function () {
+                    if (typeof originalFavoriteOnUpdate === 'function') {
+                        originalFavoriteOnUpdate.apply(this, arguments);
+                    }
+                    if (this.html) {
+                        var cardEl = this.html[0] || this.html;
+                        if (cardEl && cardEl._ydesign_updateNotch) {
+                            cardEl._ydesign_updateNotch();
+                        }
+                    }
+                };
+            }
 
             var originalOnCreate = CardMaker.Card.onCreate;
             var originalOnVisible = CardMaker.Card.onVisible;
@@ -2872,11 +3458,29 @@
 
             injectCSS();
             applyDynamicCSS();
+            fontApply();
 
             if (window.Lampa && Lampa.Storage && Lampa.Storage.listener) {
                 Lampa.Storage.listener.follow('change', function (e) {
                     if (e && e.name && e.name.indexOf('ydesign_') === 0) {
                         applyDynamicCSS();
+                        if (e.name === 'ydesign_font' || e.name === 'ydesign_font_family' || e.name === 'ydesign_font_css') {
+                            fontApply();
+                        }
+                    }
+                });
+            }
+
+            if (window.Lampa && Lampa.Listener) {
+                Lampa.Listener.follow('state:changed', function (e) {
+                    if (e && (e.target === 'favorite' || e.name === 'favorite')) {
+                        document.querySelectorAll('.ydesign-card').forEach(function (c) {
+                            if (c._ydesign_updateNotch) {
+                                if (!e.card || (c._ydesign_data && c._ydesign_data.id == e.card.id)) {
+                                    c._ydesign_updateNotch();
+                                }
+                            }
+                        });
                     }
                 });
             }
