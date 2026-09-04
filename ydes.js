@@ -248,17 +248,43 @@
         return false;
     }
 
-    function isTvMedia(movie) {
-        if (!movie) return false;
-        if (movie.media_type === 'tv') return true;
-        if (movie.media_type === 'movie') return false;
-        if (movie.type === 'tv' || movie.type === 'tv_series') return true;
-        if (movie.type === 'movie') return false;
-        if (movie.number_of_seasons !== undefined && movie.number_of_seasons !== null && movie.number_of_seasons > 0) return true;
-        if (movie.seasons && movie.seasons.length > 0) return true;
-        if (movie.first_air_date && !movie.release_date) return true;
-        if (movie.name && !movie.title) return true;
-        if (movie.original_name && !movie.original_title) return true;
+    function isTvMedia(movie, cardEl, extData) {
+        if (!movie && !cardEl && !extData) return false;
+
+        if (extData) {
+            if (extData.seasons || extData.se_str || extData.number_of_seasons) return true;
+            if (extData.type === 'tv' || extData.media_type === 'tv') return true;
+            if (extData.type === 'movie' || extData.media_type === 'movie') return false;
+        }
+
+        if (movie) {
+            if (movie.media_type === 'tv' || movie.type === 'tv' || movie.type === 'tv_series') return true;
+            if (movie.media_type === 'movie' || movie.type === 'movie') return false;
+            if (movie.number_of_seasons !== undefined && movie.number_of_seasons !== null && movie.number_of_seasons > 0) return true;
+            if (movie.seasons && movie.seasons.length > 0) return true;
+            if (movie.number_of_episodes !== undefined && movie.number_of_episodes !== null && movie.number_of_episodes > 0) return true;
+
+            // TMDB специфіка: серіали завжди мають first_air_date або original_name, фільми - ніколи
+            if (movie.first_air_date) return true;
+            if (movie.original_name) return true;
+            if (movie.name && !movie.title) return true;
+        }
+
+        if (cardEl) {
+            if (cardEl.classList) {
+                if (cardEl.classList.contains('card--tv') || cardEl.classList.contains('tv')) return true;
+                if (cardEl.classList.contains('card--movie') || cardEl.classList.contains('movie')) return false;
+            }
+            if (cardEl.querySelector) {
+                var typeDiv = cardEl.querySelector('.card__type');
+                if (typeDiv) {
+                    var txt = (typeDiv.innerText || typeDiv.textContent || '').trim().toUpperCase();
+                    if (txt === 'TV' || txt === 'СЕРІАЛ' || txt === 'СЕРИАЛ') return true;
+                    if (txt === 'MOV' || txt === 'ФІЛЬМ' || txt === 'ФИЛЬМ') return false;
+                }
+            }
+        }
+
         return false;
     }
 
@@ -415,8 +441,8 @@
     // =========================================================================
     // 3.2. ВЕРХНІЙ БЛОК-ВИРІЗ КАРТКИ ("ЧОЛКА") ТА МІТКИ
     // =========================================================================
-    function getMediaTypeName(data) {
-        var isTv = isTvMedia(data) || (data && (data.media_type === 'tv' || data.type === 'tv'));
+    function getMediaTypeName(data, cardEl, extData) {
+        var isTv = isTvMedia(data, cardEl, extData) || (data && (data.media_type === 'tv' || data.type === 'tv'));
         var lang = (window.Lampa && Lampa.Storage) ? (Lampa.Storage.get('language', 'uk') || 'uk') : 'uk';
         if (lang === 'en') return isTv ? 'Series' : 'Movie';
         if (lang === 'ru') return isTv ? 'Сериал' : 'Фильм';
@@ -534,14 +560,14 @@
         return '';
     }
 
-    function renderCardNotchContent(data, cardEl) {
+    function renderCardNotchContent(data, cardEl, extData) {
         if (!data || !getSet('ydesign_notch_show')) return '';
 
         var html = '';
 
         // 1-а група: Тип медіа (Фільм або Серіал)
         if (getSet('ydesign_notch_show_type')) {
-            var typeName = getMediaTypeName(data);
+            var typeName = getMediaTypeName(data, cardEl, extData);
             if (typeName) {
                 html += '<span class="ydesign-notch-type">' + typeName + '</span>';
             }
@@ -568,7 +594,7 @@
         return html;
     }
 
-    function updateCardNotch(cardEl, data) {
+    function updateCardNotch(cardEl, data, extData) {
         if (!cardEl) return;
         var view = cardEl.querySelector ? cardEl.querySelector('.card__view') : null;
         if (!view) return;
@@ -579,7 +605,7 @@
             return;
         }
 
-        var contentHtml = renderCardNotchContent(data, cardEl);
+        var contentHtml = renderCardNotchContent(data, cardEl, extData);
         if (!contentHtml) {
             if (notchEl) {
                 notchEl.innerHTML = '';
@@ -1085,13 +1111,14 @@
         el.classList.remove('ydesign-vertical', 'ydesign-horizontal');
         el.classList.add(isHorz ? 'ydesign-horizontal' : 'ydesign-vertical');
 
-        var type = data.media_type || (data.name ? 'tv' : 'movie');
+        var type = isTvMedia(data, el) ? 'tv' : (data.media_type || 'movie');
+        if (!data.media_type) data.media_type = type;
         if (!data.id) return;
 
         var prefix = isHorz ? 'ydesign_h_' : 'ydesign_v_';
 
         el._ydesign_updateNotch = function () {
-            updateCardNotch(el, data);
+            updateCardNotch(el, data, el._ydesign_extData);
         };
 
         var buildExtendedCard = function () {
@@ -1106,7 +1133,7 @@
             view.appendChild(imgLayer);
             view.appendChild(gradientLayer);
             view.appendChild(contentLayer);
-            updateCardNotch(el, data);
+            updateCardNotch(el, data, el._ydesign_extData);
 
             var bgQuality = isHorz ? getSet('ydesign_backdrop_quality') : getSet('ydesign_poster_quality');
 
@@ -1134,6 +1161,10 @@
             };
 
             fetchExtendedData(data.id, type).then(function (extData) {
+                if (extData) {
+                    el._ydesign_extData = extData;
+                    updateCardNotch(el, data, extData);
+                }
                 var bgToLoad = null;
                 if (extData) {
                     bgToLoad = isHorz ? (extData.clean_backdrop || data.backdrop_path || data.poster_path) : (extData.clean_poster || data.poster_path || data.backdrop_path);
